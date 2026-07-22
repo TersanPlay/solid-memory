@@ -1,0 +1,179 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../server/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+  runtime             = "nodejs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+  VIEWER
+}
+
+enum DocumentStatus {
+  REGISTRADO
+  EM_ELABORACAO
+  ENVIADO
+  RECEBIDO
+  ARQUIVADO
+  CANCELADO
+}
+
+enum HistoryAction {
+  CREATE
+  UPDATE
+  STATUS_CHANGE
+  CANCEL
+  ATTACHMENT_ADD
+  ATTACHMENT_REMOVE
+}
+
+model User {
+  id               String            @id @default(cuid())
+  name             String
+  email            String            @unique
+  passwordHash     String
+  passwordSalt     String
+  role             UserRole          @default(VIEWER)
+  active           Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  sessions         Session[]
+  responsibleFor   Document[]        @relation("ResponsibleUser")
+  createdDocuments Document[]        @relation("CreatedByUser")
+  updatedDocuments Document[]        @relation("UpdatedByUser")
+  historyEntries   DocumentHistory[]
+  attachments      Attachment[]
+
+  @@index([role, active])
+}
+
+model Session {
+  tokenHash  String   @id
+  userId     String
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model DocumentType {
+  id        String             @id @default(cuid())
+  name      String
+  prefix    String             @unique
+  separator String
+  digits    Int                @default(3)
+  active    Boolean            @default(true)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  documents Document[]
+  sequences ProtocolSequence[]
+
+  @@index([active])
+}
+
+model Department {
+  id                   String     @id @default(cuid())
+  name                 String
+  code                 String     @unique
+  active               Boolean    @default(true)
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  originDocuments      Document[] @relation("OriginDepartment")
+  destinationDocuments Document[] @relation("DestinationDepartment")
+
+  @@index([active])
+}
+
+model ProtocolSequence {
+  typeId     String
+  year       Int
+  lastNumber Int          @default(0)
+  type       DocumentType @relation(fields: [typeId], references: [id], onDelete: Restrict)
+
+  @@id([typeId, year])
+}
+
+model Document {
+  id                      String            @id @default(cuid())
+  protocol                String            @unique
+  sequence                Int
+  year                    Int
+  typeId                  String
+  date                    String
+  originDepartmentId      String
+  originCodeSnapshot      String
+  originNameSnapshot      String
+  destinationDepartmentId String?
+  destinationText         String?
+  destinationCodeSnapshot String?
+  destinationNameSnapshot String
+  subject                 String
+  responsibleUserId       String
+  status                  DocumentStatus    @default(REGISTRADO)
+  notes                   String            @default("")
+  createdById             String
+  updatedById             String
+  cancelledAt             DateTime?
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+  type                    DocumentType      @relation(fields: [typeId], references: [id], onDelete: Restrict)
+  originDepartment        Department        @relation("OriginDepartment", fields: [originDepartmentId], references: [id], onDelete: Restrict)
+  destinationDepartment   Department?       @relation("DestinationDepartment", fields: [destinationDepartmentId], references: [id], onDelete: Restrict)
+  responsibleUser         User              @relation("ResponsibleUser", fields: [responsibleUserId], references: [id], onDelete: Restrict)
+  createdBy               User              @relation("CreatedByUser", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy               User              @relation("UpdatedByUser", fields: [updatedById], references: [id], onDelete: Restrict)
+  history                 DocumentHistory[]
+  attachments             Attachment[]
+
+  @@unique([typeId, year, sequence])
+  @@index([date])
+  @@index([year])
+  @@index([status])
+  @@index([typeId])
+  @@index([originDepartmentId])
+  @@index([destinationDepartmentId])
+  @@index([responsibleUserId])
+  @@index([createdById])
+}
+
+model DocumentHistory {
+  id          String          @id @default(cuid())
+  documentId  String
+  action      HistoryAction
+  fromStatus  DocumentStatus?
+  toStatus    DocumentStatus?
+  description String
+  detailsJson String?
+  userId      String
+  createdAt   DateTime        @default(now())
+  document    Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([documentId, createdAt])
+  @@index([createdAt])
+}
+
+model Attachment {
+  id           String   @id @default(cuid())
+  documentId   String
+  originalName String
+  mimeType     String
+  size         Int
+  content      Bytes
+  uploadedById String
+  createdAt    DateTime @default(now())
+  document     Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+
+  @@index([documentId])
+}

@@ -47,6 +47,16 @@ import {
   resetUserPassword,
   updateUser,
 } from "./users.js";
+import {
+  buildAttachmentStorageKey,
+  finalizeStagedAttachmentRemoval,
+  normalizeOriginalName,
+  readAttachmentFile,
+  removeAttachmentFile,
+  restoreStagedAttachmentFile,
+  stageAttachmentFileRemoval,
+  writeAttachmentFile,
+} from "./attachment-storage.js";
 
 const statuses = Object.keys(STATUS_LABELS);
 const initialStatuses = statuses.filter((status) => status !== "CANCELADO");
@@ -164,13 +174,6 @@ function normalizeDepartment(input) {
     name: input.name?.trim(),
     code: input.code?.trim().toUpperCase(),
   };
-}
-
-function attachmentName(name) {
-  return path
-    .basename(name)
-    .replace(/[\r\n"]/g, "_")
-    .slice(0, 180);
 }
 
 const allowedFiles = new Map([
@@ -539,34 +542,56 @@ export function createApp({ prisma, config }) {
           "UNSUPPORTED_MEDIA_TYPE",
           "Formato de arquivo não permitido ou assinatura incompatível.",
         );
-      const attachment = await prisma.$transaction(async (transaction) => {
-        const created = await transaction.attachment.create({
-          data: {
-            documentId: document.id,
-            originalName: attachmentName(request.file.originalname),
-            mimeType: detected.mime,
-            size: request.file.size,
-            content: request.file.buffer,
-            uploadedById: request.user.id,
-          },
-          select: {
-            id: true,
-            originalName: true,
-            mimeType: true,
-            size: true,
-            createdAt: true,
-          },
-        });
-        await transaction.documentHistory.create({
-          data: {
-            documentId: document.id,
-            action: "ATTACHMENT_ADD",
-            description: `Anexo adicionado: ${created.originalName}`,
-            userId: request.user.id,
-          },
-        });
-        return created;
+      const originalName = normalizeOriginalName(request.file.originalname);
+      const storageKey = buildAttachmentStorageKey({
+        documentId: document.id,
+        originalName,
       });
+      await writeAttachmentFile(
+        config.attachmentsDir,
+        storageKey,
+        request.file.buffer,
+      );
+      let attachment;
+      try {
+        attachment = await prisma.$transaction(async (transaction) => {
+          const created = await transaction.attachment.create({
+            data: {
+              documentId: document.id,
+              originalName,
+              mimeType: detected.mime,
+              size: request.file.size,
+              storageKey,
+              uploadedById: request.user.id,
+            },
+            select: {
+              id: true,
+              originalName: true,
+              mimeType: true,
+              size: true,
+              createdAt: true,
+            },
+          });
+          await transaction.documentHistory.create({
+            data: {
+              documentId: document.id,
+              action: "ATTACHMENT_ADD",
+              description: `Anexo adicionado: ${created.originalName}`,
+              userId: request.user.id,
+            },
+          });
+          return created;
+        });
+      } catch (error) {
+        await removeAttachmentFile(config.attachmentsDir, storageKey).catch(
+          (cleanupError) =>
+            request.log?.error(
+              { err: cleanupError, requestId: request.id },
+              "attachment rollback cleanup failed",
+            ),
+        );
+        throw error;
+      }
       response.status(201).json({ data: attachment });
     }),
   );
@@ -581,47 +606,104 @@ export function createApp({ prisma, config }) {
       response.set({
         "Content-Type": attachment.mimeType,
         "Content-Length": String(attachment.size),
-        "Content-Disposition": `attachment; filename="${attachmentName(attachment.originalName)}"`,
+        "Content-Disposition": `attachment; filename="${normalizeOriginalName(attachment.originalName)}"`,
         "Cache-Control": "private, no-store",
       });
-      response.send(Buffer.from(attachment.content));
+      let content;
+      if (attachment.storageKey) {
+        try {
+          content = await readAttachmentFile(
+            config.attachmentsDir,
+            attachment.storageKey,
+          );
+        } catch (error) {
+          if (error.code === "ENOENT") {
+            throw new ApiError(
+              500,
+              "ATTACHMENT_CONTENT_MISSING",
+              "O conteúdo do anexo não foi encontrado no armazenamento.",
+            );
+          }
+          throw error;
+        }
+      } else if (attachment.content) {
+        content = Buffer.from(attachment.content);
+      } else {
+        throw new ApiError(
+          500,
+          "ATTACHMENT_CONTENT_MISSING",
+          "O conteúdo do anexo não foi encontrado no armazenamento.",
+        );
+      }
+      response.send(content);
     }),
   );
   app.delete(
     "/api/attachments/:id",
     requireRoles("ADMIN", "OPERATOR"),
     asyncRoute(async (request, response) => {
-      await prisma.$transaction(async (transaction) => {
-        const attachment = await transaction.attachment.findUnique({
-          where: { id: request.params.id },
-          include: { document: true },
-        });
-        if (!attachment)
-          throw new ApiError(404, "NOT_FOUND", "Anexo não encontrado.");
-        assertCanMutateDocument(request.user, attachment.document);
-        const audit = {
-          attachmentId: attachment.id,
-          originalName: attachment.originalName,
-          mimeType: attachment.mimeType,
-          size: attachment.size,
-          uploadedById: attachment.uploadedById,
-          uploadedAt: attachment.createdAt.toISOString(),
-        };
-        await transaction.attachment.delete({ where: { id: attachment.id } });
-        await transaction.document.update({
-          where: { id: attachment.documentId },
-          data: { updatedById: request.user.id },
-        });
-        await transaction.documentHistory.create({
-          data: {
-            documentId: attachment.documentId,
-            action: "ATTACHMENT_REMOVE",
-            description: `Anexo removido: ${attachment.originalName}`,
-            detailsJson: JSON.stringify(audit),
-            userId: request.user.id,
-          },
-        });
+      const current = await prisma.attachment.findUnique({
+        where: { id: request.params.id },
+        include: { document: true },
       });
+      if (!current)
+        throw new ApiError(404, "NOT_FOUND", "Anexo não encontrado.");
+      assertCanMutateDocument(request.user, current.document);
+      const staged = current.storageKey
+        ? await stageAttachmentFileRemoval(
+            config.attachmentsDir,
+            current.storageKey,
+          )
+        : null;
+      try {
+        await prisma.$transaction(async (transaction) => {
+          const attachment = await transaction.attachment.findUnique({
+            where: { id: request.params.id },
+            include: { document: true },
+          });
+          if (!attachment)
+            throw new ApiError(404, "NOT_FOUND", "Anexo não encontrado.");
+          assertCanMutateDocument(request.user, attachment.document);
+          const audit = {
+            attachmentId: attachment.id,
+            originalName: attachment.originalName,
+            mimeType: attachment.mimeType,
+            size: attachment.size,
+            uploadedById: attachment.uploadedById,
+            uploadedAt: attachment.createdAt.toISOString(),
+          };
+          await transaction.attachment.delete({
+            where: { id: attachment.id },
+          });
+          await transaction.document.update({
+            where: { id: attachment.documentId },
+            data: { updatedById: request.user.id },
+          });
+          await transaction.documentHistory.create({
+            data: {
+              documentId: attachment.documentId,
+              action: "ATTACHMENT_REMOVE",
+              description: `Anexo removido: ${attachment.originalName}`,
+              detailsJson: JSON.stringify(audit),
+              userId: request.user.id,
+            },
+          });
+        });
+      } catch (error) {
+        await restoreStagedAttachmentFile(staged).catch((restoreError) =>
+          request.log?.error(
+            { err: restoreError, requestId: request.id },
+            "attachment restore failed",
+          ),
+        );
+        throw error;
+      }
+      await finalizeStagedAttachmentRemoval(staged).catch((cleanupError) =>
+        request.log?.error(
+          { err: cleanupError, requestId: request.id },
+          "attachment file cleanup failed",
+        ),
+      );
       response.status(204).end();
     }),
   );

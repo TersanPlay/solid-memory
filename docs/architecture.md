@@ -19,6 +19,7 @@ flowchart TB
     end
     HTTP -->|"/api · JSON · cookie HttpOnly"| Express
     Prisma --> SQLite[("SQLite · data/folio.db")]
+    Express --> Attachments[("Arquivos · data/attachments")]
     Express -->|"produção"| Dist["dist/ · frontend compilado"]
 ```
 
@@ -28,6 +29,8 @@ O frontend e o backend compartilham o mesmo `package.json`, mas mantêm responsa
 - `server/app.js`: composição do Express, validações Zod e rotas;
 - `server/auth.js`: hash de senha, tokens, cookies e perfis;
 - `server/documents.js`: filtros, numeração, permissões por documento e histórico;
+- `server/attachment-storage.js`: nomes seguros, chaves relativas e operações atômicas de arquivo;
+- `server/attachment-migration.js`: migração em lotes dos `BLOBs` legados;
 - `server/db.js`: adapter Prisma e pragmas SQLite;
 - `prisma/`: schema, migration e seed.
 
@@ -41,7 +44,7 @@ O frontend e o backend compartilham o mesmo `package.json`, mas mantêm responsa
 | Navegação | React Router `7.18.1` | History API, links, rotas, retorno pós-login e parâmetros de URL. |
 | Build e desenvolvimento | Vite `8.1.5` | Servidor web em `127.0.0.1:5173`, proxy `/api` e build `dist/`. |
 | API | Express `5.2.1`, Zod `4.4.3` | HTTP, validação, autenticação, RBAC e respostas. |
-| Persistência | Prisma `7.9.0`, adapter `better-sqlite3` | Acesso transacional ao arquivo SQLite. |
+| Persistência | Prisma `7.9.0`, adapter `better-sqlite3` e filesystem local | Dados relacionais no SQLite e conteúdo dos anexos fora do banco. |
 | Testes | Vitest `4.1.10`, Testing Library, Supertest | Testes unitários, DOM, CLI, API e fallback SPA. |
 
 As versões completas e autoritativas estão no `package.json` e no `package-lock.json`.
@@ -98,8 +101,10 @@ O último administrador ativo não pode ser desativado nem receber outro perfil.
 - Pino registra método, URL, status, duração e request ID; cookies e autorização são ocultados e o corpo não é incluído.
 - Toda resposta contém `X-Request-Id`; erros internos não devolvem stack trace.
 - CSV protege células iniciadas por `=`, `+`, `-` ou `@` contra execução de fórmula.
-- Anexos são limitados a 10 MB e validados por extensão e assinatura antes do `BLOB`.
-- A remoção de anexos apaga o conteúdo binário, mas preserva metadados e autoria em `DocumentHistory`; documentos cancelados permanecem terminais.
+- Anexos são limitados a 10 MB e validados por extensão e assinatura antes da gravação em `ATTACHMENTS_DIR`.
+- O caminho persistido é relativo à raiz autorizada e nunca deriva diretamente de um caminho informado pelo navegador.
+- O nome original é preservado no banco e no arquivo quando compatível com o sistema operacional; caracteres de controle, separadores e nomes reservados são neutralizados somente no nome físico.
+- A remoção apaga o arquivo, mas preserva metadados e autoria em `DocumentHistory`; documentos cancelados permanecem terminais.
 
 ## Fluxo de dados do frontend
 
@@ -143,5 +148,6 @@ Os guardas do frontend evitam apresentar páginas incompatíveis com o perfil, m
 
 - Desenvolvimento: Vite serve o frontend e encaminha `/api` para a porta definida por `API_PORT` ou 3002.
 - Produção: `npm run build` cria `dist/`; Express serve os arquivos e a API no mesmo processo/host.
+- A pasta definida por `ATTACHMENTS_DIR` deve estar em volume persistente e acompanhar o banco nos backups.
 - O processo escuta somente em `127.0.0.1`; exposição por HTTPS exige proxy reverso no mesmo servidor ou rede confiável.
 - O projeto foi desenhado para uma única instância da API e um arquivo SQLite local. Escala horizontal não está implementada.

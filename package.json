@@ -21,6 +21,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
+    "attachments:migrate": "tsx scripts/migrate-attachments.js",
     "users": "tsx scripts/users.js",
     "test": "vitest run",
     "test:watch": "vitest",

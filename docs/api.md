@@ -191,9 +191,11 @@ Documentos cancelados retornam `CANCELLED_TERMINAL` em tentativas de alteração
 | `GET /attachments/:id`            | Qualquer sessão; resposta binária com `Content-Disposition: attachment`.             |
 | `DELETE /attachments/:id`         | Retorna `204`; `ADMIN` ou operador proprietário, somente em documento não cancelado. |
 
-Formatos: PDF, DOCX, XLSX, JPEG e PNG. Limite: 10 MB. A API compara extensão e assinatura detectada. O conteúdo binário nunca é incluído no JSON de documento; listagens recebem somente ID, nome, MIME, tamanho e data.
+Formatos: PDF, DOCX, XLSX, JPEG e PNG. Limite: 10 MB. A API compara extensão e assinatura detectada. O conteúdo binário é gravado em `ATTACHMENTS_DIR` e nunca é incluído no JSON de documento; listagens recebem somente ID, nome, MIME, tamanho e data.
 
-A remoção exclui fisicamente o `BLOB`, atualiza o documento e registra `ATTACHMENT_REMOVE`. O histórico preserva em `detailsJson` o ID, nome, MIME, tamanho, usuário e data do upload; o usuário e a data da remoção vêm do próprio registro de histórico. Anexos de documentos cancelados não podem ser removidos.
+A chave física segue `AAAA/MM/<documentId>/<storageId>/<nome-original-seguro>`. O nome original permanece nos metadados e é usado no download. O diretório intermediário aleatório evita colisões entre arquivos de mesmo nome.
+
+A remoção exclui fisicamente o arquivo, atualiza o documento e registra `ATTACHMENT_REMOVE`. O histórico preserva em `detailsJson` o ID, nome, MIME, tamanho, usuário e data do upload; o usuário e a data da remoção vêm do próprio registro de histórico. Anexos de documentos cancelados não podem ser removidos.
 
 ## Painel e atividades
 
@@ -220,4 +222,4 @@ O CSV usa `;`, BOM UTF-8 e escapa aspas/fórmulas. Os relatórios incluem regist
 |  413 | `LIMIT_FILE_SIZE`                                                                                      |
 |  415 | `UNSUPPORTED_MEDIA_TYPE`                                                                               |
 |  429 | `RATE_LIMITED`                                                                                         |
-|  500 | `INTERNAL_ERROR`                                                                                       |
+|  500 | `INTERNAL_ERROR`, `ATTACHMENT_CONTENT_MISSING`                                                         |

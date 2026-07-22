@@ -169,7 +169,8 @@ model Attachment {
   originalName String
   mimeType     String
   size         Int
-  content      Bytes
+  content      Bytes?
+  storageKey   String?  @unique
   uploadedById String
   createdAt    DateTime @default(now())
   document     Document @relation(fields: [documentId], references: [id], onDelete: Cascade)

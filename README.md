@@ -1,6 +1,6 @@
 # SoftProtocolo — Fólio
 
-Aplicação web em português do Brasil para registrar, numerar, localizar e acompanhar documentos administrativos. O frontend React consome uma API Express e persiste os dados em um arquivo SQLite administrado pelo Prisma.
+Aplicação web em português do Brasil para registrar, numerar, localizar e acompanhar documentos administrativos. O frontend React consome uma API Express; os dados relacionais ficam no SQLite e os anexos, em uma hierarquia de arquivos administrada pelo backend.
 
 ## Comece por aqui
 
@@ -28,6 +28,7 @@ flowchart LR
     B["Navegador · React/Vite + React Router"] -->|"/api + cookie HttpOnly"| E["Express 5"]
     E --> P["Prisma 7 + adapter better-sqlite3"]
     P --> S[("data/folio.db · SQLite")]
+    E --> A[("data/attachments · arquivos")]
 ```
 
 Em desenvolvimento, `npm run dev` inicia frontend e backend. Em produção, o Express serve tanto a API quanto o frontend compilado.
@@ -38,9 +39,9 @@ O frontend possui URLs navegáveis, incluindo `/inicio`, `/documentos`, `/docume
 
 - Sessão HTTP real com perfis `ADMIN`, `OPERATOR` e `VIEWER`.
 - Numeração atômica por tipo e ano, sem reaproveitamento após cancelamento.
-- Anexos validados e armazenados como `BLOB` no SQLite.
+- Anexos validados e armazenados em `data/attachments/AAAA/MM/<documento>/<identificador>/<nome-original>`.
 - URLs por página, retorno pós-login, títulos contextuais e guardas visuais por perfil.
 - Migrations, seed idempotente, testes Vitest/Supertest e build Vite.
 - O antigo armazenamento funcional em `localStorage` é removido uma única vez pelo frontend e não é importado.
 
-O endereço remoto do repositório ainda não está configurado; a documentação usa `<URL_DO_REPOSITORIO>` sem inventar um URL.
+Repositório remoto: [TersanPlay/solid-memory](https://github.com/TersanPlay/solid-memory).

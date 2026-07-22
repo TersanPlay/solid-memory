@@ -5,12 +5,15 @@ import Database from "better-sqlite3";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createApp } from "./app.js";
+import { migrateLegacyAttachments } from "./attachment-migration.js";
+import { resolveAttachmentPath } from "./attachment-storage.js";
 import { hashPassword } from "./auth.js";
 import { loadConfig } from "./config.js";
 import { createDatabase, initializeDatabase } from "./db.js";
 
 const tempDir = path.resolve(".tmp", `api-${process.pid}-${Date.now()}`);
 const databasePath = path.join(tempDir, "test.db");
+const attachmentsDir = path.join(tempDir, "attachments");
 const databaseUrl = `file:${databasePath.replaceAll("\\", "/")}`;
 let prisma;
 let app;
@@ -89,7 +92,12 @@ beforeAll(async () => {
   });
   app = createApp({
     prisma,
-    config: loadConfig({ databaseUrl, nodeEnv: "test", port: 3002 }),
+    config: loadConfig({
+      databaseUrl,
+      attachmentsDir,
+      nodeEnv: "test",
+      port: 3002,
+    }),
   });
   adminAgent = request.agent(app);
   viewerAgent = request.agent(app);
@@ -286,6 +294,16 @@ describe("API integrada com SQLite", () => {
         })
         .expect(201)
     ).body.data;
+    const persisted = await prisma.attachment.findUnique({
+      where: { id: uploaded.id },
+    });
+    const storedPath = resolveAttachmentPath(
+      attachmentsDir,
+      persisted.storageKey,
+    );
+    expect(persisted.content).toBeNull();
+    expect(path.basename(storedPath)).toBe("removivel.pdf");
+    expect(fs.existsSync(storedPath)).toBe(true);
 
     await viewerAgent.delete(`/api/attachments/${uploaded.id}`).expect(403);
     await operatorAgent.delete(`/api/attachments/${uploaded.id}`).expect(403);
@@ -295,6 +313,7 @@ describe("API integrada com SQLite", () => {
     expect(
       await prisma.attachment.findUnique({ where: { id: uploaded.id } }),
     ).toBeNull();
+    expect(fs.existsSync(storedPath)).toBe(false);
 
     const removal = await prisma.documentHistory.findFirst({
       where: { documentId: adminDocument.id, action: "ATTACHMENT_REMOVE" },
@@ -363,7 +382,7 @@ describe("API integrada com SQLite", () => {
     ).not.toBeNull();
   });
 
-  it("registra histórico, armazena BLOB validado e exporta relatório", async () => {
+  it("registra histórico, armazena arquivo validado e exporta relatório", async () => {
     const updated = await adminAgent
       .patch(`/api/documents/${firstDocument.id}/status`)
       .send({ status: "ARQUIVADO" })
@@ -390,6 +409,13 @@ describe("API integrada com SQLite", () => {
       .expect(200);
     expect(download.headers["content-type"]).toContain("application/pdf");
     expect(download.headers["content-disposition"]).toContain("evidencia.pdf");
+    const fileAttachment = await prisma.attachment.findUnique({
+      where: { id: upload.body.data.id },
+    });
+    expect(fileAttachment).toMatchObject({
+      content: null,
+      storageKey: expect.stringContaining(`/${activeDocument.id}/`),
+    });
     const history = await adminAgent
       .get(`/api/documents/${activeDocument.id}/history`)
       .expect(200);
@@ -409,5 +435,43 @@ describe("API integrada com SQLite", () => {
         contentType: "application/octet-stream",
       })
       .expect(415);
+  });
+
+  it("mantém download legado e migra BLOBs existentes para arquivos", async () => {
+    const activeDocument = await prisma.document.findFirst({
+      where: { status: { not: "CANCELADO" } },
+    });
+    const legacyContent = Buffer.from("%PDF-1.4\nlegado\n%%EOF");
+    const legacy = await prisma.attachment.create({
+      data: {
+        documentId: activeDocument.id,
+        originalName: "arquivo legado.pdf",
+        mimeType: "application/pdf",
+        size: legacyContent.length,
+        content: legacyContent,
+        uploadedById: admin.id,
+      },
+    });
+
+    const before = await adminAgent
+      .get(`/api/attachments/${legacy.id}`)
+      .expect(200);
+    expect(before.body).toEqual(legacyContent);
+
+    const result = await migrateLegacyAttachments({ prisma, attachmentsDir });
+    expect(result).toEqual({ migrated: 1 });
+    const migrated = await prisma.attachment.findUnique({
+      where: { id: legacy.id },
+    });
+    expect(migrated.content).toBeNull();
+    expect(migrated.storageKey).toContain(`/${activeDocument.id}/`);
+    expect(
+      fs.existsSync(resolveAttachmentPath(attachmentsDir, migrated.storageKey)),
+    ).toBe(true);
+
+    const after = await adminAgent
+      .get(`/api/attachments/${legacy.id}`)
+      .expect(200);
+    expect(after.body).toEqual(legacyContent);
   });
 });

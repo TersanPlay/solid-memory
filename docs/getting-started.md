@@ -15,7 +15,7 @@ O projeto usa um módulo nativo para SQLite. Em instalações comuns do Node 22 
 
 | Ordem | Diretório | Comando | Finalidade | Resultado esperado |
 |---:|---|---|---|---|
-| 1 | Pasta onde o projeto será criado | `git clone <URL_DO_REPOSITORIO> SoftProtocolo` | Clonar o repositório sem inventar o endereço remoto. | A pasta `SoftProtocolo` é criada. |
+| 1 | Pasta onde o projeto será criado | `git clone https://github.com/TersanPlay/solid-memory.git SoftProtocolo` | Clonar o repositório oficial. | A pasta `SoftProtocolo` é criada. |
 | 2 | Pasta pai | `cd SoftProtocolo` | Entrar na raiz do projeto. | O prompt passa a apontar para `SoftProtocolo`. |
 | 3 | Raiz | `node --version` | Confirmar a versão suportada. | Uma versão `v22.13.0` ou superior, ainda na série 22. |
 | 4 | Raiz | `npm ci` | Instalar exatamente as versões do `package-lock.json`. | Dependências instaladas e auditoria sem erro de instalação. |
@@ -33,6 +33,7 @@ O projeto usa um módulo nativo para SQLite. Em instalações comuns do Node 22 
 
 ```dotenv
 DATABASE_URL="file:./data/folio.db"
+ATTACHMENTS_DIR="./data/attachments"
 PORT=3002
 API_PORT=3002
 NODE_ENV=development
@@ -49,7 +50,7 @@ Antes de executar o seed, substitua `SUBSTITUA_POR_UMA_SENHA_FORTE` por uma senh
 - a senha é usada somente para criar um administrador ainda inexistente e não é redefinida em execuções posteriores;
 - `SEED_DEMO_DATA=true` cria dois documentos sanitizados, sem anexos; o padrão `false` não cria documentos fictícios.
 
-Nunca versione `.env`. O `.gitignore` já exclui o arquivo e os bancos SQLite.
+`ATTACHMENTS_DIR` aceita caminho relativo à raiz ou absoluto. A aplicação cria os subdiretórios no primeiro upload. Nunca versione `.env`, bancos ou anexos; `data/` já está no `.gitignore`.
 
 Em desenvolvimento, mantenha `PORT` e `API_PORT` iguais. `PORT` define onde o Express escuta; `API_PORT` define o destino do proxy `/api` do Vite.
 
@@ -82,8 +83,9 @@ Na raiz, depois de disponibilizar o código e um `.env` seguro:
 | 2 | `npm run db:generate` | Gerar o cliente Prisma. | Cliente disponível para o backend. |
 | 3 | `npm run build` | Compilar o React. | Arquivos estáticos em `dist/`. |
 | 4 | `npm run db:deploy` | Aplicar somente migrations versionadas. | Banco atualizado sem criar migration nova. |
-| 5 | `npm run db:seed` | Garantir catálogos e administrador de bootstrap. | Seed idempotente concluído. |
-| 6 | `$env:NODE_ENV='production'; npm start` | Iniciar o processo único. | API e frontend na porta configurada em `PORT`. |
+| 5 | `npm run attachments:migrate` | Transferir para a pasta configurada qualquer anexo legado ainda armazenado no SQLite. | Contagem migrada ou mensagem `Nenhum anexo legado pendente`. |
+| 6 | `npm run db:seed` | Garantir catálogos e administrador de bootstrap. | Seed idempotente concluído. |
+| 7 | `$env:NODE_ENV='production'; npm start` | Iniciar o processo único. | API e frontend na porta configurada em `PORT`. |
 
 Em produção, o cookie de sessão possui `Secure`; publique a aplicação por HTTPS.
 
@@ -147,5 +149,13 @@ Sintoma: código `SQLITE_BUSY` ou `database is locked`.
 ### Migration pendente
 
 Desenvolvimento: `npm run db:migrate`. Produção: `npm run db:deploy`. Não use `migrate dev` em produção.
+
+### Conteúdo do anexo não encontrado
+
+Sintoma: código `ATTACHMENT_CONTENT_MISSING` ao baixar.
+
+- confirme que `ATTACHMENTS_DIR` aponta para a mesma pasta usada nos uploads;
+- restaure banco e pasta de anexos do mesmo backup;
+- para registros antigos ainda no SQLite, pare a aplicação e execute `npm run attachments:migrate` depois de aplicar as migrations.
 
 Procedimentos de reset e restauração estão em [Operação](operations.md).

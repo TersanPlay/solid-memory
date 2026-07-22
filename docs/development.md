@@ -6,6 +6,7 @@
 SoftProtocolo/
 ├── scripts/
 │   ├── users.js                     # CLI administrativo de usuários
+│   ├── migrate-attachments.js       # migração explícita de BLOBs legados
 │   └── users.test.js                # integração do CLI com SQLite
 ├── prisma/
 │   ├── migrations/                  # SQL versionado
@@ -13,6 +14,9 @@ SoftProtocolo/
 │   └── seed.js                      # catálogos e bootstrap
 ├── server/
 │   ├── app.js                       # Express, rotas e validações
+│   ├── attachment-storage.js        # hierarquia e operações seguras de arquivo
+│   ├── attachment-migration.js      # migração em lotes para o filesystem
+│   ├── attachment-storage.test.js   # nomes, traversal e ciclo do arquivo
 │   ├── auth.js                      # senha, sessão e RBAC
 │   ├── documents.js                 # protocolo e regras documentais
 │   ├── db.js                        # Prisma/SQLite
@@ -52,6 +56,7 @@ SoftProtocolo/
 | `npm run db:deploy` | Prepara o arquivo e aplica migrations versionadas. |
 | `npm run db:seed` | Executa o seed explícito. |
 | `npm run db:studio` | Abre Prisma Studio. |
+| `npm run attachments:migrate` | Move anexos legados do SQLite para `ATTACHMENTS_DIR`; execute com a aplicação parada. |
 | `npm run users -- <comando>` | Lista, cria ou edita usuários diretamente no SQLite; consulte `npm run users -- help`. |
 | `npm test` | Executa Vitest uma vez. |
 | `npm run test:watch` | Vitest em modo interativo. |
@@ -61,7 +66,8 @@ SoftProtocolo/
 
 - `server/auth.test.js`: e-mail, scrypt, hash de sessão e máscara.
 - `server/config.test.js`: porta padrão e configuração do servidor.
-- `server/app.integration.test.js`: migration real em SQLite temporário, sessão, RBAC, concorrência, cancelamento, BLOB, histórico, filtros e relatórios.
+- `server/app.integration.test.js`: migrations reais em SQLite temporário, sessão, RBAC, concorrência, cancelamento, anexos em arquivo/legados, histórico, filtros e relatórios.
+- `server/attachment-storage.test.js`: preservação de nome, neutralização de nomes incompatíveis, bloqueio de traversal, escrita, leitura e remoção.
 - `server/spa-routing.test.js`: fallback de produção para acesso direto a rotas do frontend.
 - `scripts/users.test.js`: argumentos e códigos de saída do CLI, normalização, senha, sessões, conflitos e proteção do último administrador.
 - `src/data.test.js`: rótulos e protocolo exibido.
@@ -73,7 +79,7 @@ SoftProtocolo/
 
 Os testes de servidor declaram ambiente Node. Os testes React usam jsdom, Testing Library e o setup em `src/test/setup.js`.
 
-Os testes integrados criam bancos temporários, aplicam todos os arquivos `migration.sql` em ordem, injetam um Prisma Client no `createApp` e removem os artefatos após desconectar. Isso impede uso acidental de `data/folio.db` nos testes.
+Os testes integrados criam bancos e pastas de anexos temporários, aplicam todos os arquivos `migration.sql` em ordem, injetam um Prisma Client no `createApp` e removem os artefatos após desconectar. Isso impede uso acidental de `data/folio.db` e `data/attachments` nos testes.
 
 As rotas HTTP e `scripts/users.js` reutilizam `server/users.js`. Alterações em validação, normalização de e-mail, senha, sessões ou proteção administrativa devem ser implementadas nesse serviço compartilhado e cobertas nos dois contratos.
 
@@ -106,7 +112,7 @@ Nunca edite uma migration já aplicada em ambientes compartilhados; crie outra m
 - Use `ApiError` para falhas esperadas e mantenha o envelope padrão.
 - Aplique `authenticate` implicitamente pelo prefixo `/api` e `requireRoles` quando necessário.
 - Repita no serviço regras dependentes do proprietário/estado do documento.
-- Não devolva hash, salt, token ou conteúdo BLOB em JSON.
+- Não devolva hash, salt, token, `storageKey` ou conteúdo binário em JSON.
 - Adicione teste Supertest de sucesso, permissão e validação.
 - Atualize `docs/api.md` no mesmo conjunto de mudanças.
 

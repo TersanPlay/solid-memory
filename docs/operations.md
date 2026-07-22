@@ -2,11 +2,11 @@
 
 ## Modelo operacional
 
-O SoftProtocolo opera com uma única instância Node/Express e um arquivo SQLite local. Não há Docker, fila, storage externo ou escala horizontal.
+O SoftProtocolo opera com uma única instância Node/Express, um arquivo SQLite local e uma pasta local de anexos. Não há Docker, fila, storage externo ou escala horizontal.
 
 Em produção:
 
-1. use armazenamento persistente para a pasta `data`;
+1. use armazenamento persistente para o SQLite e para `ATTACHMENTS_DIR`; no padrão, ambos ficam em `data`;
 2. execute `npm run build` antes de iniciar;
 3. execute `npm run db:deploy` antes de cada versão;
 4. publique o processo por HTTPS, pois o cookie de produção usa `Secure`;
@@ -21,6 +21,7 @@ npm ci
 npm run db:generate
 npm run build
 npm run db:deploy
+npm run attachments:migrate
 npm run db:seed
 $env:NODE_ENV='production'
 npm start
@@ -48,7 +49,7 @@ Indicadores operacionais úteis:
 - `SQLITE_BUSY` recorrente;
 - 401/429 anormais no login;
 - espaço livre no volume;
-- tamanho do banco e tempo do backup;
+- tamanho do banco, da pasta de anexos e tempo do backup;
 - falha de migration no deploy.
 
 ## Gerenciamento de usuários pelo CLI
@@ -95,7 +96,7 @@ Como o banco usa WAL, a rotina mais simples e segura é parar o processo antes d
 1. Interrompa somente a instância do SoftProtocolo pelo gerenciador de serviço.
 2. Confirme que não há processo escrevendo no banco.
 3. Crie uma pasta de backup fora da árvore publicada.
-4. Copie todo o conjunto SQLite existente.
+4. Copie todo o conjunto SQLite e a pasta de anexos da mesma parada.
 
 Exemplo PowerShell, executado na raiz com a aplicação parada:
 
@@ -105,21 +106,24 @@ New-Item -ItemType Directory -Path $backupDir | Out-Null
 Copy-Item -LiteralPath '.\data\folio.db' -Destination $backupDir
 if (Test-Path -LiteralPath '.\data\folio.db-wal') { Copy-Item -LiteralPath '.\data\folio.db-wal' -Destination $backupDir }
 if (Test-Path -LiteralPath '.\data\folio.db-shm') { Copy-Item -LiteralPath '.\data\folio.db-shm' -Destination $backupDir }
+if (Test-Path -LiteralPath '.\data\attachments') { Copy-Item -LiteralPath '.\data\attachments' -Destination $backupDir -Recurse }
 ```
 
-Resultado esperado: o diretório datado contém `folio.db` e, quando existentes, arquivos WAL/SHM correspondentes. Restrinja permissões do backup: ele contém usuários, hashes e anexos.
+Resultado esperado: o diretório datado contém `folio.db`, os arquivos WAL/SHM quando existentes e a pasta `attachments`. Restrinja permissões do backup: ele contém usuários, hashes, documentos e anexos.
+
+Se `ATTACHMENTS_DIR` for absoluto ou estiver fora de `data`, substitua o caminho do último `Copy-Item` pelo valor efetivo da variável. Banco e anexos devem pertencer ao mesmo instante lógico.
 
 Valide periodicamente a restauração em um ambiente isolado; cópia sem teste não comprova recuperabilidade.
 
 ## Restauração
 
 1. Pare a aplicação.
-2. Preserve o banco atual em uma pasta de contingência.
-3. Copie o conjunto de backup para a pasta `data` mantendo nomes coerentes.
+2. Preserve o banco e `ATTACHMENTS_DIR` atuais em uma pasta de contingência.
+3. Copie o conjunto SQLite e a pasta de anexos do mesmo backup para seus caminhos configurados.
 4. Execute `npm run db:deploy` para aplicar migrations posteriores ao backup.
 5. Inicie a aplicação e verifique `/api/health`, login, contagens e download de um anexo conhecido.
 
-Não misture `folio.db` de um backup com `-wal`/`-shm` de outro momento.
+Não misture `folio.db`, WAL/SHM e anexos de momentos diferentes.
 
 ## Reset somente em desenvolvimento
 
@@ -132,6 +136,7 @@ Get-Item -LiteralPath '.\data\folio.db' | Select-Object FullName,Length,LastWrit
 Remove-Item -LiteralPath '.\data\folio.db' -Force
 Remove-Item -LiteralPath '.\data\folio.db-wal' -Force -ErrorAction SilentlyContinue
 Remove-Item -LiteralPath '.\data\folio.db-shm' -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath '.\data\attachments' -Recurse -Force -ErrorAction SilentlyContinue
 npm run db:migrate
 npm run db:seed
 ```
@@ -200,14 +205,15 @@ Gere novamente após qualquer alteração do schema ou atualização do Prisma.
 3. Gere o cliente e execute `npm run verify`.
 4. Pare a instância atual.
 5. Execute `npm run db:deploy`.
-6. Inicie a nova versão.
-7. Verifique saúde, autenticação, criação, histórico e anexos.
-8. Mantenha caminho de rollback do código; restaure banco apenas quando a migration não for retrocompatível e usando backup validado.
+6. Ainda com a aplicação parada, execute `npm run attachments:migrate`.
+7. Inicie a nova versão.
+8. Verifique saúde, autenticação, criação, histórico e download de anexos novos e antigos.
+9. Mantenha caminho de rollback do código; restaure banco e anexos juntos quando a migration não for retrocompatível, sempre usando backup validado.
 
 ## Limitações conhecidas
 
 - única instância de escrita;
-- anexos aumentam diretamente o tamanho do arquivo e do backup;
+- anexos aumentam diretamente o tamanho de `ATTACHMENTS_DIR` e do backup;
 - sem recuperação de senha por e-mail;
 - sem exclusão física de documentos, usuários, tipos ou departamentos; anexos podem ser removidos com auditoria;
 - sem storage externo ou replicação;

@@ -63,7 +63,7 @@ try {
     await createDocument(prisma, { typeId: oficio.id, date: '2026-07-21', originDepartmentId: ti.id, destinationDepartmentId: patrimonio.id, subject: 'Encaminhamento de inventário de equipamentos', responsibleUserId: admin.id, status: 'ENVIADO', notes: 'Registro demonstrativo sem anexo.' }, admin);
   }
 
-  console.log(`Seed concluído: ${types.length} tipos, ${departments.length} departamentos e administrador ${bootstrap.email}.`);
+  console.log(`Seed concluído: ${types.length} tipos, ${departments.length} departamentos e administrador configurado.`);
 } finally {
   await prisma.$disconnect();
 }

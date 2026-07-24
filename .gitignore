@@ -3,6 +3,4 @@ dist
 .vite
 *.log
 !.env.example
-server/generated/
-coverage/
 .tmp/

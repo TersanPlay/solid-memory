@@ -9,7 +9,7 @@ const prisma = createDatabase(config.databaseUrl);
 try {
   await initializeDatabase(prisma);
   const app = createApp({ prisma, config });
-  const server = app.listen(config.port, '127.0.0.1', () => {
+  const server = app.listen(config.port, '0.0.0.0', () => {
     console.log(`SoftProtocolo disponível em http://127.0.0.1:${config.port}`);
   });
 
@@ -27,3 +27,4 @@ try {
   await prisma.$disconnect();
   process.exit(1);
 }
+

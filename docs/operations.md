@@ -218,6 +218,6 @@ Gere novamente após qualquer alteração do schema ou atualização do Prisma.
 - única instância de escrita;
 - anexos aumentam diretamente o tamanho de `ATTACHMENTS_DIR` e do backup;
 - sem recuperação de senha por e-mail;
-- sem exclusão física de documentos, usuários, tipos ou departamentos; anexos podem ser removidos com auditoria;
+- sem exclusão física de documentos, usuários ou tipos; departamentos somente podem ser excluídos quando não possuem vínculos, e anexos podem ser removidos com auditoria;
 - sem storage externo ou replicação;
 - sem workflow rígido entre status não cancelados;

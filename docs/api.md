@@ -81,7 +81,7 @@ Usuários são ordenados por situação ativa e, em seguida, por nome. Nome acei
 | Método e rota               | Autorização | Corpo                                     |
 | --------------------------- | ----------- | ----------------------------------------- |
 | `GET /document-types`       | Sessão      | Sem corpo; inclui contagem de documentos. |
-| `POST /document-types`      | `ADMIN`     | `name`, `prefix`, `separator`, `digits`.  |
+| `POST /document-types`      | `ADMIN`     | `name`, `prefix`, `digits`.               |
 | `PATCH /document-types/:id` | `ADMIN`     | Campos parciais e/ou `active`.            |
 
 Exemplo:
@@ -90,26 +90,28 @@ Exemplo:
 {
   "name": "Ata administrativa",
   "prefix": "ATA",
-  "separator": "/",
   "digits": 3
 }
 ```
 
 Prefixos são normalizados para maiúsculas e devem ser únicos.
 
-Nome aceita de 2 a 100 caracteres; prefixo, de 1 a 8 caracteres alfanuméricos ou hífen; `digits`, de 3 a 6; `separator` aceita `/` ou `-`.
+Nome aceita de 2 a 100 caracteres; prefixo, de 1 a 8 caracteres alfanuméricos ou hífen; `digits`, de 3 a 6. O formato é fixo em `PREFIXO-NÚMERO/ANO`, por exemplo `MEMO-001/2026`; não existe configuração de separador.
 
 ## Departamentos
 
-| Método e rota            | Autorização | Corpo                         |
-| ------------------------ | ----------- | ----------------------------- |
-| `GET /departments`       | Sessão      | Sem corpo.                    |
-| `POST /departments`      | `ADMIN`     | `name`, `code`.               |
-| `PATCH /departments/:id` | `ADMIN`     | `name`, `code` e/ou `active`. |
+| Método e rota             | Autorização | Corpo/resultado                                                     |
+| ------------------------- | ----------- | ------------------------------------------------------------------- |
+| `GET /departments`        | Sessão      | Inclui `_count.originDocuments` e `_count.destinationDocuments`.    |
+| `POST /departments`       | `ADMIN`     | `name`, `code`.                                                     |
+| `PATCH /departments/:id`  | `ADMIN`     | `name`, `code` e/ou `active`.                                       |
+| `DELETE /departments/:id` | `ADMIN`     | Sem corpo; retorna `204` quando o departamento não possui vínculos. |
 
 Códigos são normalizados para maiúsculas e devem ser únicos.
 
 Nome aceita de 2 a 140 caracteres. Código aceita de 2 a 30 caracteres alfanuméricos ou hífen.
+
+A exclusão é física e aceita departamentos ativos ou inativos. Se o cadastro for usado como origem ou destino de qualquer documento, a API retorna `409` com o código `DEPARTMENT_IN_USE`; nesse caso, desative o departamento para impedir novos usos. Um ID inexistente retorna `404 NOT_FOUND`.
 
 ## Protocolo e documentos
 

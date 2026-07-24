@@ -11,7 +11,9 @@ SoftProtocolo/
 ├── prisma/
 │   ├── migrations/                  # SQL versionado
 │   ├── schema.prisma                # modelo do banco
-│   └── seed.js                      # catálogos e bootstrap
+│   ├── seed-catalogs.js             # catálogos padrão em tabelas vazias
+│   ├── seed-catalogs.test.js        # preservação de edições e exclusões
+│   └── seed.js                      # bootstrap e dados demonstrativos
 ├── server/
 │   ├── app.js                       # Express, rotas e validações
 │   ├── attachment-storage.js        # hierarquia e operações seguras de arquivo
@@ -57,7 +59,7 @@ SoftProtocolo/
 | `npm run db:migrate` | Prepara o arquivo e executa `prisma migrate dev`. |
 | `predb:deploy` | Hook do npm executado automaticamente antes de `db:deploy`; chama `db:prepare`. |
 | `npm run db:deploy` | Prepara o arquivo e aplica migrations versionadas. |
-| `npm run db:seed` | Executa o seed explícito. |
+| `npm run db:seed` | Inicializa catálogos em tabelas vazias e garante o administrador de bootstrap. |
 | `npm run db:studio` | Abre Prisma Studio. |
 | `npm run attachments:migrate` | Move anexos legados do SQLite para `ATTACHMENTS_DIR`; execute com a aplicação parada. |
 | `npm run users -- <comando>` | Lista, cria ou edita usuários diretamente no SQLite; consulte `npm run users -- help`. |
@@ -72,7 +74,9 @@ SoftProtocolo/
 - `server/app.integration.test.js`: migrations reais em SQLite temporário, sessão, RBAC, concorrência, cancelamento, anexos em arquivo/legados, histórico, filtros e relatórios.
 - `server/attachment-storage.test.js`: preservação de nome, neutralização de nomes incompatíveis, bloqueio de traversal, escrita, leitura e remoção.
 - `server/spa-routing.test.js`: fallback de produção para acesso direto a rotas do frontend.
+- `prisma/seed-catalogs.test.js`: primeira carga dos catálogos e preservação de edições/exclusões em novas execuções.
 - `scripts/users.test.js`: argumentos e códigos de saída do CLI, normalização, senha, sessões, conflitos e proteção do último administrador.
+- `src/Departments.test.jsx`: edição, contagem de vínculos, confirmação e exclusão de departamentos.
 - `src/data.test.js`: rótulos e protocolo exibido.
 - `src/App.test.jsx`: sessão, URLs, retorno pós-login, navegação, histórico, guardas, detalhes e estados 403/404.
 - `src/components/FormControls.test.jsx`: seleção, pesquisa, foco, calendário pt-BR, datas locais e limites de período.
@@ -155,6 +159,7 @@ Antes de concluir:
 - Código da aplicação em JavaScript ESM; arquivos gerados pelo Prisma são TypeScript e executados por `tsx`.
 - IDs são gerados pelo Prisma com `cuid()`.
 - E-mails ficam em minúsculas; prefixos/códigos, em maiúsculas.
+- Protocolos usam o formato fixo `PREFIXO-NÚMERO/ANO`; tipos documentais não configuram separador.
 - Status trafegam na API como enum e são traduzidos para pt-BR apenas na apresentação.
 - Não calcule protocolo definitivo no frontend.
 - Não introduza nova fonte de persistência no navegador.

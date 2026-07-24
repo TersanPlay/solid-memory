@@ -12,5 +12,5 @@ export const statusLabel = (value) => statusOptions.find((status) => status.valu
 
 export function formatProtocol(type, sequence, year) {
   if (!type) return 'Selecione um tipo';
-  return `${type.prefix}-${String(sequence).padStart(type.digits, '0')}${type.separator}${year}`;
+  return `${type.prefix}-${String(sequence).padStart(type.digits, '0')}/${year}`;
 }

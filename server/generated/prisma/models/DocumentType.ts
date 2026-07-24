@@ -38,7 +38,6 @@ export type DocumentTypeMinAggregateOutputType = {
   id: string | null
   name: string | null
   prefix: string | null
-  separator: string | null
   digits: number | null
   active: boolean | null
   createdAt: Date | null
@@ -49,7 +48,6 @@ export type DocumentTypeMaxAggregateOutputType = {
   id: string | null
   name: string | null
   prefix: string | null
-  separator: string | null
   digits: number | null
   active: boolean | null
   createdAt: Date | null
@@ -60,7 +58,6 @@ export type DocumentTypeCountAggregateOutputType = {
   id: number
   name: number
   prefix: number
-  separator: number
   digits: number
   active: number
   createdAt: number
@@ -81,7 +78,6 @@ export type DocumentTypeMinAggregateInputType = {
   id?: true
   name?: true
   prefix?: true
-  separator?: true
   digits?: true
   active?: true
   createdAt?: true
@@ -92,7 +88,6 @@ export type DocumentTypeMaxAggregateInputType = {
   id?: true
   name?: true
   prefix?: true
-  separator?: true
   digits?: true
   active?: true
   createdAt?: true
@@ -103,7 +98,6 @@ export type DocumentTypeCountAggregateInputType = {
   id?: true
   name?: true
   prefix?: true
-  separator?: true
   digits?: true
   active?: true
   createdAt?: true
@@ -201,7 +195,6 @@ export type DocumentTypeGroupByOutputType = {
   id: string
   name: string
   prefix: string
-  separator: string
   digits: number
   active: boolean
   createdAt: Date
@@ -235,7 +228,6 @@ export type DocumentTypeWhereInput = {
   id?: Prisma.StringFilter<"DocumentType"> | string
   name?: Prisma.StringFilter<"DocumentType"> | string
   prefix?: Prisma.StringFilter<"DocumentType"> | string
-  separator?: Prisma.StringFilter<"DocumentType"> | string
   digits?: Prisma.IntFilter<"DocumentType"> | number
   active?: Prisma.BoolFilter<"DocumentType"> | boolean
   createdAt?: Prisma.DateTimeFilter<"DocumentType"> | Date | string
@@ -248,7 +240,6 @@ export type DocumentTypeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   prefix?: Prisma.SortOrder
-  separator?: Prisma.SortOrder
   digits?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -264,7 +255,6 @@ export type DocumentTypeWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.DocumentTypeWhereInput[]
   NOT?: Prisma.DocumentTypeWhereInput | Prisma.DocumentTypeWhereInput[]
   name?: Prisma.StringFilter<"DocumentType"> | string
-  separator?: Prisma.StringFilter<"DocumentType"> | string
   digits?: Prisma.IntFilter<"DocumentType"> | number
   active?: Prisma.BoolFilter<"DocumentType"> | boolean
   createdAt?: Prisma.DateTimeFilter<"DocumentType"> | Date | string
@@ -277,7 +267,6 @@ export type DocumentTypeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   prefix?: Prisma.SortOrder
-  separator?: Prisma.SortOrder
   digits?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -296,7 +285,6 @@ export type DocumentTypeScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"DocumentType"> | string
   name?: Prisma.StringWithAggregatesFilter<"DocumentType"> | string
   prefix?: Prisma.StringWithAggregatesFilter<"DocumentType"> | string
-  separator?: Prisma.StringWithAggregatesFilter<"DocumentType"> | string
   digits?: Prisma.IntWithAggregatesFilter<"DocumentType"> | number
   active?: Prisma.BoolWithAggregatesFilter<"DocumentType"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DocumentType"> | Date | string
@@ -307,7 +295,6 @@ export type DocumentTypeCreateInput = {
   id?: string
   name: string
   prefix: string
-  separator: string
   digits?: number
   active?: boolean
   createdAt?: Date | string
@@ -320,7 +307,6 @@ export type DocumentTypeUncheckedCreateInput = {
   id?: string
   name: string
   prefix: string
-  separator: string
   digits?: number
   active?: boolean
   createdAt?: Date | string
@@ -333,7 +319,6 @@ export type DocumentTypeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  separator?: Prisma.StringFieldUpdateOperationsInput | string
   digits?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -346,7 +331,6 @@ export type DocumentTypeUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  separator?: Prisma.StringFieldUpdateOperationsInput | string
   digits?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -359,7 +343,6 @@ export type DocumentTypeCreateManyInput = {
   id?: string
   name: string
   prefix: string
-  separator: string
   digits?: number
   active?: boolean
   createdAt?: Date | string
@@ -370,7 +353,6 @@ export type DocumentTypeUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  separator?: Prisma.StringFieldUpdateOperationsInput | string
   digits?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,7 +363,6 @@ export type DocumentTypeUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  separator?: Prisma.StringFieldUpdateOperationsInput | string
   digits?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -392,7 +373,6 @@ export type DocumentTypeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   prefix?: Prisma.SortOrder
-  separator?: Prisma.SortOrder
   digits?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -407,7 +387,6 @@ export type DocumentTypeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   prefix?: Prisma.SortOrder
-  separator?: Prisma.SortOrder
   digits?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -418,7 +397,6 @@ export type DocumentTypeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   prefix?: Prisma.SortOrder
-  separator?: Prisma.SortOrder
   digits?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -474,7 +452,6 @@ export type DocumentTypeCreateWithoutSequencesInput = {
   id?: string
   name: string
   prefix: string
-  separator: string
   digits?: number
   active?: boolean
   createdAt?: Date | string
@@ -486,7 +463,6 @@ export type DocumentTypeUncheckedCreateWithoutSequencesInput = {
   id?: string
   name: string
   prefix: string
-  separator: string
   digits?: number
   active?: boolean
   createdAt?: Date | string
@@ -514,7 +490,6 @@ export type DocumentTypeUpdateWithoutSequencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  separator?: Prisma.StringFieldUpdateOperationsInput | string
   digits?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -526,7 +501,6 @@ export type DocumentTypeUncheckedUpdateWithoutSequencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  separator?: Prisma.StringFieldUpdateOperationsInput | string
   digits?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -538,7 +512,6 @@ export type DocumentTypeCreateWithoutDocumentsInput = {
   id?: string
   name: string
   prefix: string
-  separator: string
   digits?: number
   active?: boolean
   createdAt?: Date | string
@@ -550,7 +523,6 @@ export type DocumentTypeUncheckedCreateWithoutDocumentsInput = {
   id?: string
   name: string
   prefix: string
-  separator: string
   digits?: number
   active?: boolean
   createdAt?: Date | string
@@ -578,7 +550,6 @@ export type DocumentTypeUpdateWithoutDocumentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  separator?: Prisma.StringFieldUpdateOperationsInput | string
   digits?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -590,7 +561,6 @@ export type DocumentTypeUncheckedUpdateWithoutDocumentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  separator?: Prisma.StringFieldUpdateOperationsInput | string
   digits?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -642,7 +612,6 @@ export type DocumentTypeSelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   name?: boolean
   prefix?: boolean
-  separator?: boolean
   digits?: boolean
   active?: boolean
   createdAt?: boolean
@@ -656,7 +625,6 @@ export type DocumentTypeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   name?: boolean
   prefix?: boolean
-  separator?: boolean
   digits?: boolean
   active?: boolean
   createdAt?: boolean
@@ -667,7 +635,6 @@ export type DocumentTypeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   name?: boolean
   prefix?: boolean
-  separator?: boolean
   digits?: boolean
   active?: boolean
   createdAt?: boolean
@@ -678,14 +645,13 @@ export type DocumentTypeSelectScalar = {
   id?: boolean
   name?: boolean
   prefix?: boolean
-  separator?: boolean
   digits?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DocumentTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "prefix" | "separator" | "digits" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["documentType"]>
+export type DocumentTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "prefix" | "digits" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["documentType"]>
 export type DocumentTypeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   documents?: boolean | Prisma.DocumentType$documentsArgs<ExtArgs>
   sequences?: boolean | Prisma.DocumentType$sequencesArgs<ExtArgs>
@@ -704,7 +670,6 @@ export type $DocumentTypePayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     name: string
     prefix: string
-    separator: string
     digits: number
     active: boolean
     createdAt: Date
@@ -1137,7 +1102,6 @@ export interface DocumentTypeFieldRefs {
   readonly id: Prisma.FieldRef<"DocumentType", 'String'>
   readonly name: Prisma.FieldRef<"DocumentType", 'String'>
   readonly prefix: Prisma.FieldRef<"DocumentType", 'String'>
-  readonly separator: Prisma.FieldRef<"DocumentType", 'String'>
   readonly digits: Prisma.FieldRef<"DocumentType", 'Int'>
   readonly active: Prisma.FieldRef<"DocumentType", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"DocumentType", 'DateTime'>

@@ -70,7 +70,6 @@ model DocumentType {
   id        String             @id @default(cuid())
   name      String
   prefix    String             @unique
-  separator String
   digits    Int                @default(3)
   active    Boolean            @default(true)
   createdAt DateTime           @default(now())

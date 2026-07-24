@@ -50,7 +50,6 @@ erDiagram
     DocumentType {
       string id PK
       string prefix UK
-      string separator
       int digits
       boolean active
     }
@@ -95,9 +94,10 @@ erDiagram
 - A combinação `(typeId, year, sequence)` também é única.
 - `ProtocolSequence` usa `(typeId, year)` como chave primária.
 - Perfis, status e ações de histórico possuem `CHECK`; a migration `20260722163000_attachment_remove_history` acrescenta `ATTACHMENT_REMOVE` sem reescrever a migration inicial.
-- Separador aceita `/` ou `-`; a máscara aceita de 3 a 6 dígitos.
+- A migration `20260724183000_remove_document_type_separator` remove a antiga configuração de separador sem alterar protocolos já emitidos.
+- A máscara aceita de 3 a 6 dígitos e o protocolo usa sempre `PREFIXO-NÚMERO/ANO`, como `MEMO-001/2026`.
 - Um documento deve ter exatamente um destino: `destinationDepartmentId` ou `destinationText`.
-- Foreign keys impedem excluir referências usadas. A aplicação não oferece exclusão física desses cadastros.
+- Foreign keys impedem excluir referências usadas. Departamentos sem vínculos podem ser excluídos fisicamente pela API; os demais devem ser desativados.
 - `Attachment.storageKey` é único e relativo a `ATTACHMENTS_DIR`; `content` permanece opcional apenas para leitura e migração de `BLOBs` legados.
 - A constraint `Attachment_storage_check` exige exatamente uma origem de conteúdo: arquivo ou `BLOB` legado.
 - A remoção apaga a linha e o arquivo, mas grava antes os metadados no `detailsJson` de `DocumentHistory`.
@@ -108,7 +108,8 @@ Documentos guardam snapshots de código e nome da origem/destino. Renomear um de
 
 ### Ciclo de vida
 
-- Usuários, tipos, departamentos e documentos não possuem endpoint de exclusão; são desativados ou mantidos para preservar referências.
+- Usuários, tipos e documentos não possuem endpoint de exclusão; são desativados ou mantidos para preservar referências.
+- Departamentos ativos ou inativos podem ser excluídos quando não são origem nem destino de nenhum documento. A API verifica as duas relações em transação e a foreign key `Restrict` permanece como proteção final.
 - Sessões expiradas são removidas na inicialização e também durante o login.
 - Documentos cancelados permanecem no banco e não podem voltar a outro status.
 - Anexos são a exceção: podem ser excluídos fisicamente para liberar o arquivo, mantendo metadados e autoria no histórico.
@@ -142,9 +143,9 @@ Anexos criados antes desta mudança continuam disponíveis pelo campo `content`.
 Formato implementado:
 
 ```text
-PREFIXO-NÚMERO_PREENCHIDO{SEPARADOR}ANO
+PREFIXO-NÚMERO_PREENCHIDO/ANO
 MEMO-014/2026
-LT-005-2026
+LT-005/2026
 ```
 
 ```mermaid
@@ -178,6 +179,7 @@ Migrations versionadas atualmente:
 | `20260722130000_init` | Cria entidades, índices, chaves estrangeiras e constraints iniciais. |
 | `20260722163000_attachment_remove_history` | Atualiza o `CHECK` de `HistoryAction` para permitir `ATTACHMENT_REMOVE`. |
 | `20260722203000_attachment_filesystem_storage` | Adiciona `storageKey`, torna o `BLOB` opcional e exige uma única origem de conteúdo. |
+| `20260724183000_remove_document_type_separator` | Remove o separador configurável dos tipos e preserva os demais campos e vínculos. |
 
 | Contexto                          | Comando                                          | Uso                                                      |
 | --------------------------------- | ------------------------------------------------ | -------------------------------------------------------- |
@@ -193,12 +195,14 @@ Os testes integrados aplicam todos os arquivos `migration.sql` em ordem lexicogr
 
 ## Seed
 
-`npm run db:seed` faz upsert de:
+`npm run db:seed` inicializa, somente quando a respectiva tabela está vazia:
 
 - Memorando, Ofício, Circular, Comunicado Interno, Ordem de Serviço, Laudo Técnico e Parecer Técnico;
 - Departamento de Arquivo, Almoxarifado, Tecnologia da Informação, Gestão de Pessoas, Financeiro e Patrimônio/Manutenção;
-- administrador definido pelas variáveis `BOOTSTRAP_ADMIN_*`.
+- administrador definido pelas variáveis `BOOTSTRAP_ADMIN_*` é criado ou atualizado em toda execução.
 
-O seed é idempotente e não redefine a senha de usuário existente. Quando `SEED_DEMO_DATA=true` e ainda não há documentos, cria dois registros sanitizados, usando o administrador como responsável e sem anexos.
+Depois da primeira carga, o seed não recria departamentos ou tipos excluídos e não sobrescreve edições administrativas. A verificação é independente para cada tabela: tipos são criados apenas quando não existe nenhum tipo, e departamentos apenas quando não existe nenhum departamento.
+
+O seed é idempotente e não redefine a senha de usuário existente. Quando `SEED_DEMO_DATA=true`, ainda não há documentos e os catálogos necessários estão disponíveis, cria dois registros sanitizados, usando o administrador como responsável e sem anexos.
 
 As variáveis `BOOTSTRAP_ADMIN_NAME`, `BOOTSTRAP_ADMIN_EMAIL` e `BOOTSTRAP_ADMIN_PASSWORD` são validadas em toda execução do seed. Se o e-mail já existir, o seed atualiza o nome, restaura o perfil `ADMIN` e reativa o usuário, mas preserva o hash e o salt da senha existente.

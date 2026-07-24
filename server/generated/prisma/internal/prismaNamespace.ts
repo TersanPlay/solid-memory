@@ -1082,7 +1082,6 @@ export const DocumentTypeScalarFieldEnum = {
   id: 'id',
   name: 'name',
   prefix: 'prefix',
-  separator: 'separator',
   digits: 'digits',
   active: 'active',
   createdAt: 'createdAt',

@@ -75,17 +75,18 @@ const loginSchema = z.object({
   email: z.email(),
   password: z.string().min(1).max(200),
 });
-const typeCreateSchema = z.object({
-  name: z.string().trim().min(2).max(100),
-  prefix: z
-    .string()
-    .trim()
-    .min(1)
-    .max(8)
-    .regex(/^[A-Za-z0-9-]+$/),
-  separator: z.enum(["/", "-"]),
-  digits: z.coerce.number().int().min(3).max(6),
-});
+const typeCreateSchema = z
+  .object({
+    name: z.string().trim().min(2).max(100),
+    prefix: z
+      .string()
+      .trim()
+      .min(1)
+      .max(8)
+      .regex(/^[A-Za-z0-9-]+$/),
+    digits: z.coerce.number().int().min(3).max(6),
+  })
+  .strict();
 const typeUpdateSchema = typeCreateSchema
   .partial()
   .extend({ active: z.boolean().optional() })
@@ -175,6 +176,52 @@ function normalizeDepartment(input) {
     name: input.name?.trim(),
     code: input.code?.trim().toUpperCase(),
   };
+}
+
+async function deleteDepartment(prisma, id) {
+  try {
+    await prisma.$transaction(async (transaction) => {
+      const department = await transaction.department.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          _count: {
+            select: {
+              originDocuments: true,
+              destinationDocuments: true,
+            },
+          },
+        },
+      });
+      if (!department) {
+        throw new ApiError(
+          404,
+          "NOT_FOUND",
+          "Departamento não encontrado.",
+        );
+      }
+      const references =
+        department._count.originDocuments +
+        department._count.destinationDocuments;
+      if (references > 0) {
+        throw new ApiError(
+          409,
+          "DEPARTMENT_IN_USE",
+          "O departamento possui documentos vinculados e não pode ser excluído. Desative-o para impedir novos usos.",
+        );
+      }
+      await transaction.department.delete({ where: { id } });
+    });
+  } catch (error) {
+    if (error?.code === "P2003") {
+      throw new ApiError(
+        409,
+        "DEPARTMENT_IN_USE",
+        "O departamento possui documentos vinculados e não pode ser excluído. Desative-o para impedir novos usos.",
+      );
+    }
+    throw error;
+  }
 }
 
 const allowedFiles = new Map([
@@ -374,6 +421,14 @@ export function createApp({ prisma, config }) {
     asyncRoute(async (_request, response) => {
       const departments = await prisma.department.findMany({
         orderBy: { name: "asc" },
+        include: {
+          _count: {
+            select: {
+              originDocuments: true,
+              destinationDocuments: true,
+            },
+          },
+        },
       });
       response.json({ data: departments });
     }),
@@ -397,6 +452,14 @@ export function createApp({ prisma, config }) {
         data: normalizeDepartment(departmentUpdateSchema.parse(request.body)),
       });
       response.json({ data: department });
+    }),
+  );
+  app.delete(
+    "/api/departments/:id",
+    requireRoles("ADMIN"),
+    asyncRoute(async (request, response) => {
+      await deleteDepartment(prisma, request.params.id);
+      response.status(204).end();
     }),
   );
 

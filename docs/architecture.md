@@ -92,6 +92,8 @@ O frontend oculta ações incompatíveis, mas toda decisão é repetida no backe
 
 O último administrador ativo não pode ser desativado nem receber outro perfil.
 
+Administradores podem editar nome e código de departamentos. A exclusão física é restrita a departamentos sem vínculos de origem ou destino; cadastros usados permanecem editáveis e podem ser desativados.
+
 ## Limites de confiança
 
 - Todas as entradas JSON passam por Zod antes de alcançar a regra de negócio.

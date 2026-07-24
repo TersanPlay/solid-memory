@@ -82,7 +82,7 @@ beforeAll(async () => {
     role: "OPERATOR",
   });
   type = await prisma.documentType.create({
-    data: { name: "Memorando", prefix: "MEMO", separator: "/", digits: 3 },
+    data: { name: "Memorando", prefix: "MEMO", digits: 3 },
   });
   origin = await prisma.department.create({
     data: { name: "Arquivo", code: "DEP-ARQUIVO" },
@@ -179,6 +179,103 @@ describe("API integrada com SQLite", () => {
       .send({ active: false })
       .expect(409);
     expect(lastAdmin.body.error.code).toBe("LAST_ADMIN");
+  });
+
+  it("usa o formato fixo de protocolo e rejeita configuração de separador", async () => {
+    const invalid = await adminAgent
+      .post("/api/document-types")
+      .send({
+        name: "Laudo de validação",
+        prefix: "LDV",
+        digits: 4,
+        separator: "-",
+      })
+      .expect(400);
+    expect(invalid.body.error.code).toBe("VALIDATION_ERROR");
+
+    const created = await adminAgent
+      .post("/api/document-types")
+      .send({ name: "Laudo de validação", prefix: "LDV", digits: 4 })
+      .expect(201);
+    expect(created.body.data).not.toHaveProperty("separator");
+    const preview = await adminAgent
+      .get(
+        `/api/protocols/next?typeId=${created.body.data.id}&date=2027-01-10`,
+      )
+      .expect(200);
+    expect(preview.body.data.protocol).toBe("LDV-0001/2027");
+  });
+
+  it("edita, contabiliza e exclui somente departamentos sem vínculos", async () => {
+    const listed = await adminAgent.get("/api/departments").expect(200);
+    expect(
+      listed.body.data.find((department) => department.id === origin.id)._count,
+    ).toMatchObject({
+      originDocuments: expect.any(Number),
+      destinationDocuments: expect.any(Number),
+    });
+
+    const editable = await adminAgent
+      .post("/api/departments")
+      .send({ name: "  Unidade Editável  ", code: "dep-editavel" })
+      .expect(201);
+    const edited = await adminAgent
+      .patch(`/api/departments/${editable.body.data.id}`)
+      .send({ name: "  Unidade Atualizada  ", code: "dep-atualizada" })
+      .expect(200);
+    expect(edited.body.data).toMatchObject({
+      name: "Unidade Atualizada",
+      code: "DEP-ATUALIZADA",
+      active: true,
+    });
+
+    const duplicate = await adminAgent
+      .post("/api/departments")
+      .send({ name: "Outra Unidade", code: "DEP-OUTRA" })
+      .expect(201);
+    await adminAgent
+      .patch(`/api/departments/${duplicate.body.data.id}`)
+      .send({ code: "dep-atualizada" })
+      .expect(409);
+    await viewerAgent
+      .patch(`/api/departments/${editable.body.data.id}`)
+      .send({ name: "Alteração não autorizada" })
+      .expect(403);
+    await operatorAgent
+      .delete(`/api/departments/${editable.body.data.id}`)
+      .expect(403);
+    await adminAgent
+      .patch("/api/departments/departamento-inexistente")
+      .send({ name: "Inexistente" })
+      .expect(404);
+
+    await adminAgent
+      .delete(`/api/departments/${editable.body.data.id}`)
+      .expect(204);
+    await adminAgent
+      .delete(`/api/departments/${editable.body.data.id}`)
+      .expect(404);
+
+    await adminAgent
+      .patch(`/api/departments/${duplicate.body.data.id}`)
+      .send({ active: false })
+      .expect(200);
+    await adminAgent
+      .delete(`/api/departments/${duplicate.body.data.id}`)
+      .expect(204);
+
+    const originConflict = await adminAgent
+      .delete(`/api/departments/${origin.id}`)
+      .expect(409);
+    expect(originConflict.body.error).toMatchObject({
+      code: "DEPARTMENT_IN_USE",
+    });
+    const destinationConflict = await adminAgent
+      .delete(`/api/departments/${destination.id}`)
+      .expect(409);
+    expect(destinationConflict.body.error).toMatchObject({
+      code: "DEPARTMENT_IN_USE",
+    });
   });
 
   it("mantém o contrato HTTP de listagem, criação, edição e redefinição de usuários", async () => {

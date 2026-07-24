@@ -199,6 +199,56 @@ describe("roteamento e autenticação do frontend", () => {
     expect(document.title).toBe("Documentos · MemoryDoc");
   });
 
+  it("cria tipo documental sem oferecer ou enviar separador", async () => {
+    let submitted;
+    const baseFetch = authenticatedFetch(admin);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input, options = {}) => {
+        const url = String(input);
+        if (url === "/api/document-types" && options.method === "POST") {
+          submitted = JSON.parse(options.body);
+          return json(
+            {
+              data: {
+                id: "type-created",
+                ...submitted,
+                active: true,
+                _count: { documents: 0 },
+              },
+            },
+            201,
+          );
+        }
+        return baseFetch(input, options);
+      }),
+    );
+    renderAt("/tipos");
+
+    await screen.findByRole("heading", { name: "Tipos de documento" });
+    fireEvent.click(screen.getByRole("button", { name: "Novo tipo" }));
+    expect(screen.queryByText("Separador")).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Nome"), {
+      target: { value: "Ata administrativa" },
+    });
+    fireEvent.change(screen.getByLabelText("Prefixo"), {
+      target: { value: "ATA" },
+    });
+    fireEvent.change(screen.getByLabelText("Dígitos"), {
+      target: { value: "4" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Criar tipo" }));
+
+    await waitFor(() =>
+      expect(submitted).toEqual({
+        name: "Ata administrativa",
+        prefix: "ATA",
+        digits: 4,
+      }),
+    );
+    expect(submitted).not.toHaveProperty("separator");
+  });
+
   it("mantém a URL e informa acesso negado para um perfil sem permissão", async () => {
     vi.stubGlobal("fetch", authenticatedFetch(viewer));
     renderAt("/usuarios");

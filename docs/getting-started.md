@@ -84,7 +84,7 @@ Na raiz, depois de disponibilizar o código e um `.env` seguro:
 | 3 | `npm run build` | Compilar o React. | Arquivos estáticos em `dist/`. |
 | 4 | `npm run db:deploy` | Aplicar somente migrations versionadas. | Banco atualizado sem criar migration nova. |
 | 5 | `npm run attachments:migrate` | Transferir para a pasta configurada qualquer anexo legado ainda armazenado no SQLite. | Contagem migrada ou mensagem `Nenhum anexo legado pendente`. |
-| 6 | `npm run db:seed` | Garantir catálogos e administrador de bootstrap. | Seed idempotente concluído. |
+| 6 | `npm run db:seed` | Inicializar catálogos em tabelas vazias e garantir o administrador de bootstrap. | Seed idempotente concluído sem sobrescrever alterações administrativas. |
 | 7 | `$env:NODE_ENV='production'; npm start` | Iniciar o processo único. | API e frontend na porta configurada em `PORT`. |
 
 Em produção, o cookie de sessão possui `Secure`; publique a aplicação por HTTPS.

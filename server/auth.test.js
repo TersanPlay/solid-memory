@@ -18,6 +18,6 @@ describe('segurança e protocolo', () => {
   });
 
   it('preserva a máscara de protocolo', () => {
-    expect(formatProtocol({ prefix: 'MEMO', separator: '/', digits: 3 }, 14, 2026)).toBe('MEMO-014/2026');
+    expect(formatProtocol({ prefix: 'MEMO', digits: 3 }, 14, 2026)).toBe('MEMO-014/2026');
   });
 });

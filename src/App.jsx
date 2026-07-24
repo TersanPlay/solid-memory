@@ -40,6 +40,7 @@ import {
   Menu,
   MoreHorizontal,
   Paperclip,
+  Pencil,
   Plus,
   Search,
   ShieldCheck,
@@ -1758,23 +1759,134 @@ export function RemoveAttachmentModal({
   );
 }
 
-function Departments({ departments, refresh, notify }) {
-  const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({ name: "", code: "" });
+export function RemoveDepartmentModal({
+  department,
+  busy = false,
+  error = "",
+  onClose,
+  onConfirm,
+}) {
+  return (
+    <SimpleModal
+      role="alertdialog"
+      className="remove-department-modal"
+      title="Excluir departamento?"
+      description="O cadastro será removido permanentemente e não poderá ser recuperado."
+      onClose={onClose}
+    >
+      <div className="remove-department-body">
+        <div className="remove-department-card">
+          <span aria-hidden="true">
+            <Building2 />
+          </span>
+          <div>
+            <small>{department.code}</small>
+            <strong>{department.name}</strong>
+          </div>
+        </div>
+        <div className="removal-audit-note">
+          <CircleHelp aria-hidden="true" />
+          <div>
+            <strong>Exclusão definitiva</strong>
+            <p>
+              Esta ação só é permitida porque não existem documentos vinculados
+              a este departamento.
+            </p>
+          </div>
+        </div>
+        <InlineError error={error} />
+        <div className="modal-actions remove-department-actions">
+          <button
+            type="button"
+            className="ghost-button"
+            disabled={busy}
+            onClick={onClose}
+          >
+            Manter departamento
+          </button>
+          <button
+            type="button"
+            className="confirm-danger-button"
+            disabled={busy}
+            onClick={onConfirm}
+          >
+            <span>{busy ? "Excluindo…" : "Excluir definitivamente"}</span>
+            <span aria-hidden="true">
+              <Trash2 />
+            </span>
+          </button>
+        </div>
+      </div>
+    </SimpleModal>
+  );
+}
+
+const emptyDepartmentForm = { name: "", code: "" };
+const departmentReferenceCount = (department) =>
+  (department._count?.originDocuments || 0) +
+  (department._count?.destinationDocuments || 0);
+
+export function Departments({ departments, refresh, notify }) {
+  const [formMode, setFormMode] = useState(null);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [departmentToDelete, setDepartmentToDelete] = useState(null);
+  const [form, setForm] = useState(emptyDepartmentForm);
   const [error, setError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [switchingId, setSwitchingId] = useState(null);
+
+  const resetEditor = () => {
+    setFormMode(null);
+    setSelectedDepartment(null);
+    setForm(emptyDepartmentForm);
+    setError("");
+  };
+
+  const openCreate = () => {
+    setSelectedDepartment(null);
+    setForm(emptyDepartmentForm);
+    setError("");
+    setFormMode("create");
+  };
+
+  const openEdit = (department) => {
+    setSelectedDepartment(department);
+    setForm({ name: department.name, code: department.code });
+    setError("");
+    setFormMode("edit");
+  };
+
+  const closeEditor = () => {
+    if (!saving) resetEditor();
+  };
+
   const save = async (event) => {
     event.preventDefault();
+    setSaving(true);
+    setError("");
     try {
-      await api.post("/departments", form);
+      if (formMode === "edit") {
+        await api.patch(`/departments/${selectedDepartment.id}`, form);
+      } else {
+        await api.post("/departments", form);
+      }
       await refresh();
-      setAdding(false);
-      setForm({ name: "", code: "" });
-      notify("Departamento adicionado.");
+      const editing = formMode === "edit";
+      resetEditor();
+      notify(
+        editing ? "Departamento atualizado." : "Departamento adicionado.",
+      );
     } catch (err) {
       setError(err.message);
+    } finally {
+      setSaving(false);
     }
   };
+
   const toggle = async (department) => {
+    setSwitchingId(department.id);
     try {
       await api.patch(`/departments/${department.id}`, {
         active: !department.active,
@@ -1782,8 +1894,38 @@ function Departments({ departments, refresh, notify }) {
       await refresh();
     } catch (err) {
       notify(err.message, true);
+    } finally {
+      setSwitchingId(null);
     }
   };
+
+  const openDelete = (department) => {
+    if (departmentReferenceCount(department) > 0) return;
+    setDeleteError("");
+    setDepartmentToDelete(department);
+  };
+
+  const closeDelete = () => {
+    if (deleting) return;
+    setDepartmentToDelete(null);
+    setDeleteError("");
+  };
+
+  const remove = async () => {
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      await api.delete(`/departments/${departmentToDelete.id}`);
+      await refresh();
+      setDepartmentToDelete(null);
+      notify("Departamento excluído.");
+    } catch (err) {
+      setDeleteError(err.message);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <>
       <PageHeader
@@ -1791,7 +1933,7 @@ function Departments({ departments, refresh, notify }) {
         title="Departamentos"
         description="Mantenha as unidades de origem e destino organizadas e consistentes."
         action={
-          <PrimaryButton onClick={() => setAdding(true)} icon={<Plus />}>
+          <PrimaryButton onClick={openCreate} icon={<Plus />}>
             Novo departamento
           </PrimaryButton>
         }
@@ -1807,36 +1949,79 @@ function Departments({ departments, refresh, notify }) {
           </span>
         </div>
         <div className="cards-list reveal">
-          {departments.map((department) => (
-            <BezelCard className="department-card" key={department.id}>
-              <div className="department-icon">
-                <Building2 />
-              </div>
-              <div className="department-copy">
-                <span className="micro-label">{department.code}</span>
-                <h3>{department.name}</h3>
-                <StatusBadge status={department.active ? "Ativo" : "Inativo"} />
-              </div>
-              <label
-                className="switch"
-                aria-label={`${department.active ? "Desativar" : "Ativar"} ${department.name}`}
-              >
-                <input
-                  type="checkbox"
-                  checked={department.active}
-                  onChange={() => toggle(department)}
-                />
-                <span />
-              </label>
-            </BezelCard>
-          ))}
+          {departments.map((department) => {
+            const references = departmentReferenceCount(department);
+            const deleteLabel =
+              references > 0
+                ? `Não é possível excluir ${department.name}: ${references} vínculo${references === 1 ? "" : "s"} com documentos`
+                : `Excluir ${department.name}`;
+            return (
+              <BezelCard className="department-card" key={department.id}>
+                <div className="department-icon">
+                  <Building2 />
+                </div>
+                <div className="department-copy">
+                  <span className="micro-label">{department.code}</span>
+                  <h3>{department.name}</h3>
+                  <div className="department-meta">
+                    <StatusBadge
+                      status={department.active ? "Ativo" : "Inativo"}
+                    />
+                    <span>
+                      {references === 0
+                        ? "Sem vínculos"
+                        : `${references} vínculo${references === 1 ? "" : "s"}`}
+                    </span>
+                  </div>
+                </div>
+                <label
+                  className="switch"
+                  aria-label={`${department.active ? "Desativar" : "Ativar"} ${department.name}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={department.active}
+                    disabled={switchingId === department.id}
+                    onChange={() => toggle(department)}
+                  />
+                  <span />
+                </label>
+                <div className="department-actions">
+                  <IconButton
+                    type="button"
+                    label={`Editar ${department.name}`}
+                    onClick={() => openEdit(department)}
+                  >
+                    <Pencil />
+                  </IconButton>
+                  <IconButton
+                    type="button"
+                    className="department-delete-button"
+                    label={deleteLabel}
+                    disabled={references > 0}
+                    onClick={() => openDelete(department)}
+                  >
+                    <Trash2 />
+                  </IconButton>
+                </div>
+              </BezelCard>
+            );
+          })}
         </div>
       </main>
-      {adding && (
+      {formMode && (
         <SimpleModal
-          title="Novo departamento"
-          description="A unidade ficará disponível nos campos de origem e destino."
-          onClose={() => setAdding(false)}
+          title={
+            formMode === "edit"
+              ? "Editar departamento"
+              : "Novo departamento"
+          }
+          description={
+            formMode === "edit"
+              ? "As alterações serão usadas nos próximos registros; documentos emitidos preservam os dados históricos."
+              : "A unidade ficará disponível nos campos de origem e destino."
+          }
+          onClose={closeEditor}
         >
           <form onSubmit={save} className="form-stack">
             <label>
@@ -1846,6 +2031,7 @@ function Departments({ departments, refresh, notify }) {
                 onChange={(event) =>
                   setForm({ ...form, name: event.target.value })
                 }
+                disabled={saving}
                 required
               />
             </label>
@@ -1860,6 +2046,7 @@ function Departments({ departments, refresh, notify }) {
                   })
                 }
                 placeholder="DEP-JURIDICO"
+                disabled={saving}
                 required
               />
             </label>
@@ -1868,16 +2055,30 @@ function Departments({ departments, refresh, notify }) {
               <button
                 type="button"
                 className="ghost-button"
-                onClick={() => setAdding(false)}
+                disabled={saving}
+                onClick={closeEditor}
               >
                 Cancelar
               </button>
-              <PrimaryButton type="submit" icon={<Check />}>
-                Adicionar
+              <PrimaryButton type="submit" icon={<Check />} disabled={saving}>
+                {saving
+                  ? "Salvando…"
+                  : formMode === "edit"
+                    ? "Salvar alterações"
+                    : "Adicionar"}
               </PrimaryButton>
             </div>
           </form>
         </SimpleModal>
+      )}
+      {departmentToDelete && (
+        <RemoveDepartmentModal
+          department={departmentToDelete}
+          busy={deleting}
+          error={deleteError}
+          onClose={closeDelete}
+          onConfirm={remove}
+        />
       )}
     </>
   );
@@ -1888,7 +2089,6 @@ function Types({ types, refresh, notify }) {
   const [form, setForm] = useState({
     name: "",
     prefix: "",
-    separator: "/",
     digits: 3,
   });
   const [error, setError] = useState("");
@@ -1901,7 +2101,7 @@ function Types({ types, refresh, notify }) {
       });
       await refresh();
       setAdding(false);
-      setForm({ name: "", prefix: "", separator: "/", digits: 3 });
+      setForm({ name: "", prefix: "", digits: 3 });
       notify("Tipo documental criado.");
     } catch (err) {
       setError(err.message);
@@ -1960,9 +2160,6 @@ function Types({ types, refresh, notify }) {
                 <span>
                   <strong>{type.digits}</strong> dígitos
                 </span>
-                <span>
-                  Separador <strong>{type.separator}</strong>
-                </span>
               </div>
             </BezelCard>
           ))}
@@ -1985,7 +2182,7 @@ function Types({ types, refresh, notify }) {
                 required
               />
             </label>
-            <div className="fields-grid three-cols">
+            <div className="fields-grid two-cols">
               <label>
                 Prefixo
                 <input
@@ -1997,18 +2194,6 @@ function Types({ types, refresh, notify }) {
                     })
                   }
                   required
-                />
-              </label>
-              <label>
-                Separador
-                <SoftSelect
-                  ariaLabel="Separador"
-                  value={form.separator}
-                  onChange={(value) => setForm({ ...form, separator: value })}
-                  options={[
-                    { value: "/", label: "/" },
-                    { value: "-", label: "-" },
-                  ]}
                 />
               </label>
               <label>

@@ -90,6 +90,10 @@ usuário de bootstrap permaneça ativo e com perfil `ADMIN`. Alterar as variáve
 de bootstrap não renomeia a conta antiga para outro e-mail; pode criar outra
 conta administrativa.
 
+Tipos e departamentos padrão são criados somente quando a respectiva tabela
+está vazia. Reinícios e novos deploys não recriam catálogos excluídos nem
+sobrescrevem edições feitas pela administração.
+
 ## 4. Implantar
 
 Revise as alterações staged no Railway e inicie o deploy. A ordem efetiva será:

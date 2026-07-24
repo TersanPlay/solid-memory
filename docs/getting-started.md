@@ -24,7 +24,7 @@ O projeto usa um módulo nativo para SQLite. Em instalações comuns do Node 22 
 | 7 | Raiz | `npm run db:generate` | Gerar o cliente Prisma em `server/generated/prisma`. | Mensagem `Generated Prisma Client`. |
 | 8 | Raiz | `npm run db:migrate` | Criar o arquivo SQLite, registrar e aplicar migrations de desenvolvimento. | `data/folio.db` e a tabela `_prisma_migrations` são criados. |
 | 9 | Raiz | `npm run db:seed` | Cadastrar tipos, departamentos e o administrador inicial. | Mensagem `Seed concluído`. |
-| 10 | Raiz | `npm run dev` | Iniciar Vite e Express juntos. | Frontend em `127.0.0.1:5173` e API em `127.0.0.1:3002`. |
+| 10 | Raiz | `npm run dev` | Iniciar Vite e Express juntos. | Frontend em `127.0.0.1:5173` e API em `0.0.0.0:3000`. |
 | 11 | Navegador | acessar `http://127.0.0.1:5173/login` | Abrir a aplicação. | Tela de login do MemoryDoc; após autenticar, a URL muda para `/inicio` ou para a rota originalmente solicitada. |
 | 12 | Raiz, em outro terminal | `npm test` | Executar testes unitários, de frontend e de integração. | Todas as suítes aprovadas. |
 | 13 | Raiz | `npm run verify` | Executar testes e build de produção. | Testes verdes e pasta `dist/` gerada. |
@@ -34,8 +34,8 @@ O projeto usa um módulo nativo para SQLite. Em instalações comuns do Node 22 
 ```dotenv
 DATABASE_URL="file:./data/folio.db"
 ATTACHMENTS_DIR="./data/attachments"
-PORT=3002
-API_PORT=3002
+PORT=3000
+API_PORT=3000
 NODE_ENV=development
 BOOTSTRAP_ADMIN_NAME="Administrador do sistema"
 BOOTSTRAP_ADMIN_EMAIL="admin@example.invalid"
@@ -60,7 +60,7 @@ Use dois terminais na raiz quando precisar inspecionar os processos de forma ind
 
 | Terminal | Comando | Finalidade | Resultado esperado |
 |---|---|---|---|
-| API | `npm run dev:api` | Executar Express com recarga pelo `tsx`. | API em `http://127.0.0.1:3002/api/health`. |
+| API | `npm run dev:api` | Executar Express com recarga pelo `tsx`. | API em `http://127.0.0.1:3000/api/health`, ouvindo em `0.0.0.0`. |
 | Web | `npm run dev:web` | Executar o Vite com proxy de `/api`. | Interface em `http://127.0.0.1:5173`. |
 
 Para usar outra porta da API durante o desenvolvimento, mantenha os dois valores iguais:
@@ -88,6 +88,11 @@ Na raiz, depois de disponibilizar o código e um `.env` seguro:
 | 7 | `$env:NODE_ENV='production'; npm start` | Iniciar o processo único. | API e frontend na porta configurada em `PORT`. |
 
 Em produção, o cookie de sessão possui `Secure`; publique a aplicação por HTTPS.
+
+Para Railway, não copie o `.env` local para o serviço. O repositório inclui
+`railway.json`, `npm run build:railway` e `npm run start:railway`; siga o
+[guia específico do Railway](railway.md) para criar o volume e cadastrar as
+variáveis antes do deploy.
 
 ## Problemas comuns
 
@@ -125,7 +130,7 @@ Confirme que `.env` existe, substitua o placeholder e execute novamente `npm run
 Sintoma: `EADDRINUSE` ou Vite selecionando outra porta.
 
 ```powershell
-Get-NetTCPConnection -State Listen -LocalPort 3002,5173
+Get-NetTCPConnection -State Listen -LocalPort 3000,5173
 ```
 
 Resultado esperado: identificar o PID que já usa a porta. Encerre apenas o processo conhecido ou use `PORT` e `API_PORT` iguais em portas livres.

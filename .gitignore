@@ -2,5 +2,13 @@ node_modules
 dist
 .vite
 *.log
+.env
+.env.*
 !.env.example
+data/
+*.db
+*.db-shm
+*.db-wal
+server/generated/
+coverage/
 .tmp/

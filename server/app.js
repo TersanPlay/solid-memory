@@ -1,7 +1,8 @@
 import fs from "node:fs";
+import { isIP } from "node:net";
 import path from "node:path";
 import express from "express";
-import { rateLimit } from "express-rate-limit";
+import { ipKeyGenerator, rateLimit } from "express-rate-limit";
 import { fileTypeFromBuffer } from "file-type";
 import helmet from "helmet";
 import multer from "multer";
@@ -190,6 +191,13 @@ const allowedFiles = new Map([
   ],
 ]);
 
+export function rateLimitClientIp(request, config) {
+  const forwarded = config.isRailway
+    ? request.get("X-Real-IP")?.trim()
+    : "";
+  return ipKeyGenerator(isIP(forwarded) ? forwarded : request.ip);
+}
+
 export function createApp({ prisma, config }) {
   const app = express();
   app.disable("x-powered-by");
@@ -236,6 +244,7 @@ export function createApp({ prisma, config }) {
   const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 5,
+    keyGenerator: (request) => rateLimitClientIp(request, config),
     standardHeaders: "draft-8",
     legacyHeaders: false,
     message: {

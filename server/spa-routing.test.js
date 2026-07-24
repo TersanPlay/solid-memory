@@ -21,7 +21,7 @@ beforeAll(() => {
   app = createApp({
     prisma: {},
     config: {
-      ...loadConfig({ nodeEnv: "production", port: 3002 }),
+      ...loadConfig({ nodeEnv: "production", port: 3000 }),
       rootDir,
     },
   });

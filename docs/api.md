@@ -1,6 +1,6 @@
 # Referência da API
 
-Base local: `http://127.0.0.1:3002/api`. Em desenvolvimento, o frontend usa `/api` pelo proxy do Vite; em produção, frontend e API têm a mesma origem.
+Base local: `http://127.0.0.1:3000/api`. O Express ouve em `0.0.0.0`; em desenvolvimento, o frontend usa `/api` pelo proxy do Vite e, em produção, frontend e API têm a mesma origem.
 
 ## Convenções
 

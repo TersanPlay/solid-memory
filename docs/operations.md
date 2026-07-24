@@ -12,7 +12,7 @@ Em produção:
 4. publique o processo por HTTPS, pois o cookie de produção usa `Secure`;
 5. mantenha somente uma instância gravando em cada arquivo SQLite.
 
-O processo Node escuta em `127.0.0.1`, inclusive em produção. Use um proxy reverso local para publicar HTTPS e encaminhar tanto `/api/*` quanto as rotas do frontend para a porta definida em `PORT`.
+O processo Node escuta em `0.0.0.0` na porta definida em `PORT`. Em uma VM tradicional, restrinja a exposição com firewall e proxy reverso HTTPS. No Railway, o edge proxy termina TLS e encaminha o tráfego para essa porta.
 
 Comandos na raiz:
 
@@ -41,7 +41,10 @@ Retorna 200 somente depois de executar `SELECT 1` no SQLite. Monitore status HTT
 
 Pino escreve logs JSON em stdout com método, URL, status, duração e request ID. Cookies e autorização são ocultados. Encaminhe stdout/stderr ao gerenciador de serviço; não grave segredos em mensagens manuais.
 
-O Express mantém `trust proxy=false`. Consequentemente, o rate limiter de login usa o endereço IP visto diretamente pelo Node; atrás de um proxy reverso, diferentes clientes podem compartilhar a mesma chave. Não habilite confiança irrestrita em cabeçalhos encaminhados sem definir e testar a topologia do proxy.
+O Express mantém `trust proxy=false`. No Railway, detectado por `RAILWAY_ENVIRONMENT_ID`, o rate limiter usa o `X-Real-IP` validado que o edge proxy fornece; localmente e em outros ambientes usa `request.ip`. Não habilite confiança irrestrita em cabeçalhos encaminhados.
+
+Para o procedimento completo de volume, variáveis, build, healthcheck e primeiro
+deploy, consulte [Deploy no Railway](railway.md).
 
 Indicadores operacionais úteis:
 
@@ -148,10 +151,10 @@ Resultado esperado: uma base vazia é recriada com catálogos e administrador. N
 ### `EADDRINUSE`
 
 ```powershell
-Get-NetTCPConnection -State Listen -LocalPort 3002,5173 | Select-Object LocalPort,OwningProcess
+Get-NetTCPConnection -State Listen -LocalPort 3000,5173 | Select-Object LocalPort,OwningProcess
 ```
 
-Identifique o processo antes de encerrá-lo. Outra aplicação na porta 3002 também faz o proxy do Vite responder com conteúdo incorreto; use `PORT` e `API_PORT` iguais em uma porta livre.
+Identifique o processo antes de encerrá-lo. Outra aplicação na porta 3000 também faz o proxy do Vite responder com conteúdo incorreto; use `PORT` e `API_PORT` iguais em uma porta livre.
 
 ### `SQLITE_BUSY`
 
@@ -196,7 +199,7 @@ Gere novamente após qualquer alteração do schema ou atualização do Prisma.
 - confirme `NODE_ENV=production` no processo que executa `npm start`;
 - encaminhe caminhos como `/inicio`, `/documentos` e `/usuarios` ao Express;
 - não redirecione `/api/*` para o fallback do frontend;
-- valide diretamente uma rota profunda, por exemplo `Invoke-WebRequest http://127.0.0.1:3002/documentos/ID_DE_TESTE`.
+- valide diretamente uma rota profunda, por exemplo `Invoke-WebRequest http://127.0.0.1:3000/documentos/ID_DE_TESTE`.
 
 ## Atualização de versão
 

@@ -146,8 +146,10 @@ Os guardas do frontend evitam apresentar páginas incompatíveis com o perfil, m
 
 ## Execução
 
-- Desenvolvimento: Vite serve o frontend e encaminha `/api` para a porta definida por `API_PORT` ou 3002.
+- Desenvolvimento: Vite serve o frontend e encaminha `/api` para a porta definida por `API_PORT` ou 3000.
 - Produção: `npm run build` cria `dist/`; Express serve os arquivos e a API no mesmo processo/host.
 - A pasta definida por `ATTACHMENTS_DIR` deve estar em volume persistente e acompanhar o banco nos backups.
-- O processo escuta somente em `127.0.0.1`; exposição por HTTPS exige proxy reverso no mesmo servidor ou rede confiável.
+- O Express escuta em `0.0.0.0` na porta definida por `PORT`; localmente, o navegador continua acessando `127.0.0.1`.
+- No Railway, `railway.json` força o processo Express completo, evitando que a detecção do Vite publique apenas os arquivos estáticos.
+- O volume Railway deve ser montado em `/app/data`; migrations e seed são executados no comando de inicialização, quando o volume já está disponível.
 - O projeto foi desenhado para uma única instância da API e um arquivo SQLite local. Escala horizontal não está implementada.

@@ -5,8 +5,11 @@ const DEFAULT_ATTACHMENTS_DIR = './data/attachments';
 
 export function loadConfig(overrides = {}) {
   const databaseUrl = overrides.databaseUrl ?? process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
-  const port = Number(overrides.port ?? process.env.PORT ?? 3002);
+  const port = Number(overrides.port ?? process.env.PORT ?? 3000);
   const nodeEnv = overrides.nodeEnv ?? process.env.NODE_ENV ?? 'development';
+  const railwayEnvironmentId = overrides.railwayEnvironmentId
+    ?? process.env.RAILWAY_ENVIRONMENT_ID
+    ?? '';
   const attachmentsDir = path.resolve(
     overrides.attachmentsDir ?? process.env.ATTACHMENTS_DIR ?? DEFAULT_ATTACHMENTS_DIR,
   );
@@ -23,6 +26,7 @@ export function loadConfig(overrides = {}) {
     port,
     nodeEnv,
     isProduction: nodeEnv === 'production',
+    isRailway: Boolean(railwayEnvironmentId),
     rootDir: path.resolve(process.cwd()),
     attachmentsDir,
     sessionHours: 8,

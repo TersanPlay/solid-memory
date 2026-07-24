@@ -12,6 +12,7 @@ Aplicação web em português do Brasil para registrar, numerar, localizar e aco
 | Integrar ou manter endpoints HTTP | [Referência da API](docs/api.md) |
 | Alterar código, criar rotas e executar testes | [Desenvolvimento e testes](docs/development.md) |
 | Publicar, administrar usuários, fazer backup e diagnosticar | [Operação, backup e diagnóstico](docs/operations.md) |
+| Publicar no Railway com SQLite e anexos persistentes | [Deploy no Railway](docs/railway.md) |
 
 ## Requisitos essenciais
 

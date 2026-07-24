@@ -33,6 +33,7 @@ SoftProtocolo/
 │   └── styles.css                   # identidade visual responsiva
 ├── docs/
 ├── prisma.config.ts
+├── railway.json                  # build, start e healthcheck no Railway
 └── vite.config.js
 ```
 
@@ -46,7 +47,9 @@ SoftProtocolo/
 | `npm run dev:web` | Apenas frontend em 127.0.0.1:5173. |
 | `npm run dev:api` | Apenas API com watch. |
 | `npm run build` | Compila o frontend em `dist/`. |
+| `npm run build:railway` | Gera o Prisma Client e compila o frontend no Railpack. |
 | `npm start` | Executa Express; em `NODE_ENV=production`, também serve `dist/`. |
+| `npm run start:railway` | Em runtime, aplica migrations, executa o seed idempotente e inicia o Express. |
 | `npm run preview` | Serve o build Vite localmente; não inicia a API Express. |
 | `npm run db:prepare` | Cria diretório e arquivo SQLite quando ausentes. |
 | `predb:migrate` | Hook do npm executado automaticamente antes de `db:migrate`; chama `db:prepare`. |
@@ -165,5 +168,5 @@ Antes de concluir:
 - Concorrência não cria protocolo duplicado.
 - Listas respeitam paginação máxima de 100.
 - Anexo não aparece em JSON como conteúdo.
-- `npm audit --audit-level=high`, `npm test` e `npm run build` passam.
+- `npm audit --audit-level=high` é revisado; vulnerabilidades aceitas temporariamente ficam documentadas. `npm test` e `npm run build` devem passar.
 - Documentação reflete nomes reais de scripts, rotas e variáveis.

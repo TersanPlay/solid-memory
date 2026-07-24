@@ -96,7 +96,7 @@ beforeAll(async () => {
       databaseUrl,
       attachmentsDir,
       nodeEnv: "test",
-      port: 3002,
+      port: 3000,
     }),
   });
   adminAgent = request.agent(app);

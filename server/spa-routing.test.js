@@ -15,7 +15,7 @@ beforeAll(() => {
   fs.mkdirSync(distDir, { recursive: true });
   fs.writeFileSync(
     path.join(distDir, "index.html"),
-    "<!doctype html><html><body><div id=\"root\">Fólio SPA</div></body></html>",
+    "<!doctype html><html><body><div id=\"root\">MemoryDoc SPA</div></body></html>",
     "utf8",
   );
   app = createApp({
@@ -38,6 +38,6 @@ describe("fallback de produção da SPA", () => {
       .expect(200)
       .expect("Content-Type", /html/);
 
-    expect(response.text).toContain("Fólio SPA");
+    expect(response.text).toContain("MemoryDoc SPA");
   });
 });

@@ -1,4 +1,4 @@
-# SoftProtocolo — Fólio
+# SoftProtocolo — MemoryDoc
 
 Aplicação web em português do Brasil para registrar, numerar, localizar e acompanhar documentos administrativos. O frontend React consome uma API Express; os dados relacionais ficam no SQLite e os anexos, em uma hierarquia de arquivos administrada pelo backend.
 

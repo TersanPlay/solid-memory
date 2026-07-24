@@ -114,7 +114,7 @@ function renderAt(path) {
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
-  document.title = "Fólio · Gestão documental";
+  document.title = "MemoryDoc · Gestão documental";
 });
 
 describe("roteamento e autenticação do frontend", () => {
@@ -172,13 +172,13 @@ describe("roteamento e autenticação do frontend", () => {
     fireEvent.change(screen.getByLabelText("Senha"), {
       target: { value: "SenhaSeguraTeste" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Entrar no Fólio" }));
+    fireEvent.click(screen.getByRole("button", { name: "Entrar no MemoryDoc" }));
 
     expect(
       await screen.findByRole("heading", { name: "Usuários" }),
     ).toBeInTheDocument();
     expect(screen.getByTestId("location")).toHaveTextContent("/usuarios");
-    expect(document.title).toBe("Usuários · Fólio");
+    expect(document.title).toBe("Usuários · MemoryDoc");
   });
 
   it("atualiza a URL e o estado ativo pelos links de navegação", async () => {
@@ -196,7 +196,7 @@ describe("roteamento e autenticação do frontend", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("location")).toHaveTextContent("/documentos");
     expect(documentsLinks[0]).toHaveClass("active");
-    expect(document.title).toBe("Documentos · Fólio");
+    expect(document.title).toBe("Documentos · MemoryDoc");
   });
 
   it("mantém a URL e informa acesso negado para um perfil sem permissão", async () => {
@@ -219,7 +219,7 @@ describe("roteamento e autenticação do frontend", () => {
       await screen.findByRole("heading", { name: documentFixture.protocol }),
     ).toBeInTheDocument();
     await waitFor(() =>
-      expect(document.title).toBe(`${documentFixture.protocol} · Fólio`),
+      expect(document.title).toBe(`${documentFixture.protocol} · MemoryDoc`),
     );
     expect(
       screen.getAllByRole("link", { name: "Documentos" })[0],
@@ -283,6 +283,6 @@ describe("roteamento e autenticação do frontend", () => {
     expect(screen.getByTestId("location")).toHaveTextContent(
       "/pagina-inexistente",
     );
-    expect(document.title).toBe("Página não encontrada · Fólio");
+    expect(document.title).toBe("Página não encontrada · MemoryDoc");
   });
 });

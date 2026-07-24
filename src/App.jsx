@@ -185,11 +185,11 @@ function Avatar({ name = "?", small = false }) {
 
 function Brand() {
   return (
-    <div className="brand" aria-label="Fólio">
+    <div className="brand" aria-label="MemoryDoc">
       <span className="brand-mark">
         <FileText />
       </span>
-      <span>fólio</span>
+      <span>MemoryDoc</span>
     </div>
   );
 }
@@ -310,7 +310,7 @@ function Login({ onLogin }) {
               disabled={loading}
               icon={loading ? <span className="spinner" /> : <ArrowUpRight />}
             >
-              {loading ? "Entrando…" : "Entrar no Fólio"}
+              {loading ? "Entrando…" : "Entrar no MemoryDoc"}
             </PrimaryButton>
           </form>
           <div className="login-note">
@@ -2384,7 +2384,7 @@ function Footer() {
   return (
     <footer>
       <div>
-        <span>FÓLIO · GESTÃO DOCUMENTAL</span>
+        <span>MEMORYDOC · GESTÃO DOCUMENTAL</span>
         <span>SQLITE · SEQUÊNCIAS SEGURAS · HISTÓRICO PRESERVADO</span>
       </div>
     </footer>
@@ -2426,19 +2426,19 @@ function PageTitle() {
   const location = useLocation();
   useEffect(() => {
     const pathname = location.pathname;
-    let title = "Fólio · Gestão documental";
-    if (pathname === "/login") title = "Acesso · Fólio";
-    else if (pathname === "/inicio" || pathname === "/") title = "Início · Fólio";
-    else if (pathname === "/documentos") title = "Documentos · Fólio";
-    else if (pathname === "/documentos/novo") title = "Novo registro · Fólio";
+    let title = "MemoryDoc · Gestão documental";
+    if (pathname === "/login") title = "Acesso · MemoryDoc";
+    else if (pathname === "/inicio" || pathname === "/") title = "Início · MemoryDoc";
+    else if (pathname === "/documentos") title = "Documentos · MemoryDoc";
+    else if (pathname === "/documentos/novo") title = "Novo registro · MemoryDoc";
     else if (pathname.startsWith("/documentos/"))
-      title = "Detalhes do documento · Fólio";
-    else if (pathname === "/departamentos") title = "Departamentos · Fólio";
-    else if (pathname === "/tipos") title = "Tipos documentais · Fólio";
-    else if (pathname === "/usuarios") title = "Usuários · Fólio";
-    else if (pathname === "/relatorios") title = "Relatórios · Fólio";
-    else if (pathname === "/atividades") title = "Atividades · Fólio";
-    else title = "Página não encontrada · Fólio";
+      title = "Detalhes do documento · MemoryDoc";
+    else if (pathname === "/departamentos") title = "Departamentos · MemoryDoc";
+    else if (pathname === "/tipos") title = "Tipos documentais · MemoryDoc";
+    else if (pathname === "/usuarios") title = "Usuários · MemoryDoc";
+    else if (pathname === "/relatorios") title = "Relatórios · MemoryDoc";
+    else if (pathname === "/atividades") title = "Atividades · MemoryDoc";
+    else title = "Página não encontrada · MemoryDoc";
     document.title = title;
   }, [location.pathname]);
   return null;
@@ -2562,7 +2562,7 @@ function DocumentDetailsRoute({ session, onUpdate, notify }) {
 
   useEffect(() => {
     if (documentRecord?.protocol)
-      document.title = `${documentRecord.protocol} · Fólio`;
+      document.title = `${documentRecord.protocol} · MemoryDoc`;
   }, [documentRecord?.protocol]);
 
   if ((loading && !documentRecord) || error)

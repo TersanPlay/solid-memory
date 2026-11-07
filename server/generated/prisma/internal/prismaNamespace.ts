@@ -1248,10 +1248,8 @@ export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof
 export const DocumentLinkScalarFieldEnum = {
   id: 'id',
   documentId: 'documentId',
-  title: 'title',
   url: 'url',
   provider: 'provider',
-  description: 'description',
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

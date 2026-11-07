@@ -1038,7 +1038,7 @@ function NewDocument({
     destinationMode: "internal",
     subject: "",
     responsibleUserId: session.id,
-    status: "REGISTRADO",
+    status: "ENVIADO",
     notes: "",
   });
   const [file, setFile] = useState(null);
@@ -1251,7 +1251,7 @@ function NewDocument({
                   value={form.status}
                   onChange={(value) => update("status", value)}
                   options={statusOptions.filter(
-                    (item) => item.value !== "CANCELADO",
+                    (item) => !["REGISTRADO", "CANCELADO"].includes(item.value),
                   )}
                   required
                 />

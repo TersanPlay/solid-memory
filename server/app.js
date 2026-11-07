@@ -49,7 +49,10 @@ import {
 } from "./users.js";
 
 const statuses = Object.keys(STATUS_LABELS);
-const initialStatuses = statuses.filter((status) => status !== "CANCELADO");
+const initialStatuses = statuses.filter(
+  (status) => !["REGISTRADO", "CANCELADO"].includes(status),
+);
+const transitionStatuses = statuses.filter((status) => status !== "CANCELADO");
 const dateOnly = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Use a data no formato AAAA-MM-DD.")
@@ -108,7 +111,7 @@ const documentCreateSchema = z
     destinationText: z.string().trim().min(2).max(160).nullable().optional(),
     subject: z.string().trim().min(3).max(300),
     responsibleUserId: z.string().min(1).optional(),
-    status: z.enum(initialStatuses).default("REGISTRADO"),
+    status: z.enum(initialStatuses).default("ENVIADO"),
     notes: z.string().max(4000).optional().default(""),
   })
   .superRefine((value, context) => {
@@ -132,7 +135,7 @@ const documentLinkSchema = z.object({
   description: z.string().trim().max(400).default(""),
 }).strict();
 const documentLinkUpdateSchema = documentLinkSchema.partial().refine((value) => Object.keys(value).length > 0, "Informe ao menos uma alteração.");
-const statusSchema = z.object({ status: z.enum(initialStatuses) });
+const statusSchema = z.object({ status: z.enum(transitionStatuses) });
 const documentQuerySchema = z
   .object({
     q: z.string().trim().max(200).optional(),

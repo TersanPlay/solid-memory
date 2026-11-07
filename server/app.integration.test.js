@@ -148,7 +148,7 @@ describe("API integrada com SQLite", () => {
       destinationText: null,
       subject: "Documento criado no teste de integração",
       responsibleUserId: admin.id,
-      status: "REGISTRADO",
+      status: "RECEBIDO",
       notes: "",
     };
     const first = await adminAgent
@@ -326,7 +326,7 @@ describe("API integrada com SQLite", () => {
       destinationDepartmentId: destination.id,
       subject: "Criação concorrente",
       responsibleUserId: admin.id,
-      status: "REGISTRADO",
+      status: "ENVIADO",
     };
     const responses = await Promise.all([
       adminAgent
@@ -349,7 +349,7 @@ describe("API integrada com SQLite", () => {
       originDepartmentId: origin.id,
       destinationDepartmentId: destination.id,
       subject: "Documento próprio do operador",
-      status: "REGISTRADO",
+      status: "ENVIADO",
     };
     const created = await operatorAgent
       .post("/api/documents")
@@ -358,7 +358,7 @@ describe("API integrada com SQLite", () => {
     expect(created.body.data.responsibleUserId).toBe(operator.id);
     await operatorAgent
       .patch(`/api/documents/${created.body.data.id}/status`)
-      .send({ status: "ENVIADO" })
+      .send({ status: "ARQUIVADO" })
       .expect(200);
     const adminDocument = await prisma.document.findFirst({
       where: { createdById: admin.id, status: { not: "CANCELADO" } },
@@ -377,7 +377,7 @@ describe("API integrada com SQLite", () => {
       destinationDepartmentId: destination.id,
       subject: "Documento com link externo",
       responsibleUserId: admin.id,
-      status: "REGISTRADO",
+      status: "ENVIADO",
     }).expect(201)).body.data;
     const link = (await adminAgent.post(`/api/documents/${created.id}/links`).send({
       title: "Pasta no Drive",
@@ -403,7 +403,7 @@ describe("API integrada com SQLite", () => {
       destinationDepartmentId: destination.id,
       subject: "Documento para remoção de anexo",
       responsibleUserId: admin.id,
-      status: "REGISTRADO",
+      status: "ENVIADO",
     };
     const adminDocument = (
       await adminAgent.post("/api/documents").send(payload).expect(201)

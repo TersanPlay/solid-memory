@@ -27,7 +27,7 @@ export default function NewDocument() {
     destinationMode: "internal",
     subject: "",
     responsibleUserId: session.id,
-    status: "REGISTRADO",
+    status: "ENVIADO",
     notes: "",
   });
   const [file, setFile] = useState(null);
@@ -240,9 +240,9 @@ export default function NewDocument() {
                   ariaLabel="Status inicial"
                   value={form.status}
                   onChange={(value) => update("status", value)}
-                  options={statusOptions.filter(
-                    (item) => item.value !== "CANCELADO",
-                  )}
+                options={statusOptions.filter(
+                  (item) => !["REGISTRADO", "CANCELADO"].includes(item.value),
+                )}
                   required
                 />
               </label>

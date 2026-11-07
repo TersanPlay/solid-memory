@@ -130,9 +130,7 @@ const documentUpdateSchema = z.object({
   responsibleUserId: z.string().min(1).optional(),
 });
 const documentLinkSchema = z.object({
-  title: z.string().trim().min(2).max(120),
   url: z.string().trim().url().max(2000).refine((value) => new URL(value).protocol === "https:", "Use uma URL HTTPS."),
-  description: z.string().trim().max(400).default(""),
 }).strict();
 const documentLinkUpdateSchema = documentLinkSchema.partial().refine((value) => Object.keys(value).length > 0, "Informe ao menos uma alteração.");
 const statusSchema = z.object({ status: z.enum(transitionStatuses) });
@@ -591,7 +589,7 @@ export function createApp({ prisma, config }) {
         include: { createdBy: { select: { id: true, name: true } } },
       });
       await prisma.documentHistory.create({
-        data: { documentId: document.id, action: "UPDATE", description: `Link documental adicionado: ${link.title}`, detailsJson: JSON.stringify({ linkId: link.id, url: link.url, provider: link.provider }), userId: request.user.id },
+        data: { documentId: document.id, action: "UPDATE", description: `Link documental adicionado: ${link.provider}`, detailsJson: JSON.stringify({ linkId: link.id, url: link.url, provider: link.provider }), userId: request.user.id },
       });
       response.status(201).json({ data: link });
     }),
@@ -609,7 +607,7 @@ export function createApp({ prisma, config }) {
         data: { ...input, ...(input.url ? { provider: getLinkProvider(input.url) } : {}) },
         include: { createdBy: { select: { id: true, name: true } } },
       });
-      await prisma.documentHistory.create({ data: { documentId: current.documentId, action: "UPDATE", description: `Link documental atualizado: ${link.title}`, userId: request.user.id } });
+      await prisma.documentHistory.create({ data: { documentId: current.documentId, action: "UPDATE", description: `Link documental atualizado: ${link.provider}`, userId: request.user.id } });
       response.json({ data: link });
     }),
   );
@@ -621,7 +619,7 @@ export function createApp({ prisma, config }) {
       if (!current) throw new ApiError(404, "NOT_FOUND", "Link documental não encontrado.");
       assertCanMutateDocument(request.user, current.document);
       await prisma.documentLink.delete({ where: { id: current.id } });
-      await prisma.documentHistory.create({ data: { documentId: current.documentId, action: "UPDATE", description: `Link documental removido: ${current.title}`, detailsJson: JSON.stringify({ linkId: current.id, url: current.url }), userId: request.user.id } });
+      await prisma.documentHistory.create({ data: { documentId: current.documentId, action: "UPDATE", description: `Link documental removido: ${current.provider}`, detailsJson: JSON.stringify({ linkId: current.id, url: current.url }), userId: request.user.id } });
       response.status(204).end();
     }),
   );

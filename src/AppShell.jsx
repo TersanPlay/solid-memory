@@ -1042,7 +1042,7 @@ function NewDocument({
     notes: "",
   });
   const [file, setFile] = useState(null);
-  const [link, setLink] = useState({ title: "", url: "", description: "" });
+  const [link, setLink] = useState({ url: "" });
   const [preview, setPreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -1081,7 +1081,7 @@ function NewDocument({
       let document = (await api.post("/documents", payload)).data;
       if (link.url.trim()) {
         try {
-          await api.post(`/documents/${document.id}/links`, { ...link, title: link.title.trim() || "Documento externo" });
+          await api.post(`/documents/${document.id}/links`, link);
           document = (await api.get(`/documents/${document.id}`)).data;
         } catch (uploadError) {
           notify(
@@ -1276,9 +1276,7 @@ function NewDocument({
                     </span>
                   </button>
                 </div>
-                <label>Título do link<input value={link.title} onChange={(event) => setLink((current) => ({ ...current, title: event.target.value }))} maxLength="120" placeholder="Ex.: Documento no Google Drive" /></label>
                 <label>URL do documento<input type="url" value={link.url} onChange={(event) => setLink((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://drive.google.com/..." /></label>
-                <label>Descrição (opcional)<textarea value={link.description} onChange={(event) => setLink((current) => ({ ...current, description: event.target.value }))} maxLength="400" rows="2" /></label>
               </div>
             </div>
           </BezelCard>
@@ -1308,7 +1306,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [confirmingCancel, setConfirmingCancel] = useState(false);
-  const [linkDraft, setLinkDraft] = useState({ title: "", url: "", description: "" });
+  const [linkDraft, setLinkDraft] = useState({ url: "" });
   useEffect(() => {
     if (!document) return;
     api
@@ -1354,10 +1352,10 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
     setBusy(true);
     setError("");
     try {
-      await api.post(`/documents/${document.id}/links`, { ...linkDraft, title: linkDraft.title.trim() || "Documento externo" });
+      await api.post(`/documents/${document.id}/links`, linkDraft);
       const updated = (await api.get(`/documents/${document.id}`)).data;
       onUpdate(updated);
-      setLinkDraft({ title: "", url: "", description: "" });
+      setLinkDraft({ url: "" });
       notify("Link documental adicionado.");
     } catch (err) {
       setError(err.message);
@@ -1492,12 +1490,12 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
                 <div className="attachment-row" key={link.id}>
                   <a className="attachment-download" href={link.url} target="_blank" rel="noopener noreferrer">
                     <span className="doc-file-icon"><ExternalLink /></span>
-                    <span><strong>{link.title}</strong><small>{link.provider}{link.description ? ` · ${link.description}` : ""}</small></span>
+                    <span><strong>{link.provider}</strong><small>{link.url}</small></span>
                     <ArrowUpRight />
                   </a>
                   {canEdit && (
                     <IconButton
-                      label={`Remover link ${link.title}`}
+                      label={`Remover link ${link.provider}`}
                       className="attachment-remove"
                       disabled={busy}
                       onClick={() => removeLink(link)}
@@ -1515,9 +1513,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
               )}
               {canEdit && (
                 <form className="document-link-fields" onSubmit={addLink}>
-                  <label>Título<input value={linkDraft.title} onChange={(event) => setLinkDraft((current) => ({ ...current, title: event.target.value }))} maxLength="120" placeholder="Ex.: Pasta do processo" /></label>
                   <label>URL HTTPS<input type="url" required value={linkDraft.url} onChange={(event) => setLinkDraft((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://..." /></label>
-                  <label>Descrição<textarea value={linkDraft.description} onChange={(event) => setLinkDraft((current) => ({ ...current, description: event.target.value }))} maxLength="400" rows="2" /></label>
                   <button type="submit" className="ghost-button" disabled={busy}><ExternalLink /> Adicionar link</button>
                 </form>
               )}

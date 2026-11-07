@@ -380,16 +380,14 @@ describe("API integrada com SQLite", () => {
       status: "ENVIADO",
     }).expect(201)).body.data;
     const link = (await adminAgent.post(`/api/documents/${created.id}/links`).send({
-      title: "Pasta no Drive",
       url: "https://drive.google.com/drive/folders/exemplo",
-      description: "Documentos do processo",
     }).expect(201)).body.data;
     expect(link.provider).toBe("Google Drive");
     const detail = (await adminAgent.get(`/api/documents/${created.id}`).expect(200)).body.data;
     expect(detail.links).toHaveLength(1);
     expect(detail.links[0].url).toBe(link.url);
-    const updated = (await adminAgent.patch(`/api/links/${link.id}`).send({ title: "Pasta principal" }).expect(200)).body.data;
-    expect(updated.title).toBe("Pasta principal");
+    const updated = (await adminAgent.patch(`/api/links/${link.id}`).send({ url: "https://drive.google.com/drive/folders/atualizada" }).expect(200)).body.data;
+    expect(updated.url).toBe("https://drive.google.com/drive/folders/atualizada");
     await viewerAgent.delete(`/api/links/${link.id}`).expect(403);
     await adminAgent.delete(`/api/links/${link.id}`).expect(204);
     expect((await adminAgent.get(`/api/documents/${created.id}`).expect(200)).body.data.links).toHaveLength(0);

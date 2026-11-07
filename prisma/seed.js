@@ -81,7 +81,7 @@ try {
           destinationDepartmentId: ti.id,
           subject: "Solicitação de suporte para equipamento administrativo",
           responsibleUserId: admin.id,
-          status: "REGISTRADO",
+          status: "ENVIADO",
           notes: "Registro demonstrativo sem dados pessoais.",
         },
         admin,

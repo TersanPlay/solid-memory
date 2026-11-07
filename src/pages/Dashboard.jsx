@@ -74,7 +74,7 @@ export default function Dashboard({
   if (error) return <main className="page-content wrap"><InlineError error={error} /></main>;
   if (!data) return <DashboardSkeleton />;
 
-  const inFlow = ["REGISTRADO", "ENVIADO"].reduce(
+  const inFlow = ["ENVIADO"].reduce(
     (sum, status) => sum + (data.byStatus[status] || 0),
     0,
   );

@@ -147,7 +147,7 @@ GET /api/protocols/next?typeId=<ID>&date=2026-07-22
 | `originDepartmentId`, `destinationDepartmentId` | Percurso interno.                                            |
 | `page`, `pageSize`                              | Paginação.                                                   |
 
-Status aceitos: `REGISTRADO`, `ENVIADO`, `RECEBIDO`, `ARQUIVADO`, `CANCELADO`.
+Status persistidos: `REGISTRADO`, `ENVIADO`, `RECEBIDO`, `ARQUIVADO`, `CANCELADO`. O status `REGISTRADO` é legado e não pode ser usado em novas criações.
 
 ### Criação
 
@@ -162,14 +162,14 @@ Status aceitos: `REGISTRADO`, `ENVIADO`, `RECEBIDO`, `ARQUIVADO`, `CANCELADO`.
   "destinationText": null,
   "subject": "Solicitação de manutenção de equipamento",
   "responsibleUserId": "<ID_DO_RESPONSAVEL>",
-  "status": "REGISTRADO",
+  "status": "ENVIADO",
   "notes": "Informação complementar sem dado sensível."
 }
 ```
 
 Para destino externo, envie `destinationDepartmentId: null` e `destinationText`. Informar ambos ou nenhum é inválido.
 
-O assunto aceita de 3 a 300 caracteres, o destino externo de 2 a 160 e as observações até 4.000 caracteres. O status inicial pode ser qualquer status aceito, exceto `CANCELADO`.
+O assunto aceita de 3 a 300 caracteres, o destino externo de 2 a 160 e as observações até 4.000 caracteres. O status inicial deve ser `ENVIADO`, `RECEBIDO` ou `ARQUIVADO`; `REGISTRADO` e `CANCELADO` são rejeitados na criação.
 
 O `admin` deve informar o responsável. Para `OPERATOR`, o servidor usa o próprio usuário, mesmo que outro ID seja enviado.
 

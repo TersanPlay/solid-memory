@@ -240,9 +240,7 @@ export default function NewDocument() {
                   ariaLabel="Status inicial"
                   value={form.status}
                   onChange={(value) => update("status", value)}
-                options={statusOptions.filter(
-                  (item) => !["REGISTRADO", "CANCELADO"].includes(item.value),
-                )}
+                options={statusOptions.filter((item) => item.value !== "CANCELADO")}
                   required
                 />
               </label>

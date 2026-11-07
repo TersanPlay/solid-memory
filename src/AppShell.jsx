@@ -513,7 +513,7 @@ function Dashboard({
         <LoadingState />
       </main>
     );
-  const activeFlow = ["REGISTRADO", "ENVIADO"].reduce(
+  const activeFlow = ["ENVIADO"].reduce(
     (sum, status) => sum + (data.byStatus[status] || 0),
     0,
   );
@@ -1250,9 +1250,7 @@ function NewDocument({
                   ariaLabel="Status inicial"
                   value={form.status}
                   onChange={(value) => update("status", value)}
-                  options={statusOptions.filter(
-                    (item) => !["REGISTRADO", "CANCELADO"].includes(item.value),
-                  )}
+                  options={statusOptions.filter((item) => item.value !== "CANCELADO")}
                   required
                 />
               </label>

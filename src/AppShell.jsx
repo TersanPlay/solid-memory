@@ -1264,7 +1264,18 @@ function NewDocument({
                 />
               </label>
               <div className="document-link-fields span-two">
-                <div className="form-section-note">O conteúdo permanece no serviço externo. O MemoryDoc armazena apenas o link para consulta.</div>
+                <div className="form-section-note">
+                  <button
+                    type="button"
+                    className="form-info-trigger"
+                    aria-label="Como os links documentais são armazenados"
+                  >
+                    <CircleHelp aria-hidden="true" />
+                    <span className="form-info-tooltip" role="tooltip">
+                      O conteúdo permanece no serviço externo. O MemoryDoc armazena apenas o link HTTPS para consulta e não faz upload, cópia ou hospedagem do arquivo.
+                    </span>
+                  </button>
+                </div>
                 <label>Título do link<input value={link.title} onChange={(event) => setLink((current) => ({ ...current, title: event.target.value }))} maxLength="120" placeholder="Ex.: Documento no Google Drive" /></label>
                 <label>URL do documento<input type="url" value={link.url} onChange={(event) => setLink((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://drive.google.com/..." /></label>
                 <label>Descrição (opcional)<textarea value={link.description} onChange={(event) => setLink((current) => ({ ...current, description: event.target.value }))} maxLength="400" rows="2" /></label>

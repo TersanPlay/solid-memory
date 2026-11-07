@@ -149,7 +149,6 @@ describe("API integrada com SQLite", () => {
       subject: "Documento criado no teste de integração",
       responsibleUserId: admin.id,
       status: "RECEBIDO",
-      notes: "",
     };
     const first = await adminAgent
       .post("/api/documents")

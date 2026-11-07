@@ -112,7 +112,6 @@ const documentCreateSchema = z
     subject: z.string().trim().min(3).max(300),
     responsibleUserId: z.string().min(1).optional(),
     status: z.enum(initialStatuses).default("ENVIADO"),
-    notes: z.string().max(4000).optional().default(""),
   })
   .superRefine((value, context) => {
     const internal = Boolean(value.destinationDepartmentId);
@@ -126,7 +125,6 @@ const documentCreateSchema = z
   });
 const documentUpdateSchema = z.object({
   subject: z.string().trim().min(3).max(300).optional(),
-  notes: z.string().max(4000).optional(),
   responsibleUserId: z.string().min(1).optional(),
 });
 const documentLinkSchema = z.object({

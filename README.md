@@ -10,7 +10,7 @@ Este README é a porta de entrada do projeto: apresenta os módulos disponíveis
 |---|---|
 | Painel inicial | Indicadores do acervo, documentos recentes, distribuição por status e próxima sequência disponível. |
 | Documentos | Consulta paginada, busca por protocolo/assunto/origem, filtros por tipo/status/ano e abertura do detalhe do documento. |
-| Cadastro de documentos | Criação de protocolos com numeração atômica por tipo e ano, origem, destino, responsável, status e observações. |
+| Cadastro de documentos | Criação de protocolos com numeração atômica por tipo e ano, origem, destino, responsável, status e link documental externo. |
 | Detalhe do documento | Alteração de status, histórico de movimentações, cancelamento terminal e informações de autoria. |
 | Anexos | Upload, download e remoção de PDF, DOCX, XLSX, JPEG e PNG, com limite de 10 MB e validação de assinatura. |
 | Departamentos | Cadastro, edição, ativação/desativação e exclusão quando não há vínculos documentais. |

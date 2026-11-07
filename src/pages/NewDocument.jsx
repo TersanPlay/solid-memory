@@ -28,7 +28,6 @@ export default function NewDocument() {
     subject: "",
     responsibleUserId: session.id,
     status: "ENVIADO",
-    notes: "",
   });
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -64,7 +63,6 @@ export default function NewDocument() {
         responsibleUserId:
           session.role === "OPERATOR" ? session.id : form.responsibleUserId,
         status: form.status,
-        notes: form.notes,
       };
       let document = (await api.post("/documents", payload)).data;
       if (file) {
@@ -242,15 +240,6 @@ export default function NewDocument() {
                   onChange={(value) => update("status", value)}
                 options={statusOptions.filter((item) => item.value !== "CANCELADO")}
                   required
-                />
-              </label>
-              <label className="span-two">
-                Observações
-                <textarea
-                  value={form.notes}
-                  onChange={(event) => update("notes", event.target.value)}
-                  rows="4"
-                  maxLength="4000"
                 />
               </label>
               <AttachmentPicker

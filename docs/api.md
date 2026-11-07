@@ -162,14 +162,13 @@ Status persistidos: `REGISTRADO`, `ENVIADO`, `RECEBIDO`, `ARQUIVADO`, `CANCELADO
   "destinationText": null,
   "subject": "Solicitação de manutenção de equipamento",
   "responsibleUserId": "<ID_DO_RESPONSAVEL>",
-  "status": "ENVIADO",
-  "notes": "Informação complementar sem dado sensível."
+  "status": "ENVIADO"
 }
 ```
 
 Para destino externo, envie `destinationDepartmentId: null` e `destinationText`. Informar ambos ou nenhum é inválido.
 
-O assunto aceita de 3 a 300 caracteres, o destino externo de 2 a 160 e as observações até 4.000 caracteres. O status inicial deve ser `ENVIADO`, `RECEBIDO` ou `ARQUIVADO`; `REGISTRADO` e `CANCELADO` são rejeitados na criação.
+O assunto aceita de 3 a 300 caracteres e o destino externo de 2 a 160. O status inicial deve ser `ENVIADO`, `RECEBIDO` ou `ARQUIVADO`; `REGISTRADO` e `CANCELADO` são rejeitados na criação.
 
 O `admin` deve informar o responsável. Para `OPERATOR`, o servidor usa o próprio usuário, mesmo que outro ID seja enviado.
 
@@ -178,7 +177,7 @@ O `admin` deve informar o responsável. Para `OPERATOR`, o servidor usa o própr
 | Método e rota                 | Regra                                                                 |
 | ----------------------------- | --------------------------------------------------------------------- |
 | `GET /documents/:id`          | Qualquer sessão.                                                      |
-| `PATCH /documents/:id`        | `admin` ou `OPERATOR` proprietário; `subject`, `notes`; somente `admin` pode alterar `responsibleUserId`. |
+| `PATCH /documents/:id`        | `admin` ou `OPERATOR` proprietário; `subject`; somente `admin` pode alterar `responsibleUserId`. |
 | `PATCH /documents/:id/status` | Status não cancelado. `OPERATOR` somente em documento próprio.        |
 | `POST /documents/:id/cancel`  | Somente `admin`; cancelamento terminal.                               |
 | `GET /documents/:id/history`  | Histórico mais recente primeiro.                                      |

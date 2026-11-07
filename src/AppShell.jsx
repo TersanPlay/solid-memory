@@ -1039,7 +1039,6 @@ function NewDocument({
     subject: "",
     responsibleUserId: session.id,
     status: "ENVIADO",
-    notes: "",
   });
   const [file, setFile] = useState(null);
   const [link, setLink] = useState({ url: "" });
@@ -1076,7 +1075,6 @@ function NewDocument({
         responsibleUserId:
           session.role === "OPERATOR" ? session.id : form.responsibleUserId,
         status: form.status,
-        notes: form.notes,
       };
       let document = (await api.post("/documents", payload)).data;
       if (link.url.trim()) {
@@ -1252,15 +1250,6 @@ function NewDocument({
                   onChange={(value) => update("status", value)}
                   options={statusOptions.filter((item) => item.value !== "CANCELADO")}
                   required
-                />
-              </label>
-              <label className="span-two">
-                Observações
-                <textarea
-                  value={form.notes}
-                  onChange={(event) => update("notes", event.target.value)}
-                  rows="4"
-                  maxLength="4000"
                 />
               </label>
               <div className="document-link-fields span-two">
@@ -1482,10 +1471,9 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
             </section>
             <section className="detail-section">
               <div className="detail-section-title">
-                <h3>Observações e links</h3>
+                <h3>Links documentais</h3>
                 <ExternalLink />
               </div>
-              <p>{document.notes || "Nenhuma observação adicionada."}</p>
               {document.links?.map((link) => (
                 <div className="attachment-row" key={link.id}>
                   <a className="attachment-download" href={link.url} target="_blank" rel="noopener noreferrer">

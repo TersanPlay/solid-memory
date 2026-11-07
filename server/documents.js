@@ -110,7 +110,7 @@ export async function createDocument(prisma, input, user) {
             destinationCodeSnapshot: destination?.code ?? null,
             destinationNameSnapshot: destination?.name ?? input.destinationText,
             subject: input.subject.trim(), responsibleUserId, status: input.status,
-            notes: input.notes?.trim() || '', createdById: user.id, updatedById: user.id,
+            createdById: user.id, updatedById: user.id,
             history: { create: { action: 'CREATE', toStatus: input.status, description: 'Documento registrado', userId: user.id } },
           },
           select: { id: true },
@@ -135,7 +135,6 @@ export async function updateDocument(prisma, id, input, user) {
   assertCanMutateDocument(user, current);
   const data = { updatedById: user.id };
   if (input.subject !== undefined) data.subject = input.subject.trim();
-  if (input.notes !== undefined) data.notes = input.notes.trim();
   if (input.responsibleUserId !== undefined) {
     if (user.role !== 'admin') throw new ApiError(403, 'FORBIDDEN', 'Somente administradores podem reatribuir documentos.');
     const responsible = await prisma.user.findUnique({ where: { id: input.responsibleUserId } });

@@ -67,7 +67,7 @@ beforeAll(async () => {
     name: "Admin Teste",
     email: "admin@test.invalid",
     password: "SenhaAdminTeste2026",
-    role: "ADMIN",
+    role: "admin",
   });
   viewer = await createUser({
     name: "Consulta Teste",

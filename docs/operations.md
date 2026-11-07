@@ -2,7 +2,7 @@
 
 ## Modelo operacional
 
-O SoftProtocolo opera com uma única instância Node/Express, um arquivo SQLite local e uma pasta local de anexos. Não há Docker, fila, storage externo ou escala horizontal.
+O MemoryDoc opera com uma única instância Node/Express, um arquivo SQLite local e uma pasta local de anexos. Não há Docker, fila, storage externo ou escala horizontal.
 
 Em produção:
 
@@ -57,7 +57,7 @@ Indicadores operacionais úteis:
 
 ## Gerenciamento de usuários pelo CLI
 
-O utilitário administrativo acessa diretamente o arquivo indicado por `DATABASE_URL`; a aplicação web pode estar parada. Migrations e seed devem ter sido executados antes do primeiro uso. Como esse acesso permite conceder perfil `ADMIN`, execute o comando somente na raiz do projeto e por operadores autorizados a acessar o servidor e o arquivo SQLite.
+O utilitário administrativo acessa diretamente o arquivo indicado por `DATABASE_URL`; a aplicação web pode estar parada. Migrations e seed devem ter sido executados antes do primeiro uso. Como esse acesso permite conceder perfil `admin`, execute o comando somente na raiz do projeto e por operadores autorizados a acessar o servidor e o arquivo SQLite.
 
 Ajuda e listagem:
 
@@ -96,7 +96,7 @@ O CLI não exclui usuários e impede desativar ou rebaixar o último administrad
 
 Como o banco usa WAL, a rotina mais simples e segura é parar o processo antes da cópia.
 
-1. Interrompa somente a instância do SoftProtocolo pelo gerenciador de serviço.
+1. Interrompa somente a instância do MemoryDoc pelo gerenciador de serviço.
 2. Confirme que não há processo escrevendo no banco.
 3. Crie uma pasta de backup fora da árvore publicada.
 4. Copie todo o conjunto SQLite e a pasta de anexos da mesma parada.
@@ -104,7 +104,7 @@ Como o banco usa WAL, a rotina mais simples e segura é parar o processo antes d
 Exemplo PowerShell, executado na raiz com a aplicação parada:
 
 ```powershell
-$backupDir = Join-Path 'D:\Backups\SoftProtocolo' (Get-Date -Format 'yyyyMMdd-HHmmss')
+$backupDir = Join-Path 'D:\Backups\MemoryDoc' (Get-Date -Format 'yyyyMMdd-HHmmss')
 New-Item -ItemType Directory -Path $backupDir | Out-Null
 Copy-Item -LiteralPath '.\data\folio.db' -Destination $backupDir
 if (Test-Path -LiteralPath '.\data\folio.db-wal') { Copy-Item -LiteralPath '.\data\folio.db-wal' -Destination $backupDir }

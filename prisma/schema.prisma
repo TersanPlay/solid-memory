@@ -11,14 +11,13 @@ datasource db {
 }
 
 enum UserRole {
-  ADMIN
+  admin
   OPERATOR
   VIEWER
 }
 
 enum DocumentStatus {
   REGISTRADO
-  EM_ELABORACAO
   ENVIADO
   RECEBIDO
   ARQUIVADO

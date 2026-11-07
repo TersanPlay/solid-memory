@@ -10,7 +10,7 @@
 */
 
 export const UserRole = {
-  ADMIN: 'ADMIN',
+  admin: 'admin',
   OPERATOR: 'OPERATOR',
   VIEWER: 'VIEWER'
 } as const
@@ -20,7 +20,6 @@ export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 export const DocumentStatus = {
   REGISTRADO: 'REGISTRADO',
-  EM_ELABORACAO: 'EM_ELABORACAO',
   ENVIADO: 'ENVIADO',
   RECEBIDO: 'RECEBIDO',
   ARQUIVADO: 'ARQUIVADO',

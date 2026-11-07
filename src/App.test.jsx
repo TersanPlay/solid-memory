@@ -13,7 +13,7 @@ const admin = {
   id: "user-admin",
   name: "Dev Administrador",
   email: "dev@example.invalid",
-  role: "ADMIN",
+  role: "admin",
   active: true,
 };
 

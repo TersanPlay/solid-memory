@@ -86,7 +86,7 @@ O Railway e o healthcheck usam `PORT`. O frontend de produção acessa `/api` na
 mesma origem pública.
 
 O seed não redefine a senha de um administrador já existente, mas garante que o
-usuário de bootstrap permaneça ativo e com perfil `ADMIN`. Alterar as variáveis
+usuário de bootstrap permaneça ativo e com perfil `admin`. Alterar as variáveis
 de bootstrap não renomeia a conta antiga para outro e-mail; pode criar outra
 conta administrativa.
 

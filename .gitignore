@@ -12,3 +12,4 @@ data/
 server/generated/
 coverage/
 .tmp/
+test-results/

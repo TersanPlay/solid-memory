@@ -77,7 +77,7 @@ sequenceDiagram
 
 ## Perfis e autorização
 
-| Capacidade                               |                ADMIN                |                    OPERATOR                     | VIEWER |
+| Capacidade                               |                admin                |                    OPERATOR                     | VIEWER |
 | ---------------------------------------- | :---------------------------------: | :---------------------------------------------: | :----: |
 | Consultar documentos, histórico e anexos |                 Sim                 |                       Sim                       |  Sim   |
 | Criar documento                          |                 Sim                 |                       Sim                       |  Não   |
@@ -114,7 +114,7 @@ Administradores podem editar nome e código de departamentos. A exclusão físic
 flowchart LR
     Boot["BrowserRouter + URL atual"] --> Me["GET /auth/me"]
     Me -->|"401"| Login["Tela de login"]
-    Me -->|"sessão válida"| Catalogs["Tipos + departamentos + usuários se ADMIN"]
+    Me -->|"sessão válida"| Catalogs["Tipos + departamentos + usuários se admin"]
     Catalogs --> Views["Painel, documentos, cadastros e relatórios"]
     Views --> API["src/api.js"]
     API -->|"envelope data/error"| Views
@@ -133,9 +133,9 @@ O navegador é a fonte de verdade da página atual. A aplicação usa `BrowserRo
 | `/login` | Autenticação | Pública |
 | `/inicio` | Painel | Qualquer sessão |
 | `/documentos` | Acervo e filtros | Qualquer sessão |
-| `/documentos/novo` | Novo registro | `ADMIN` ou `OPERATOR` |
+| `/documentos/novo` | Novo registro | `admin` ou `OPERATOR` |
 | `/documentos/:documentId` | Drawer de detalhes | Qualquer sessão |
-| `/departamentos`, `/tipos`, `/usuarios`, `/relatorios` | Administração | `ADMIN` |
+| `/departamentos`, `/tipos`, `/usuarios`, `/relatorios` | Administração | `admin` |
 | `/atividades` | Histórico global | Qualquer sessão |
 
 Ao receber `401`, uma URL protegida redireciona para `/login` e é preservada como destino de retorno. Depois do login, o usuário volta ao endereço solicitado. Rotas sem permissão exibem uma página interna de acesso negado sem substituir a autorização do backend.

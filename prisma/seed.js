@@ -39,7 +39,7 @@ try {
       data: {
         name: bootstrap.name,
         email: bootstrap.email,
-        role: "ADMIN",
+        role: "admin",
         active: true,
         passwordHash: password.hash,
         passwordSalt: password.salt,
@@ -48,7 +48,7 @@ try {
   } else {
     admin = await prisma.user.update({
       where: { id: admin.id },
-      data: { name: bootstrap.name, role: "ADMIN", active: true },
+      data: { name: bootstrap.name, role: "admin", active: true },
     });
   }
 

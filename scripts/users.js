@@ -20,7 +20,7 @@ Uso:
 Opções de criação:
   --name <nome>           Nome completo
   --email <email>         E-mail único
-  --role <perfil>         ADMIN, OPERATOR ou VIEWER (padrão: VIEWER)
+  --role <perfil>         admin, OPERATOR ou VIEWER (padrão: VIEWER)
   --password-stdin        Lê a senha da entrada padrão
 
 Opções de edição:
@@ -161,7 +161,8 @@ async function collectPassword(flags, input, output, confirmation = true) {
 }
 
 function validateRole(role) {
-  const normalized = String(role || 'VIEWER').toUpperCase();
+  const raw = String(role || 'VIEWER').trim();
+  const normalized = raw.toLowerCase() === 'admin' ? 'admin' : raw.toUpperCase();
   if (!USER_ROLES.includes(normalized)) throw new CliUsageError(`Perfil inválido. Use ${USER_ROLES.join(', ')}.`);
   return normalized;
 }

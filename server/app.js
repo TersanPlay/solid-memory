@@ -2,6 +2,7 @@ import fs from "node:fs";
 import { isIP } from "node:net";
 import path from "node:path";
 import express from "express";
+import compression from "compression";
 import { ipKeyGenerator, rateLimit } from "express-rate-limit";
 import { fileTypeFromBuffer } from "file-type";
 import helmet from "helmet";
@@ -271,6 +272,7 @@ export function createApp({ prisma, config }) {
       crossOriginResourcePolicy: { policy: "same-origin" },
     }),
   );
+  app.use(compression({ threshold: 1024 }));
   app.use(express.json({ limit: "1mb" }));
   app.use(originGuard(config));
 
@@ -352,14 +354,14 @@ export function createApp({ prisma, config }) {
 
   app.get(
     "/api/users",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       response.json({ data: await listUsers(prisma) });
     }),
   );
   app.post(
     "/api/users",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       response
         .status(201)
@@ -368,7 +370,7 @@ export function createApp({ prisma, config }) {
   );
   app.patch(
     "/api/users/:id",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       response.json({
         data: await updateUser(prisma, request.params.id, request.body),
@@ -377,7 +379,7 @@ export function createApp({ prisma, config }) {
   );
   app.post(
     "/api/users/:id/password",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       await resetUserPassword(prisma, request.params.id, request.body);
       response.status(204).end();
@@ -396,7 +398,7 @@ export function createApp({ prisma, config }) {
   );
   app.post(
     "/api/document-types",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       const input = normalizeType(typeCreateSchema.parse(request.body));
       const type = await prisma.documentType.create({ data: input });
@@ -405,7 +407,7 @@ export function createApp({ prisma, config }) {
   );
   app.patch(
     "/api/document-types/:id",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       const input = normalizeType(typeUpdateSchema.parse(request.body));
       const type = await prisma.documentType.update({
@@ -435,7 +437,7 @@ export function createApp({ prisma, config }) {
   );
   app.post(
     "/api/departments",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       const department = await prisma.department.create({
         data: normalizeDepartment(departmentCreateSchema.parse(request.body)),
@@ -445,7 +447,7 @@ export function createApp({ prisma, config }) {
   );
   app.patch(
     "/api/departments/:id",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       const department = await prisma.department.update({
         where: { id: request.params.id },
@@ -456,7 +458,7 @@ export function createApp({ prisma, config }) {
   );
   app.delete(
     "/api/departments/:id",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       await deleteDepartment(prisma, request.params.id);
       response.status(204).end();
@@ -517,7 +519,7 @@ export function createApp({ prisma, config }) {
   );
   app.post(
     "/api/documents",
-    requireRoles("ADMIN", "OPERATOR"),
+    requireRoles("admin", "OPERATOR"),
     asyncRoute(async (request, response) => {
       const input = documentCreateSchema.parse(request.body);
       const document = await createDocument(prisma, input, request.user);
@@ -538,7 +540,7 @@ export function createApp({ prisma, config }) {
   );
   app.patch(
     "/api/documents/:id",
-    requireRoles("ADMIN", "OPERATOR"),
+    requireRoles("admin", "OPERATOR"),
     asyncRoute(async (request, response) => {
       response.json({
         data: await updateDocument(
@@ -552,7 +554,7 @@ export function createApp({ prisma, config }) {
   );
   app.patch(
     "/api/documents/:id/status",
-    requireRoles("ADMIN", "OPERATOR"),
+    requireRoles("admin", "OPERATOR"),
     asyncRoute(async (request, response) => {
       response.json({
         data: await changeStatus(
@@ -566,7 +568,7 @@ export function createApp({ prisma, config }) {
   );
   app.post(
     "/api/documents/:id/cancel",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       response.json({
         data: await cancelDocument(prisma, request.params.id, request.user),
@@ -591,7 +593,7 @@ export function createApp({ prisma, config }) {
   });
   app.post(
     "/api/documents/:id/attachments",
-    requireRoles("ADMIN", "OPERATOR"),
+    requireRoles("admin", "OPERATOR"),
     upload.single("file"),
     asyncRoute(async (request, response) => {
       if (!request.file)
@@ -712,7 +714,7 @@ export function createApp({ prisma, config }) {
   );
   app.delete(
     "/api/attachments/:id",
-    requireRoles("ADMIN", "OPERATOR"),
+    requireRoles("admin", "OPERATOR"),
     asyncRoute(async (request, response) => {
       const current = await prisma.attachment.findUnique({
         where: { id: request.params.id },
@@ -844,7 +846,7 @@ export function createApp({ prisma, config }) {
 
   app.get(
     "/api/reports/documents",
-    requireRoles("ADMIN"),
+    requireRoles("admin"),
     asyncRoute(async (request, response) => {
       const format = z
         .enum(["csv", "json"])
@@ -903,7 +905,15 @@ export function createApp({ prisma, config }) {
   if (config.isProduction) {
     const distPath = path.join(config.rootDir, "dist");
     if (fs.existsSync(distPath)) {
-      app.use(express.static(distPath, { index: false, maxAge: "1h" }));
+      app.use(express.static(distPath, {
+        index: false,
+        maxAge: "1h",
+        setHeaders(response, filePath) {
+          if (/\\.[a-f0-9]{8,}\\.(?:js|css|woff2?|png|jpg|svg|webp|avif)$/i.test(filePath)) {
+            response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          }
+        },
+      }));
       app.use((request, response, next) =>
         request.method === "GET" && !request.path.startsWith("/api/")
           ? response.sendFile(path.join(distPath, "index.html"))

@@ -5,7 +5,7 @@ import { cleanup } from '@testing-library/react';
 import { DatePicker, parseDateValue, SearchableSelect, serializeDateValue, SoftSelect } from './FormControls.jsx';
 
 const options = [
-  { value: 'ADMIN', label: 'Administrador' },
+  { value: 'admin', label: 'Admin' },
   { value: 'VIEWER', label: 'Consulta' },
 ];
 
@@ -19,7 +19,7 @@ function ControlledDatePicker(props) {
 describe('controles modernos de formulário', () => {
   it('abre o seletor simples, permite selecionar e devolve o foco ao fechar', async () => {
     const onChange = vi.fn();
-    render(<SoftSelect ariaLabel="Perfil" value="ADMIN" onChange={onChange} options={options} />);
+    render(<SoftSelect ariaLabel="Perfil" value="admin" onChange={onChange} options={options} />);
     const trigger = screen.getByRole('combobox', { name: 'Perfil' });
 
     fireEvent.pointerDown(trigger, { button: 0, pointerType: 'mouse' });

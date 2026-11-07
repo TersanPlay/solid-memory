@@ -74,7 +74,7 @@ CREATE TABLE "Document" (
     "cancelledAt" DATETIME,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Document_status_check" CHECK ("status" IN ('REGISTRADO', 'EM_ELABORACAO', 'ENVIADO', 'RECEBIDO', 'ARQUIVADO', 'CANCELADO')),
+    CONSTRAINT "Document_status_check" CHECK ("status" IN ('REGISTRADO', 'ENVIADO', 'RECEBIDO', 'ARQUIVADO', 'CANCELADO')),
     CONSTRAINT "Document_destination_xor_check" CHECK (("destinationDepartmentId" IS NOT NULL AND "destinationText" IS NULL) OR ("destinationDepartmentId" IS NULL AND "destinationText" IS NOT NULL)),
     CONSTRAINT "Document_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "DocumentType" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Document_originDepartmentId_fkey" FOREIGN KEY ("originDepartmentId") REFERENCES "Department" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,

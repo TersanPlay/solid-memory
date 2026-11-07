@@ -80,7 +80,7 @@ describe("controles de anexos", () => {
 
   it("exibe mutações somente para perfis autorizados em documentos ativos", () => {
     const active = { status: "REGISTRADO", createdById: "operator-1" };
-    expect(canEditDocument({ id: "admin-1", role: "ADMIN" }, active)).toBe(
+    expect(canEditDocument({ id: "admin-1", role: "admin" }, active)).toBe(
       true,
     );
     expect(
@@ -94,7 +94,7 @@ describe("controles de anexos", () => {
     );
     expect(
       canEditDocument(
-        { id: "admin-1", role: "ADMIN" },
+        { id: "admin-1", role: "admin" },
         { ...active, status: "CANCELADO" },
       ),
     ).toBe(false);

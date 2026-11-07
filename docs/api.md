@@ -63,7 +63,7 @@ Não envie nem registre senhas reais em exemplos, issues ou logs.
 
 ## Usuários
 
-Todas as rotas abaixo exigem `ADMIN`.
+Todas as rotas abaixo exigem `admin`.
 
 | Método e rota              | Corpo/observação                                           |
 | -------------------------- | ---------------------------------------------------------- |
@@ -72,7 +72,7 @@ Todas as rotas abaixo exigem `ADMIN`.
 | `PATCH /users/:id`         | Um ou mais: `name`, `email`, `role`, `active`; retorna 200.             |
 | `POST /users/:id/password` | `{ "password": "..." }`; encerra as sessões desse usuário e retorna 204. |
 
-Perfis aceitos: `ADMIN`, `OPERATOR`, `VIEWER`. A API rejeita a desativação ou o rebaixamento do último administrador ativo com `LAST_ADMIN`.
+Perfis aceitos: `admin`, `OPERATOR`, `VIEWER`. A API rejeita a desativação ou o rebaixamento do último administrador ativo com `LAST_ADMIN`.
 
 Usuários são ordenados por situação ativa e, em seguida, por nome. Nome aceita de 2 a 120 caracteres; senha administrativa aceita de 10 a 200 caracteres. E-mails são normalizados para minúsculas antes da persistência.
 
@@ -81,8 +81,8 @@ Usuários são ordenados por situação ativa e, em seguida, por nome. Nome acei
 | Método e rota               | Autorização | Corpo                                     |
 | --------------------------- | ----------- | ----------------------------------------- |
 | `GET /document-types`       | Sessão      | Sem corpo; inclui contagem de documentos. |
-| `POST /document-types`      | `ADMIN`     | `name`, `prefix`, `digits`.               |
-| `PATCH /document-types/:id` | `ADMIN`     | Campos parciais e/ou `active`.            |
+| `POST /document-types`      | `admin`     | `name`, `prefix`, `digits`.               |
+| `PATCH /document-types/:id` | `admin`     | Campos parciais e/ou `active`.            |
 
 Exemplo:
 
@@ -103,9 +103,9 @@ Nome aceita de 2 a 100 caracteres; prefixo, de 1 a 8 caracteres alfanuméricos o
 | Método e rota             | Autorização | Corpo/resultado                                                     |
 | ------------------------- | ----------- | ------------------------------------------------------------------- |
 | `GET /departments`        | Sessão      | Inclui `_count.originDocuments` e `_count.destinationDocuments`.    |
-| `POST /departments`       | `ADMIN`     | `name`, `code`.                                                     |
-| `PATCH /departments/:id`  | `ADMIN`     | `name`, `code` e/ou `active`.                                       |
-| `DELETE /departments/:id` | `ADMIN`     | Sem corpo; retorna `204` quando o departamento não possui vínculos. |
+| `POST /departments`       | `admin`     | `name`, `code`.                                                     |
+| `PATCH /departments/:id`  | `admin`     | `name`, `code` e/ou `active`.                                       |
+| `DELETE /departments/:id` | `admin`     | Sem corpo; retorna `204` quando o departamento não possui vínculos. |
 
 Códigos são normalizados para maiúsculas e devem ser únicos.
 
@@ -147,11 +147,11 @@ GET /api/protocols/next?typeId=<ID>&date=2026-07-22
 | `originDepartmentId`, `destinationDepartmentId` | Percurso interno.                                            |
 | `page`, `pageSize`                              | Paginação.                                                   |
 
-Status aceitos: `REGISTRADO`, `EM_ELABORACAO`, `ENVIADO`, `RECEBIDO`, `ARQUIVADO`, `CANCELADO`.
+Status aceitos: `REGISTRADO`, `ENVIADO`, `RECEBIDO`, `ARQUIVADO`, `CANCELADO`.
 
 ### Criação
 
-`POST /documents` exige `ADMIN` ou `OPERATOR`:
+`POST /documents` exige `admin` ou `OPERATOR`:
 
 ```json
 {
@@ -171,16 +171,16 @@ Para destino externo, envie `destinationDepartmentId: null` e `destinationText`.
 
 O assunto aceita de 3 a 300 caracteres, o destino externo de 2 a 160 e as observações até 4.000 caracteres. O status inicial pode ser qualquer status aceito, exceto `CANCELADO`.
 
-O `ADMIN` deve informar o responsável. Para `OPERATOR`, o servidor usa o próprio usuário, mesmo que outro ID seja enviado.
+O `admin` deve informar o responsável. Para `OPERATOR`, o servidor usa o próprio usuário, mesmo que outro ID seja enviado.
 
 ### Detalhe e mutações
 
 | Método e rota                 | Regra                                                                 |
 | ----------------------------- | --------------------------------------------------------------------- |
 | `GET /documents/:id`          | Qualquer sessão.                                                      |
-| `PATCH /documents/:id`        | `ADMIN` ou `OPERATOR` proprietário; `subject`, `notes`; somente `ADMIN` pode alterar `responsibleUserId`. |
+| `PATCH /documents/:id`        | `admin` ou `OPERATOR` proprietário; `subject`, `notes`; somente `admin` pode alterar `responsibleUserId`. |
 | `PATCH /documents/:id/status` | Status não cancelado. `OPERATOR` somente em documento próprio.        |
-| `POST /documents/:id/cancel`  | Somente `ADMIN`; cancelamento terminal.                               |
+| `POST /documents/:id/cancel`  | Somente `admin`; cancelamento terminal.                               |
 | `GET /documents/:id/history`  | Histórico mais recente primeiro.                                      |
 
 Documentos cancelados retornam `CANCELLED_TERMINAL` em tentativas de alteração. Use o endpoint específico para cancelar; `PATCH status` rejeita `CANCELADO`.
@@ -189,9 +189,9 @@ Documentos cancelados retornam `CANCELLED_TERMINAL` em tentativas de alteração
 
 | Método e rota                     | Regra                                                                                |
 | --------------------------------- | ------------------------------------------------------------------------------------ |
-| `POST /documents/:id/attachments` | `multipart/form-data`, campo `file`; `ADMIN` ou operador proprietário.               |
+| `POST /documents/:id/attachments` | `multipart/form-data`, campo `file`; `admin` ou operador proprietário.               |
 | `GET /attachments/:id`            | Qualquer sessão; resposta binária com `Content-Disposition: attachment`.             |
-| `DELETE /attachments/:id`         | Retorna `204`; `ADMIN` ou operador proprietário, somente em documento não cancelado. |
+| `DELETE /attachments/:id`         | Retorna `204`; `admin` ou operador proprietário, somente em documento não cancelado. |
 
 Formatos: PDF, DOCX, XLSX, JPEG e PNG. Limite: 10 MB. A API compara extensão e assinatura detectada. O conteúdo binário é gravado em `ATTACHMENTS_DIR` e nunca é incluído no JSON de documento; listagens recebem somente ID, nome, MIME, tamanho e data.
 
@@ -208,7 +208,7 @@ A remoção exclui fisicamente o arquivo, atualiza o documento e registra `ATTAC
 
 ## Relatórios
 
-`GET /reports/documents?format=csv|json` exige `ADMIN` e aceita os filtros documentais de conteúdo. `page` e `pageSize` não limitam a exportação: todos os registros correspondentes são retornados. A resposta é um download, não um envelope JSON.
+`GET /reports/documents?format=csv|json` exige `admin` e aceita os filtros documentais de conteúdo. `page` e `pageSize` não limitam a exportação: todos os registros correspondentes são retornados. A resposta é um download, não um envelope JSON.
 
 O CSV usa `;`, BOM UTF-8 e escapa aspas/fórmulas. Os relatórios incluem registros cancelados quando o filtro não os exclui.
 

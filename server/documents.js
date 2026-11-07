@@ -3,7 +3,6 @@ import { ApiError } from './api.js';
 
 export const STATUS_LABELS = {
   REGISTRADO: 'Registrado',
-  EM_ELABORACAO: 'Em elaboração',
   ENVIADO: 'Enviado',
   RECEBIDO: 'Recebido',
   ARQUIVADO: 'Arquivado',
@@ -33,7 +32,7 @@ export function serializeDocument(document) {
 }
 
 function canMutateDocument(user, document) {
-  return document.status !== 'CANCELADO' && (user.role === 'ADMIN' || (user.role === 'OPERATOR' && document.createdById === user.id));
+  return document.status !== 'CANCELADO' && (user.role === 'admin' || (user.role === 'OPERATOR' && document.createdById === user.id));
 }
 
 export function assertCanMutateDocument(user, document) {
@@ -138,7 +137,7 @@ export async function updateDocument(prisma, id, input, user) {
   if (input.subject !== undefined) data.subject = input.subject.trim();
   if (input.notes !== undefined) data.notes = input.notes.trim();
   if (input.responsibleUserId !== undefined) {
-    if (user.role !== 'ADMIN') throw new ApiError(403, 'FORBIDDEN', 'Somente administradores podem reatribuir documentos.');
+    if (user.role !== 'admin') throw new ApiError(403, 'FORBIDDEN', 'Somente administradores podem reatribuir documentos.');
     const responsible = await prisma.user.findUnique({ where: { id: input.responsibleUserId } });
     if (!responsible?.active) throw new ApiError(400, 'INACTIVE_REFERENCE', 'O responsável não está ativo.');
     data.responsibleUserId = responsible.id;

@@ -180,6 +180,7 @@ Migrations versionadas atualmente:
 | `20260722163000_attachment_remove_history` | Atualiza o `CHECK` de `HistoryAction` para permitir `ATTACHMENT_REMOVE`. |
 | `20260722203000_attachment_filesystem_storage` | Adiciona `storageKey`, torna o `BLOB` opcional e exige uma única origem de conteúdo. |
 | `20260724183000_remove_document_type_separator` | Remove o separador configurável dos tipos e preserva os demais campos e vínculos. |
+| `20261107000000_normalize_admin_role` | Converte usuários existentes de `ADMIN` para `admin` e atualiza a constraint do perfil. |
 
 | Contexto                          | Comando                                          | Uso                                                      |
 | --------------------------------- | ------------------------------------------------ | -------------------------------------------------------- |
@@ -205,4 +206,4 @@ Depois da primeira carga, o seed não recria departamentos ou tipos excluídos e
 
 O seed é idempotente e não redefine a senha de usuário existente. Quando `SEED_DEMO_DATA=true`, ainda não há documentos e os catálogos necessários estão disponíveis, cria dois registros sanitizados, usando o administrador como responsável e sem anexos.
 
-As variáveis `BOOTSTRAP_ADMIN_NAME`, `BOOTSTRAP_ADMIN_EMAIL` e `BOOTSTRAP_ADMIN_PASSWORD` são validadas em toda execução do seed. Se o e-mail já existir, o seed atualiza o nome, restaura o perfil `ADMIN` e reativa o usuário, mas preserva o hash e o salt da senha existente.
+As variáveis `BOOTSTRAP_ADMIN_NAME`, `BOOTSTRAP_ADMIN_EMAIL` e `BOOTSTRAP_ADMIN_PASSWORD` são validadas em toda execução do seed. Se o e-mail já existir, o seed atualiza o nome, restaura o perfil `admin` e reativa o usuário, mas preserva o hash e o salt da senha existente.

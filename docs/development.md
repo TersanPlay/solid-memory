@@ -3,7 +3,7 @@
 ## Estrutura
 
 ```text
-SoftProtocolo/
+MemoryDoc/
 ├── scripts/
 │   ├── users.js                     # CLI administrativo de usuários
 │   ├── migrate-attachments.js       # migração explícita de BLOBs legados
@@ -28,7 +28,8 @@ SoftProtocolo/
 │   └── prepare-database.js          # diretório/arquivo SQLite
 ├── src/
 │   ├── api.js                       # cliente fetch e downloads
-│   ├── App.jsx                      # telas, rotas, guardas e integração
+│   ├── App.tsx                      # entrada das rotas do frontend
+│   ├── AppShell.jsx                 # telas, rotas, guardas e integração
 │   ├── main.jsx                     # montagem React e BrowserRouter
 │   ├── components/FormControls.jsx  # selects pesquisáveis e calendário
 │   ├── data.js                      # rótulos e formatação visual
@@ -125,7 +126,7 @@ Nunca edite uma migration já aplicada em ambientes compartilhados; crie outra m
 
 ## Adicionar ou alterar página do frontend
 
-- Cadastre a rota declarativa em `App.jsx` e use um caminho em português coerente com as URLs existentes.
+- Cadastre a rota declarativa em `AppShell.jsx` e use um caminho em português coerente com as URLs existentes. `App.tsx` permanece como entrada que monta o shell.
 - Use `Link` ou `NavLink` para navegação acionada pelo usuário; reserve `useNavigate` para fluxos programáticos, como login, logout e conclusão de formulários.
 - Aplique `RequireRole` para restrições visuais, sem remover a validação equivalente da API.
 - Atualize o título em `PageTitle`; páginas de detalhe podem complementar o título depois de carregar o registro.
@@ -148,7 +149,7 @@ Atualize documentação e código no mesmo conjunto de mudanças. Use esta matri
 
 Antes de concluir:
 
-1. compare nomes com `package.json`, `.env.example`, `src/App.jsx`, `server/app.js` e `prisma/schema.prisma`;
+1. compare nomes com `package.json`, `.env.example`, `src/App.tsx`, `src/AppShell.jsx`, `server/app.js` e `prisma/schema.prisma`;
 2. não documente endpoint, variável ou comportamento apenas planejado;
 3. procure referências antigas de porta, rota, migration e armazenamento;
 4. valide links Markdown relativos;

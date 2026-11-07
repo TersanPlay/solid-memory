@@ -59,8 +59,10 @@ async function execute(argv, stdin = '') {
 beforeAll(async () => {
   fs.mkdirSync(tempDir, { recursive: true });
   const migration = fs.readFileSync(path.resolve('prisma/migrations/20260722130000_init/migration.sql'), 'utf8');
+  const adminRoleMigration = fs.readFileSync(path.resolve('prisma/migrations/20261107000000_normalize_admin_role/migration.sql'), 'utf8');
   const rawDatabase = new Database(databasePath);
   rawDatabase.exec(migration);
+  rawDatabase.exec(adminRoleMigration);
   rawDatabase.close();
   prisma = createDatabase(databaseUrl);
   await initializeDatabase(prisma);
@@ -84,7 +86,7 @@ describe('CLI de gerenciamento de usuários', () => {
 
     expect(code).toBe(0);
     expect(output.text()).toContain('npm run users -- create');
-    expect(output.text()).toContain('ADMIN, OPERATOR ou VIEWER');
+    expect(output.text()).toContain('admin, OPERATOR ou VIEWER');
     expect(errorOutput.text()).toBe('');
   });
 
@@ -125,7 +127,7 @@ describe('CLI de gerenciamento de usuários', () => {
 
   it('lista ativos primeiro, ordena por nome e omite campos secretos', async () => {
     const zelda = await createUser(prisma, { name: 'Zelda Lima', email: 'zelda@example.invalid', password: 'SenhaSegura2026!', role: 'VIEWER' });
-    await createUser(prisma, { name: 'Ana Lima', email: 'ana@example.invalid', password: 'SenhaSegura2026!', role: 'ADMIN' });
+    await createUser(prisma, { name: 'Ana Lima', email: 'ana@example.invalid', password: 'SenhaSegura2026!', role: 'admin' });
     await createUser(prisma, { name: 'Aaron Lima', email: 'aaron@example.invalid', password: 'SenhaSegura2026!', role: 'OPERATOR' });
     await prisma.user.update({ where: { id: zelda.id }, data: { active: false } });
 
@@ -165,13 +167,13 @@ describe('CLI de gerenciamento de usuários', () => {
   });
 
   it('protege o último administrador ativo dentro da atualização', async () => {
-    const admin = await createUser(prisma, { name: 'Admin Único', email: 'admin@example.invalid', password: 'SenhaSegura2026!', role: 'ADMIN' });
+    const admin = await createUser(prisma, { name: 'Admin Único', email: 'admin@example.invalid', password: 'SenhaSegura2026!', role: 'admin' });
 
     const result = await execute(['edit', admin.id, '--role', 'VIEWER']);
 
     expect(result.code).toBe(1);
     expect(result.error).toContain('último administrador ativo');
-    await expect(prisma.user.findUnique({ where: { id: admin.id } })).resolves.toMatchObject({ role: 'ADMIN', active: true });
+    await expect(prisma.user.findUnique({ where: { id: admin.id } })).resolves.toMatchObject({ role: 'admin', active: true });
   });
 
   it('retorna conflito para e-mail duplicado', async () => {

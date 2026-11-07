@@ -1,6 +1,6 @@
 # Instalação e início rápido
 
-Este guia prepara uma cópia nova do SoftProtocolo em Windows/PowerShell. Todos os comandos, exceto o clone e o primeiro `cd`, são executados na raiz do repositório — a pasta que contém `package.json`.
+Este guia prepara uma cópia nova do MemoryDoc em Windows/PowerShell. Todos os comandos, exceto o clone e o primeiro `cd`, são executados na raiz do repositório — a pasta que contém `package.json`.
 
 ## Pré-requisitos
 
@@ -15,8 +15,8 @@ O projeto usa um módulo nativo para SQLite. Em instalações comuns do Node 22 
 
 | Ordem | Diretório | Comando | Finalidade | Resultado esperado |
 |---:|---|---|---|---|
-| 1 | Pasta onde o projeto será criado | `git clone https://github.com/TersanPlay/solid-memory.git SoftProtocolo` | Clonar o repositório oficial. | A pasta `SoftProtocolo` é criada. |
-| 2 | Pasta pai | `cd SoftProtocolo` | Entrar na raiz do projeto. | O prompt passa a apontar para `SoftProtocolo`. |
+| 1 | Pasta onde o projeto será criado | `git clone https://github.com/TersanPlay/solid-memory.git MemoryDoc` | Clonar o repositório oficial. | A pasta `MemoryDoc` é criada. |
+| 2 | Pasta pai | `cd MemoryDoc` | Entrar na raiz do projeto. | O prompt passa a apontar para `MemoryDoc`. |
 | 3 | Raiz | `node --version` | Confirmar a versão suportada. | Uma versão `v22.13.0` ou superior, ainda na série 22. |
 | 4 | Raiz | `npm ci` | Instalar exatamente as versões do `package-lock.json`. | Dependências instaladas e auditoria sem erro de instalação. |
 | 5 | Raiz | `Copy-Item .env.example .env` | Criar a configuração local não versionada. | O arquivo `.env` passa a existir. |

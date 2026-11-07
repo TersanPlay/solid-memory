@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ApiError } from './api.js';
 import { hashPassword, normalizeEmail, publicUser } from './auth.js';
 
-export const USER_ROLES = ['ADMIN', 'OPERATOR', 'VIEWER'];
+export const USER_ROLES = ['admin', 'OPERATOR', 'VIEWER'];
 
 const normalizedEmailSchema = z.string().trim().toLowerCase().pipe(z.email());
 
@@ -56,11 +56,11 @@ export async function updateUser(prisma, target, rawInput) {
   const input = userUpdateSchema.parse(rawInput);
   return prisma.$transaction(async (transaction) => {
     const current = await findUserByTarget(transaction, target);
-    const removesAdmin = current.role === 'ADMIN'
+    const removesAdmin = current.role === 'admin'
       && current.active
-      && ((input.role && input.role !== 'ADMIN') || input.active === false);
+      && ((input.role && input.role !== 'admin') || input.active === false);
     if (removesAdmin) {
-      const activeAdminCount = await transaction.user.count({ where: { role: 'ADMIN', active: true } });
+      const activeAdminCount = await transaction.user.count({ where: { role: 'admin', active: true } });
       if (activeAdminCount <= 1) {
         throw new ApiError(409, 'LAST_ADMIN', 'O último administrador ativo não pode ser desativado ou rebaixado.');
       }

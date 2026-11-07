@@ -26,6 +26,7 @@ import {
   CircleHelp,
   Clock3,
   Download,
+  ExternalLink,
   Eye,
   FileArchive,
   FileBarChart,
@@ -1041,6 +1042,7 @@ function NewDocument({
     notes: "",
   });
   const [file, setFile] = useState(null);
+  const [link, setLink] = useState({ title: "", url: "", description: "" });
   const [preview, setPreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -1077,15 +1079,13 @@ function NewDocument({
         notes: form.notes,
       };
       let document = (await api.post("/documents", payload)).data;
-      if (file) {
-        const body = new FormData();
-        body.append("file", file);
+      if (link.url.trim()) {
         try {
-          await api.post(`/documents/${document.id}/attachments`, body);
+          await api.post(`/documents/${document.id}/links`, { ...link, title: link.title.trim() || "Documento externo" });
           document = (await api.get(`/documents/${document.id}`)).data;
         } catch (uploadError) {
           notify(
-            `Documento ${document.protocol} salvo, mas o anexo falhou: ${uploadError.message}`,
+            `Documento ${document.protocol} salvo, mas o link falhou: ${uploadError.message}`,
             true,
           );
         }
@@ -1265,11 +1265,12 @@ function NewDocument({
                   maxLength="4000"
                 />
               </label>
-              <AttachmentPicker
-                file={file}
-                onChange={setFile}
-                disabled={saving}
-              />
+              <div className="document-link-fields span-two">
+                <div className="form-section-note">O conteúdo permanece no serviço externo. O MemoryDoc armazena apenas o link para consulta.</div>
+                <label>Título do link<input value={link.title} onChange={(event) => setLink((current) => ({ ...current, title: event.target.value }))} maxLength="120" placeholder="Ex.: Documento no Google Drive" /></label>
+                <label>URL do documento<input type="url" value={link.url} onChange={(event) => setLink((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://drive.google.com/..." /></label>
+                <label>Descrição (opcional)<textarea value={link.description} onChange={(event) => setLink((current) => ({ ...current, description: event.target.value }))} maxLength="400" rows="2" /></label>
+              </div>
             </div>
           </BezelCard>
           <InlineError error={error} />
@@ -1298,7 +1299,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [confirmingCancel, setConfirmingCancel] = useState(false);
-  const [attachmentToRemove, setAttachmentToRemove] = useState(null);
+  const [linkDraft, setLinkDraft] = useState({ title: "", url: "", description: "" });
   useEffect(() => {
     if (!document) return;
     api
@@ -1338,40 +1339,37 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
       setBusy(false);
     }
   };
-  const upload = async (file) => {
-    if (!file) return;
+  const addLink = async (event) => {
+    event.preventDefault();
+    if (!linkDraft.url.trim()) return;
     setBusy(true);
     setError("");
     try {
-      const body = new FormData();
-      body.append("file", file);
-      await api.post(`/documents/${document.id}/attachments`, body);
+      await api.post(`/documents/${document.id}/links`, { ...linkDraft, title: linkDraft.title.trim() || "Documento externo" });
       const updated = (await api.get(`/documents/${document.id}`)).data;
       onUpdate(updated);
-      notify("Anexo adicionado.");
+      setLinkDraft({ title: "", url: "", description: "" });
+      notify("Link documental adicionado.");
     } catch (err) {
       setError(err.message);
     } finally {
       setBusy(false);
     }
   };
-  const removeAttachment = async () => {
-    if (!attachmentToRemove) return;
+  const removeLink = async (link) => {
     setBusy(true);
     setError("");
     try {
-      await api.delete(`/attachments/${attachmentToRemove.id}`);
+      await api.delete(`/links/${link.id}`);
       const [updated, latestHistory] = await Promise.all([
         api.get(`/documents/${document.id}`),
         api.get(`/documents/${document.id}/history`),
       ]);
       onUpdate(updated.data);
       setHistory(latestHistory.data);
-      notify(`Anexo ${attachmentToRemove.originalName} removido.`);
-      setAttachmentToRemove(null);
+      notify(`Link ${link.title} removido.`);
     } catch (err) {
       setError(err.message);
-      setAttachmentToRemove(null);
     } finally {
       setBusy(false);
     }
@@ -1477,63 +1475,42 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
             </section>
             <section className="detail-section">
               <div className="detail-section-title">
-                <h3>Observações e anexos</h3>
-                <Paperclip />
+                <h3>Observações e links</h3>
+                <ExternalLink />
               </div>
               <p>{document.notes || "Nenhuma observação adicionada."}</p>
-              {document.attachments?.map((attachment) => (
-                <div className="attachment-row" key={attachment.id}>
-                  <button
-                    type="button"
-                    className="attachment-download"
-                    onClick={() =>
-                      api
-                        .download(
-                          `/attachments/${attachment.id}`,
-                          attachment.originalName,
-                        )
-                        .catch((err) => setError(err.message))
-                    }
-                  >
-                    <span className="doc-file-icon">
-                      <FileText />
-                    </span>
-                    <span>
-                      <strong>{attachment.originalName}</strong>
-                      <small>{formatFileSize(attachment.size)}</small>
-                    </span>
-                    <Download />
-                  </button>
+              {document.links?.map((link) => (
+                <div className="attachment-row" key={link.id}>
+                  <a className="attachment-download" href={link.url} target="_blank" rel="noopener noreferrer">
+                    <span className="doc-file-icon"><ExternalLink /></span>
+                    <span><strong>{link.title}</strong><small>{link.provider}{link.description ? ` · ${link.description}` : ""}</small></span>
+                    <ArrowUpRight />
+                  </a>
                   {canEdit && (
                     <IconButton
-                      label={`Remover anexo ${attachment.originalName}`}
+                      label={`Remover link ${link.title}`}
                       className="attachment-remove"
                       disabled={busy}
-                      onClick={() => setAttachmentToRemove(attachment)}
+                      onClick={() => removeLink(link)}
                     >
                       <Trash2 />
                     </IconButton>
                   )}
                 </div>
               ))}
-              {!document.attachments?.length && (
+              {!document.links?.length && (
                 <div className="empty-inline">
-                  <Paperclip />
-                  Nenhum arquivo anexado
+                  <ExternalLink />
+                  Nenhum link documental adicionado
                 </div>
               )}
               {canEdit && (
-                <label className="ghost-button attachment-upload">
-                  <Upload />
-                  Adicionar anexo
-                  <input
-                    type="file"
-                    hidden
-                    disabled={busy}
-                    accept=".pdf,.docx,.xlsx,.jpg,.jpeg,.png"
-                    onChange={(event) => upload(event.target.files?.[0])}
-                  />
-                </label>
+                <form className="document-link-fields" onSubmit={addLink}>
+                  <label>Título<input value={linkDraft.title} onChange={(event) => setLinkDraft((current) => ({ ...current, title: event.target.value }))} maxLength="120" placeholder="Ex.: Pasta do processo" /></label>
+                  <label>URL HTTPS<input type="url" required value={linkDraft.url} onChange={(event) => setLinkDraft((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://..." /></label>
+                  <label>Descrição<textarea value={linkDraft.description} onChange={(event) => setLinkDraft((current) => ({ ...current, description: event.target.value }))} maxLength="400" rows="2" /></label>
+                  <button type="submit" className="ghost-button" disabled={busy}><ExternalLink /> Adicionar link</button>
+                </form>
               )}
             </section>
             <section className="detail-section">
@@ -1575,16 +1552,6 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
             if (!busy) setConfirmingCancel(false);
           }}
           onConfirm={cancel}
-        />
-      )}
-      {attachmentToRemove && (
-        <RemoveAttachmentModal
-          attachment={attachmentToRemove}
-          busy={busy}
-          onClose={() => {
-            if (!busy) setAttachmentToRemove(null);
-          }}
-          onConfirm={removeAttachment}
         />
       )}
     </>

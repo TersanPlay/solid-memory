@@ -220,6 +220,7 @@ export type UserWhereInput = {
   updatedDocuments?: Prisma.DocumentListRelationFilter
   historyEntries?: Prisma.DocumentHistoryListRelationFilter
   attachments?: Prisma.AttachmentListRelationFilter
+  documentLinks?: Prisma.DocumentLinkListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -238,6 +239,7 @@ export type UserOrderByWithRelationInput = {
   updatedDocuments?: Prisma.DocumentOrderByRelationAggregateInput
   historyEntries?: Prisma.DocumentHistoryOrderByRelationAggregateInput
   attachments?: Prisma.AttachmentOrderByRelationAggregateInput
+  documentLinks?: Prisma.DocumentLinkOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -259,6 +261,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedDocuments?: Prisma.DocumentListRelationFilter
   historyEntries?: Prisma.DocumentHistoryListRelationFilter
   attachments?: Prisma.AttachmentListRelationFilter
+  documentLinks?: Prisma.DocumentLinkListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -307,6 +310,7 @@ export type UserCreateInput = {
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -325,6 +329,7 @@ export type UserUncheckedCreateInput = {
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
@@ -343,6 +348,7 @@ export type UserUpdateInput = {
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -361,6 +367,7 @@ export type UserUncheckedUpdateInput = {
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -540,6 +547,20 @@ export type UserUpdateOneRequiredWithoutAttachmentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAttachmentsInput, Prisma.UserUpdateWithoutAttachmentsInput>, Prisma.UserUncheckedUpdateWithoutAttachmentsInput>
 }
 
+export type UserCreateNestedOneWithoutDocumentLinksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDocumentLinksInput, Prisma.UserUncheckedCreateWithoutDocumentLinksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocumentLinksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDocumentLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDocumentLinksInput, Prisma.UserUncheckedCreateWithoutDocumentLinksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocumentLinksInput
+  upsert?: Prisma.UserUpsertWithoutDocumentLinksInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDocumentLinksInput, Prisma.UserUpdateWithoutDocumentLinksInput>, Prisma.UserUncheckedUpdateWithoutDocumentLinksInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id?: string
   name: string
@@ -555,6 +576,7 @@ export type UserCreateWithoutSessionsInput = {
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -572,6 +594,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -605,6 +628,7 @@ export type UserUpdateWithoutSessionsInput = {
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -622,6 +646,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutResponsibleForInput = {
@@ -639,6 +664,7 @@ export type UserCreateWithoutResponsibleForInput = {
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutResponsibleForInput = {
@@ -656,6 +682,7 @@ export type UserUncheckedCreateWithoutResponsibleForInput = {
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutResponsibleForInput = {
@@ -678,6 +705,7 @@ export type UserCreateWithoutCreatedDocumentsInput = {
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedDocumentsInput = {
@@ -695,6 +723,7 @@ export type UserUncheckedCreateWithoutCreatedDocumentsInput = {
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedDocumentsInput = {
@@ -717,6 +746,7 @@ export type UserCreateWithoutUpdatedDocumentsInput = {
   createdDocuments?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutUpdatedDocumentsInput = {
@@ -734,6 +764,7 @@ export type UserUncheckedCreateWithoutUpdatedDocumentsInput = {
   createdDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutUpdatedDocumentsInput = {
@@ -767,6 +798,7 @@ export type UserUpdateWithoutResponsibleForInput = {
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResponsibleForInput = {
@@ -784,6 +816,7 @@ export type UserUncheckedUpdateWithoutResponsibleForInput = {
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCreatedDocumentsInput = {
@@ -812,6 +845,7 @@ export type UserUpdateWithoutCreatedDocumentsInput = {
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedDocumentsInput = {
@@ -829,6 +863,7 @@ export type UserUncheckedUpdateWithoutCreatedDocumentsInput = {
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutUpdatedDocumentsInput = {
@@ -857,6 +892,7 @@ export type UserUpdateWithoutUpdatedDocumentsInput = {
   createdDocuments?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUpdatedDocumentsInput = {
@@ -874,6 +910,7 @@ export type UserUncheckedUpdateWithoutUpdatedDocumentsInput = {
   createdDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutHistoryEntriesInput = {
@@ -891,6 +928,7 @@ export type UserCreateWithoutHistoryEntriesInput = {
   createdDocuments?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutHistoryEntriesInput = {
@@ -908,6 +946,7 @@ export type UserUncheckedCreateWithoutHistoryEntriesInput = {
   createdDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutHistoryEntriesInput = {
@@ -941,6 +980,7 @@ export type UserUpdateWithoutHistoryEntriesInput = {
   createdDocuments?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHistoryEntriesInput = {
@@ -958,6 +998,7 @@ export type UserUncheckedUpdateWithoutHistoryEntriesInput = {
   createdDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAttachmentsInput = {
@@ -975,6 +1016,7 @@ export type UserCreateWithoutAttachmentsInput = {
   createdDocuments?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAttachmentsInput = {
@@ -992,6 +1034,7 @@ export type UserUncheckedCreateWithoutAttachmentsInput = {
   createdDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAttachmentsInput = {
@@ -1025,6 +1068,7 @@ export type UserUpdateWithoutAttachmentsInput = {
   createdDocuments?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAttachmentsInput = {
@@ -1042,6 +1086,95 @@ export type UserUncheckedUpdateWithoutAttachmentsInput = {
   createdDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutDocumentLinksInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+}
+
+export type UserUncheckedCreateWithoutDocumentLinksInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentUncheckedCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+}
+
+export type UserCreateOrConnectWithoutDocumentLinksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDocumentLinksInput, Prisma.UserUncheckedCreateWithoutDocumentLinksInput>
+}
+
+export type UserUpsertWithoutDocumentLinksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDocumentLinksInput, Prisma.UserUncheckedUpdateWithoutDocumentLinksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDocumentLinksInput, Prisma.UserUncheckedCreateWithoutDocumentLinksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDocumentLinksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDocumentLinksInput, Prisma.UserUncheckedUpdateWithoutDocumentLinksInput>
+}
+
+export type UserUpdateWithoutDocumentLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDocumentLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUncheckedUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
 }
 
 
@@ -1056,6 +1189,7 @@ export type UserCountOutputType = {
   updatedDocuments: number
   historyEntries: number
   attachments: number
+  documentLinks: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1065,6 +1199,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   updatedDocuments?: boolean | UserCountOutputTypeCountUpdatedDocumentsArgs
   historyEntries?: boolean | UserCountOutputTypeCountHistoryEntriesArgs
   attachments?: boolean | UserCountOutputTypeCountAttachmentsArgs
+  documentLinks?: boolean | UserCountOutputTypeCountDocumentLinksArgs
 }
 
 /**
@@ -1119,6 +1254,13 @@ export type UserCountOutputTypeCountAttachmentsArgs<ExtArgs extends runtime.Type
   where?: Prisma.AttachmentWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDocumentLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentLinkWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1136,6 +1278,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedDocuments?: boolean | Prisma.User$updatedDocumentsArgs<ExtArgs>
   historyEntries?: boolean | Prisma.User$historyEntriesArgs<ExtArgs>
   attachments?: boolean | Prisma.User$attachmentsArgs<ExtArgs>
+  documentLinks?: boolean | Prisma.User$documentLinksArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1183,6 +1326,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedDocuments?: boolean | Prisma.User$updatedDocumentsArgs<ExtArgs>
   historyEntries?: boolean | Prisma.User$historyEntriesArgs<ExtArgs>
   attachments?: boolean | Prisma.User$attachmentsArgs<ExtArgs>
+  documentLinks?: boolean | Prisma.User$documentLinksArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1197,6 +1341,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     updatedDocuments: Prisma.$DocumentPayload<ExtArgs>[]
     historyEntries: Prisma.$DocumentHistoryPayload<ExtArgs>[]
     attachments: Prisma.$AttachmentPayload<ExtArgs>[]
+    documentLinks: Prisma.$DocumentLinkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1608,6 +1753,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   updatedDocuments<T extends Prisma.User$updatedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$updatedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   historyEntries<T extends Prisma.User$historyEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$historyEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attachments<T extends Prisma.User$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  documentLinks<T extends Prisma.User$documentLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$documentLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2178,6 +2324,30 @@ export type User$attachmentsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.AttachmentScalarFieldEnum | Prisma.AttachmentScalarFieldEnum[]
+}
+
+/**
+ * User.documentLinks
+ */
+export type User$documentLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentLink
+   */
+  select?: Prisma.DocumentLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentLink
+   */
+  omit?: Prisma.DocumentLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentLinkInclude<ExtArgs> | null
+  where?: Prisma.DocumentLinkWhereInput
+  orderBy?: Prisma.DocumentLinkOrderByWithRelationInput | Prisma.DocumentLinkOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentLinkScalarFieldEnum | Prisma.DocumentLinkScalarFieldEnum[]
 }
 
 /**

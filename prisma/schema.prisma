@@ -49,6 +49,7 @@ model User {
   updatedDocuments Document[]        @relation("UpdatedByUser")
   historyEntries   DocumentHistory[]
   attachments      Attachment[]
+  documentLinks    DocumentLink[]
 
   @@index([role, active])
 }
@@ -132,6 +133,7 @@ model Document {
   updatedBy               User              @relation("UpdatedByUser", fields: [updatedById], references: [id], onDelete: Restrict)
   history                 DocumentHistory[]
   attachments             Attachment[]
+  links                   DocumentLink[]
 
   @@unique([typeId, year, sequence])
   @@index([date])
@@ -175,4 +177,21 @@ model Attachment {
   uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
 
   @@index([documentId])
+}
+
+model DocumentLink {
+  id          String   @id @default(cuid())
+  documentId  String
+  title       String
+  url         String
+  provider    String
+  description String   @default("")
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([documentId, createdAt])
+  @@index([createdById])
 }

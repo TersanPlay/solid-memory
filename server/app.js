@@ -4,9 +4,7 @@ import path from "node:path";
 import express from "express";
 import compression from "compression";
 import { ipKeyGenerator, rateLimit } from "express-rate-limit";
-import { fileTypeFromBuffer } from "file-type";
 import helmet from "helmet";
-import multer from "multer";
 import pinoHttp from "pino-http";
 import { z } from "zod";
 import {
@@ -49,16 +47,6 @@ import {
   resetUserPassword,
   updateUser,
 } from "./users.js";
-import {
-  buildAttachmentStorageKey,
-  finalizeStagedAttachmentRemoval,
-  normalizeOriginalName,
-  readAttachmentFile,
-  removeAttachmentFile,
-  restoreStagedAttachmentFile,
-  stageAttachmentFileRemoval,
-  writeAttachmentFile,
-} from "./attachment-storage.js";
 
 const statuses = Object.keys(STATUS_LABELS);
 const initialStatuses = statuses.filter((status) => status !== "CANCELADO");
@@ -138,6 +126,12 @@ const documentUpdateSchema = z.object({
   notes: z.string().max(4000).optional(),
   responsibleUserId: z.string().min(1).optional(),
 });
+const documentLinkSchema = z.object({
+  title: z.string().trim().min(2).max(120),
+  url: z.string().trim().url().max(2000).refine((value) => new URL(value).protocol === "https:", "Use uma URL HTTPS."),
+  description: z.string().trim().max(400).default(""),
+}).strict();
+const documentLinkUpdateSchema = documentLinkSchema.partial().refine((value) => Object.keys(value).length > 0, "Informe ao menos uma alteração.");
 const statusSchema = z.object({ status: z.enum(initialStatuses) });
 const documentQuerySchema = z
   .object({
@@ -162,6 +156,14 @@ const documentQuerySchema = z
       message: "A data final deve ser igual ou posterior à inicial.",
     },
   );
+
+function getLinkProvider(value) {
+  const hostname = new URL(value).hostname.toLowerCase();
+  if (hostname === "drive.google.com" || hostname.endsWith(".google.com")) return "Google Drive";
+  if (hostname.includes("onedrive") || hostname.endsWith("sharepoint.com")) return "OneDrive/SharePoint";
+  if (hostname.includes("dropbox.com")) return "Dropbox";
+  return "Externo";
+}
 
 function normalizeType(input) {
   return {
@@ -224,20 +226,6 @@ async function deleteDepartment(prisma, id) {
     throw error;
   }
 }
-
-const allowedFiles = new Map([
-  ["application/pdf", ["pdf"]],
-  ["image/png", ["png"]],
-  ["image/jpeg", ["jpg", "jpeg"]],
-  [
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ["docx"],
-  ],
-  [
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ["xlsx"],
-  ],
-]);
 
 export function rateLimitClientIp(request, config) {
   const forwarded = config.isRailway
@@ -587,197 +575,50 @@ export function createApp({ prisma, config }) {
     }),
   );
 
-  const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: config.maxAttachmentBytes, files: 1 },
-  });
   app.post(
-    "/api/documents/:id/attachments",
+    "/api/documents/:id/links",
     requireRoles("admin", "OPERATOR"),
-    upload.single("file"),
     asyncRoute(async (request, response) => {
-      if (!request.file)
-        throw new ApiError(400, "FILE_REQUIRED", "Selecione um arquivo.");
-      const document = await prisma.document.findUnique({
-        where: { id: request.params.id },
-      });
-      if (!document)
-        throw new ApiError(404, "NOT_FOUND", "Documento não encontrado.");
+      const input = documentLinkSchema.parse(request.body);
+      const document = await prisma.document.findUnique({ where: { id: request.params.id } });
+      if (!document) throw new ApiError(404, "NOT_FOUND", "Documento não encontrado.");
       assertCanMutateDocument(request.user, document);
-      const detected = await fileTypeFromBuffer(request.file.buffer);
-      const allowedExtensions = detected && allowedFiles.get(detected.mime);
-      const suppliedExtension = path
-        .extname(request.file.originalname)
-        .slice(1)
-        .toLowerCase();
-      if (!allowedExtensions?.includes(suppliedExtension))
-        throw new ApiError(
-          415,
-          "UNSUPPORTED_MEDIA_TYPE",
-          "Formato de arquivo não permitido ou assinatura incompatível.",
-        );
-      const originalName = normalizeOriginalName(request.file.originalname);
-      const storageKey = buildAttachmentStorageKey({
-        documentId: document.id,
-        originalName,
+      const link = await prisma.documentLink.create({
+        data: { ...input, provider: getLinkProvider(input.url), documentId: document.id, createdById: request.user.id },
+        include: { createdBy: { select: { id: true, name: true } } },
       });
-      await writeAttachmentFile(
-        config.attachmentsDir,
-        storageKey,
-        request.file.buffer,
-      );
-      let attachment;
-      try {
-        attachment = await prisma.$transaction(async (transaction) => {
-          const created = await transaction.attachment.create({
-            data: {
-              documentId: document.id,
-              originalName,
-              mimeType: detected.mime,
-              size: request.file.size,
-              storageKey,
-              uploadedById: request.user.id,
-            },
-            select: {
-              id: true,
-              originalName: true,
-              mimeType: true,
-              size: true,
-              createdAt: true,
-            },
-          });
-          await transaction.documentHistory.create({
-            data: {
-              documentId: document.id,
-              action: "ATTACHMENT_ADD",
-              description: `Anexo adicionado: ${created.originalName}`,
-              userId: request.user.id,
-            },
-          });
-          return created;
-        });
-      } catch (error) {
-        await removeAttachmentFile(config.attachmentsDir, storageKey).catch(
-          (cleanupError) =>
-            request.log?.error(
-              { err: cleanupError, requestId: request.id },
-              "attachment rollback cleanup failed",
-            ),
-        );
-        throw error;
-      }
-      response.status(201).json({ data: attachment });
+      await prisma.documentHistory.create({
+        data: { documentId: document.id, action: "UPDATE", description: `Link documental adicionado: ${link.title}`, detailsJson: JSON.stringify({ linkId: link.id, url: link.url, provider: link.provider }), userId: request.user.id },
+      });
+      response.status(201).json({ data: link });
     }),
   );
-  app.get(
-    "/api/attachments/:id",
+  app.patch(
+    "/api/links/:id",
+    requireRoles("admin", "OPERATOR"),
     asyncRoute(async (request, response) => {
-      const attachment = await prisma.attachment.findUnique({
-        where: { id: request.params.id },
+      const input = documentLinkUpdateSchema.parse(request.body);
+      const current = await prisma.documentLink.findUnique({ where: { id: request.params.id }, include: { document: true } });
+      if (!current) throw new ApiError(404, "NOT_FOUND", "Link documental não encontrado.");
+      assertCanMutateDocument(request.user, current.document);
+      const link = await prisma.documentLink.update({
+        where: { id: current.id },
+        data: { ...input, ...(input.url ? { provider: getLinkProvider(input.url) } : {}) },
+        include: { createdBy: { select: { id: true, name: true } } },
       });
-      if (!attachment)
-        throw new ApiError(404, "NOT_FOUND", "Anexo não encontrado.");
-      response.set({
-        "Content-Type": attachment.mimeType,
-        "Content-Length": String(attachment.size),
-        "Content-Disposition": `attachment; filename="${normalizeOriginalName(attachment.originalName)}"`,
-        "Cache-Control": "private, no-store",
-      });
-      let content;
-      if (attachment.storageKey) {
-        try {
-          content = await readAttachmentFile(
-            config.attachmentsDir,
-            attachment.storageKey,
-          );
-        } catch (error) {
-          if (error.code === "ENOENT") {
-            throw new ApiError(
-              500,
-              "ATTACHMENT_CONTENT_MISSING",
-              "O conteúdo do anexo não foi encontrado no armazenamento.",
-            );
-          }
-          throw error;
-        }
-      } else if (attachment.content) {
-        content = Buffer.from(attachment.content);
-      } else {
-        throw new ApiError(
-          500,
-          "ATTACHMENT_CONTENT_MISSING",
-          "O conteúdo do anexo não foi encontrado no armazenamento.",
-        );
-      }
-      response.send(content);
+      await prisma.documentHistory.create({ data: { documentId: current.documentId, action: "UPDATE", description: `Link documental atualizado: ${link.title}`, userId: request.user.id } });
+      response.json({ data: link });
     }),
   );
   app.delete(
-    "/api/attachments/:id",
+    "/api/links/:id",
     requireRoles("admin", "OPERATOR"),
     asyncRoute(async (request, response) => {
-      const current = await prisma.attachment.findUnique({
-        where: { id: request.params.id },
-        include: { document: true },
-      });
-      if (!current)
-        throw new ApiError(404, "NOT_FOUND", "Anexo não encontrado.");
+      const current = await prisma.documentLink.findUnique({ where: { id: request.params.id }, include: { document: true } });
+      if (!current) throw new ApiError(404, "NOT_FOUND", "Link documental não encontrado.");
       assertCanMutateDocument(request.user, current.document);
-      const staged = current.storageKey
-        ? await stageAttachmentFileRemoval(
-            config.attachmentsDir,
-            current.storageKey,
-          )
-        : null;
-      try {
-        await prisma.$transaction(async (transaction) => {
-          const attachment = await transaction.attachment.findUnique({
-            where: { id: request.params.id },
-            include: { document: true },
-          });
-          if (!attachment)
-            throw new ApiError(404, "NOT_FOUND", "Anexo não encontrado.");
-          assertCanMutateDocument(request.user, attachment.document);
-          const audit = {
-            attachmentId: attachment.id,
-            originalName: attachment.originalName,
-            mimeType: attachment.mimeType,
-            size: attachment.size,
-            uploadedById: attachment.uploadedById,
-            uploadedAt: attachment.createdAt.toISOString(),
-          };
-          await transaction.attachment.delete({
-            where: { id: attachment.id },
-          });
-          await transaction.document.update({
-            where: { id: attachment.documentId },
-            data: { updatedById: request.user.id },
-          });
-          await transaction.documentHistory.create({
-            data: {
-              documentId: attachment.documentId,
-              action: "ATTACHMENT_REMOVE",
-              description: `Anexo removido: ${attachment.originalName}`,
-              detailsJson: JSON.stringify(audit),
-              userId: request.user.id,
-            },
-          });
-        });
-      } catch (error) {
-        await restoreStagedAttachmentFile(staged).catch((restoreError) =>
-          request.log?.error(
-            { err: restoreError, requestId: request.id },
-            "attachment restore failed",
-          ),
-        );
-        throw error;
-      }
-      await finalizeStagedAttachmentRemoval(staged).catch((cleanupError) =>
-        request.log?.error(
-          { err: cleanupError, requestId: request.id },
-          "attachment file cleanup failed",
-        ),
-      );
+      await prisma.documentLink.delete({ where: { id: current.id } });
+      await prisma.documentHistory.create({ data: { documentId: current.documentId, action: "UPDATE", description: `Link documental removido: ${current.title}`, detailsJson: JSON.stringify({ linkId: current.id, url: current.url }), userId: request.user.id } });
       response.status(204).end();
     }),
   );

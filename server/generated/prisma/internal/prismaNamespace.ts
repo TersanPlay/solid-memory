@@ -404,7 +404,8 @@ export const ModelName = {
   ProtocolSequence: 'ProtocolSequence',
   Document: 'Document',
   DocumentHistory: 'DocumentHistory',
-  Attachment: 'Attachment'
+  Attachment: 'Attachment',
+  DocumentLink: 'DocumentLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "documentType" | "department" | "protocolSequence" | "document" | "documentHistory" | "attachment"
+    modelProps: "user" | "session" | "documentType" | "department" | "protocolSequence" | "document" | "documentHistory" | "attachment" | "documentLink"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1016,6 +1017,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DocumentLink: {
+      payload: Prisma.$DocumentLinkPayload<ExtArgs>
+      fields: Prisma.DocumentLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>
+        }
+        update: {
+          args: Prisma.DocumentLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentLink>
+        }
+        groupBy: {
+          args: Prisma.DocumentLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentLinkCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1168,6 +1243,21 @@ export const AttachmentScalarFieldEnum = {
 } as const
 
 export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
+export const DocumentLinkScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  title: 'title',
+  url: 'url',
+  provider: 'provider',
+  description: 'description',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentLinkScalarFieldEnum = (typeof DocumentLinkScalarFieldEnum)[keyof typeof DocumentLinkScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1413,6 +1503,7 @@ export type GlobalOmitConfig = {
   document?: Prisma.DocumentOmit
   documentHistory?: Prisma.DocumentHistoryOmit
   attachment?: Prisma.AttachmentOmit
+  documentLink?: Prisma.DocumentLinkOmit
 }
 
 /* Types for Logging */

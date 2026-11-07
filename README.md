@@ -50,13 +50,13 @@ flowchart LR
     Browser["React + Vite + React Router"] -->|"/api + cookie HttpOnly"| Express["Express 5"]
     Express --> Prisma["Prisma + better-sqlite3"]
     Prisma --> SQLite[("data/folio.db")]
-    Express --> Files[("data/attachments")]
+    Express --> External["Links externos (Drive, OneDrive, Dropbox)"]
 ```
 
 - `src/`: telas, componentes, rotas, estilos e cliente HTTP.
-- `server/`: Express, autenticação, autorização, regras documentais, armazenamento e API.
+- `server/`: Express, autenticação, autorização, regras documentais e API.
 - `prisma/`: schema, migrations e seed.
-- `scripts/`: CLI de usuários e migração de anexos legados.
+- `scripts/`: CLI de usuários e manutenção do banco.
 - `docs/`: documentação operacional e técnica detalhada.
 
 Em desenvolvimento, o Vite atende `127.0.0.1:5173` e encaminha `/api` para a API em `3000`. Em produção, o Express atende a API e o frontend compilado no mesmo processo.
@@ -87,7 +87,6 @@ Abra `.env` e defina uma senha forte e exclusiva para o administrador. O arquivo
 
 ```dotenv
 DATABASE_URL="file:./data/folio.db"
-ATTACHMENTS_DIR="./data/attachments"
 PORT=3000
 API_PORT=3000
 NODE_ENV=development
@@ -152,7 +151,6 @@ O healthcheck da API fica disponível em [http://127.0.0.1:3000/api/health](http
 | `npm run db:migrate` | Cria/aplica migrations em desenvolvimento. |
 | `npm run db:deploy` | Aplica migrations versionadas, indicado para produção. |
 | `npm run db:seed` | Inicializa catálogos e garante o administrador de bootstrap. |
-| `npm run attachments:migrate` | Move anexos legados do SQLite para `ATTACHMENTS_DIR`; execute com a aplicação parada. |
 | `npm run users -- help` | Exibe a CLI administrativa de usuários. |
 | `npm run users -- list` | Lista usuários sem expor hashes ou salts. |
 | `npm test` | Executa a suíte Vitest. |
@@ -167,13 +165,12 @@ npm ci
 npm run db:generate
 npm run build
 npm run db:deploy
-npm run attachments:migrate
 npm run db:seed
 $env:NODE_ENV='production'
 npm start
 ```
 
-Use HTTPS em produção, mantenha o SQLite e `ATTACHMENTS_DIR` em armazenamento persistente e faça backup dos dois no mesmo instante lógico.
+Use HTTPS em produção e mantenha o SQLite em armazenamento persistente. O MemoryDoc não recebe, grava ou serve arquivos: os documentos ficam no serviço externo indicado pelo link HTTPS.
 
 O projeto também contém configuração para Railway:
 
@@ -202,7 +199,7 @@ Consulte [docs/railway.md](docs/railway.md) antes de publicar.
 - **`EADDRINUSE`:** há outro processo usando `3000` ou `5173`; encerre somente o processo conhecido ou configure portas livres e iguais para `PORT`/`API_PORT`.
 - **Erro de migration:** execute `npm run db:deploy` em uma base existente; em desenvolvimento, use `npm run db:migrate`.
 - **Login recusado:** confirme as variáveis `BOOTSTRAP_ADMIN_*`, execute `npm run db:seed` e verifique se o usuário está ativo.
-- **Anexo não encontrado:** restaure o banco e `ATTACHMENTS_DIR` do mesmo backup; para BLOBs legados, execute `npm run attachments:migrate` com a aplicação parada.
+- **Link indisponível:** confirme se a URL HTTPS ainda é válida e se o compartilhamento no serviço externo permite o acesso dos usuários autorizados.
 - **Erro do Prisma Client:** execute `npm run db:generate`.
 
 ## Estado e limites conhecidos
@@ -210,7 +207,7 @@ Consulte [docs/railway.md](docs/railway.md) antes de publicar.
 - O sistema foi projetado para uma única instância da API e um arquivo SQLite local.
 - A escala horizontal não está implementada.
 - A senha existente do administrador não é redefinida automaticamente pelo seed.
-- Anexos precisam ser preservados junto com o banco nos backups.
+- O banco preserva os metadados e links documentais; o conteúdo permanece sob responsabilidade do serviço externo referenciado.
 
 ## Repositório
 

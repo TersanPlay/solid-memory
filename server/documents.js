@@ -14,7 +14,7 @@ export const documentInclude = {
   responsibleUser: { select: { id: true, name: true, email: true } },
   createdBy: { select: { id: true, name: true } },
   updatedBy: { select: { id: true, name: true } },
-  attachments: { select: { id: true, originalName: true, mimeType: true, size: true, createdAt: true } },
+  links: { include: { createdBy: { select: { id: true, name: true } } }, orderBy: { createdAt: 'asc' } },
 };
 
 export function formatProtocol(type, sequence, year) {

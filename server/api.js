@@ -1,5 +1,4 @@
 import crypto from 'node:crypto';
-import multer from 'multer';
 import { Prisma } from './generated/prisma/client.ts';
 import { ZodError } from 'zod';
 
@@ -61,10 +60,6 @@ export function errorHandler(error, request, response, _next) {
   if (error instanceof ZodError) {
     const fields = Object.fromEntries(error.issues.map((issue) => [issue.path.join('.') || 'body', issue.message]));
     return response.status(400).json({ error: { code: 'VALIDATION_ERROR', message: 'Verifique os dados informados.', fields } });
-  }
-  if (error instanceof multer.MulterError) {
-    const status = error.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
-    return response.status(status).json({ error: { code: error.code, message: error.code === 'LIMIT_FILE_SIZE' ? 'O anexo excede 10 MB.' : 'Não foi possível processar o anexo.' } });
   }
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {

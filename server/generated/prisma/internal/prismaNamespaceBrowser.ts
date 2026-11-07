@@ -58,7 +58,8 @@ export const ModelName = {
   ProtocolSequence: 'ProtocolSequence',
   Document: 'Document',
   DocumentHistory: 'DocumentHistory',
-  Attachment: 'Attachment'
+  Attachment: 'Attachment',
+  DocumentLink: 'DocumentLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -190,6 +191,21 @@ export const AttachmentScalarFieldEnum = {
 } as const
 
 export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
+export const DocumentLinkScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  title: 'title',
+  url: 'url',
+  provider: 'provider',
+  description: 'description',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentLinkScalarFieldEnum = (typeof DocumentLinkScalarFieldEnum)[keyof typeof DocumentLinkScalarFieldEnum]
 
 
 export const SortOrder = {

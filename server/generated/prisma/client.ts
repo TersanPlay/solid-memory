@@ -81,3 +81,8 @@ export type DocumentHistory = Prisma.DocumentHistoryModel
  * 
  */
 export type Attachment = Prisma.AttachmentModel
+/**
+ * Model DocumentLink
+ * 
+ */
+export type DocumentLink = Prisma.DocumentLinkModel

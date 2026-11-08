@@ -413,6 +413,8 @@ td small { display: block; max-width: 250px; margin-top: 5px; overflow: hidden; 
 .document-flow-heading strong { color: var(--ink); font-size: 13px; letter-spacing: -0.01em; }
 .document-flow-heading span { color: var(--muted); font-size: 11.5px; line-height: 1.45; }
 .document-flow-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.document-flow-grid > label { align-self: start; }
+.document-flow-grid > label > .soft-select-trigger { margin-top: 0; }
 .document-flow-grid .soft-select-trigger { height: 48px; min-height: 48px; padding: 12px 14px; font-family: inherit; font-size: 13px; font-weight: 500; line-height: 1.2; }
 .two-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .three-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }

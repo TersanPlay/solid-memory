@@ -510,6 +510,9 @@ td small { display: block; max-width: 250px; margin-top: 5px; overflow: hidden; 
 .detail-section-title svg { color: var(--sage); }
 .detail-section > p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.65; }
 .detail-section label select { margin-top: 8px; text-transform: none; letter-spacing: normal; }
+.detail-section .document-link-fields { display: grid; gap: 12px; }
+.detail-section .document-link-fields label { gap: 9px; }
+.detail-section .document-link-fields > button { margin-top: 4px; }
 .detail-status-section { margin: 4px 0 8px; padding: 20px; border: 0; border-radius: 24px; background: rgba(255, 253, 248, 0.58); box-shadow: inset 0 0 0 1px rgba(54, 45, 37, 0.075), 0 22px 48px -40px rgba(43, 35, 31, 0.46); }
 .detail-status-section .detail-section-title { margin-bottom: 18px; }
 .detail-status-section .detail-section-title h3 { font-size: 17px; letter-spacing: -0.025em; }
@@ -551,7 +554,7 @@ td small { display: block; max-width: 250px; margin-top: 5px; overflow: hidden; 
 .timeline-item > div { display: grid; align-content: start; gap: 5px; }
 .timeline-item strong { font-size: 11.5px; }
 .timeline-item span { color: var(--muted); font-size: 10px; line-height: 1.45; }
-.detail-footer { display: grid; gap: 5px; padding-top: 18px; border-top: 1px solid var(--hairline); color: var(--muted); font: 500 7.5px var(--mono); }
+.detail-footer { display: grid; gap: 6px; padding-top: 18px; border-top: 1px solid var(--hairline); color: var(--muted); font: 500 11px/1.5 var(--mono); }
 .modal-overlay { align-items: center; justify-content: center; padding: 20px; }
 .modal-card { width: min(520px, 100%); animation: modal-in 800ms var(--spring) both; }
 @keyframes modal-in { from { transform: translateY(15px) scale(0.96); opacity: 0; } }

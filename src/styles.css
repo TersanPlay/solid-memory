@@ -26,6 +26,8 @@
   --spring: cubic-bezier(0.16, 1.16, 0.3, 1);
   --shell-radius: 2rem;
   --core-radius: calc(2rem - 0.42rem);
+  --nav-shell-radius: 16px;
+  --nav-radius: 12px;
   font-family: var(--sans);
   color: var(--ink);
   background: var(--canvas);
@@ -139,8 +141,8 @@ svg { width: 1.1em; height: 1.1em; stroke-width: 1.8; }
 .avatar-small { width: 29px; height: 29px; font-size: 8px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 0 0 2px rgba(255, 255, 255, 0.72); }
 
 /* Floating navigation */
-.nav-shell { position: sticky; top: 18px; z-index: 30; display: flex; justify-content: center; margin: 18px auto 0; width: min(1050px, calc(100% - 32px)); padding: 6px; border-radius: 16px; background: rgba(255, 253, 248, 0.55); -webkit-backdrop-filter: blur(24px) saturate(155%); backdrop-filter: blur(24px) saturate(155%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 0 1px var(--hairline), 0 16px 38px -24px rgba(43, 35, 31, 0.35); }
-.navbar { position: relative; display: flex; align-items: center; width: 100%; padding: 5px 7px 5px 13px; border-radius: 12px; background: rgba(255, 253, 248, 0.62); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55); }
+.nav-shell { position: sticky; top: 18px; z-index: 30; display: flex; justify-content: center; margin: 18px auto 0; width: min(1050px, calc(100% - 32px)); padding: 6px; border-radius: var(--nav-shell-radius); background: rgba(255, 253, 248, 0.55); -webkit-backdrop-filter: blur(24px) saturate(155%); backdrop-filter: blur(24px) saturate(155%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 0 1px var(--hairline), 0 16px 38px -24px rgba(43, 35, 31, 0.35); }
+.navbar { position: relative; display: flex; align-items: center; width: 100%; padding: 5px 7px 5px 13px; border-radius: var(--nav-radius); background: rgba(255, 253, 248, 0.62); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55); }
 .brand-button { border: 0; padding: 0; background: transparent; cursor: pointer; }
 .nav-links { display: flex; align-items: center; gap: 3px; margin: 0 auto; }
 .nav-links a { border: 0; padding: 10px 16px; border-radius: 12px; color: var(--ink-soft); background: transparent; cursor: pointer; font-size: 11.5px; font-weight: 600; transition: background 700ms var(--ease), color 700ms var(--ease), transform 700ms var(--ease); }

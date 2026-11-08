@@ -14,6 +14,7 @@ function PageTitle() {
     else if (pathname === "/departamentos") title = "Departamentos · MemoryDoc";
     else if (pathname === "/tipos") title = "Tipos documentais · MemoryDoc";
     else if (pathname === "/usuarios") title = "Usuários · MemoryDoc";
+    else if (pathname.startsWith("/usuarios/") && pathname.endsWith("/perfil")) title = "Perfil do usuário · MemoryDoc";
     else if (pathname === "/relatorios") title = "Relatórios · MemoryDoc";
     else if (pathname === "/atividades") title = "Atividades · MemoryDoc";
     else title = "Página não encontrada · MemoryDoc";

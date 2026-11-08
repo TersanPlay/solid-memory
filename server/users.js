@@ -27,6 +27,47 @@ export async function listUsers(prisma) {
   return users.map(publicUser);
 }
 
+export async function getUserProfile(prisma, target) {
+  const user = await findUserByTarget(prisma, target);
+  const [documents, history, createdDocuments, responsibleDocuments] = await prisma.$transaction([
+    prisma.document.findMany({
+      where: { OR: [{ createdById: user.id }, { responsibleUserId: user.id }] },
+      orderBy: { updatedAt: 'desc' },
+      take: 12,
+      select: {
+        id: true,
+        protocol: true,
+        subject: true,
+        status: true,
+        date: true,
+        updatedAt: true,
+        createdById: true,
+      },
+    }),
+    prisma.documentHistory.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+      take: 12,
+      select: {
+        id: true,
+        action: true,
+        description: true,
+        createdAt: true,
+        document: { select: { id: true, protocol: true } },
+      },
+    }),
+    prisma.document.count({ where: { createdById: user.id } }),
+    prisma.document.count({ where: { responsibleUserId: user.id } }),
+  ]);
+
+  return {
+    user: publicUser(user),
+    metrics: { createdDocuments, responsibleDocuments, activityEntries: await prisma.documentHistory.count({ where: { userId: user.id } }) },
+    documents,
+    history,
+  };
+}
+
 export async function findUserByTarget(prisma, target) {
   const value = String(target || '').trim();
   if (!value) throw new ApiError(400, 'USER_TARGET_REQUIRED', 'Informe o ID ou e-mail do usuário.');

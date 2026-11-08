@@ -43,6 +43,7 @@ import {
 } from "./documents.js";
 import {
   createUser,
+  getUserProfile,
   listUsers,
   resetUserPassword,
   updateUser,
@@ -344,6 +345,15 @@ export function createApp({ prisma, config }) {
     requireRoles("admin"),
     asyncRoute(async (request, response) => {
       response.json({ data: await listUsers(prisma) });
+    }),
+  );
+  app.get(
+    "/api/users/:id/profile",
+    asyncRoute(async (request, response) => {
+      if (request.user.role !== "admin" && request.user.id !== request.params.id) {
+        throw new ApiError(403, "FORBIDDEN", "Você só pode consultar o próprio perfil.");
+      }
+      response.json({ data: await getUserProfile(prisma, request.params.id) });
     }),
   );
   app.post(

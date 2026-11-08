@@ -178,6 +178,43 @@ svg { width: 1.1em; height: 1.1em; stroke-width: 1.8; }
 .profile-summary span { color: var(--muted); font-size: 10px; }
 .profile-popover > button, .profile-popover > a { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 12px; border: 0; border-radius: 13px; background: transparent; cursor: pointer; color: var(--ink-soft); font-size: 11px; text-align: left; transition: background 700ms var(--ease), color 700ms var(--ease); }
 .profile-popover > button:hover, .profile-popover > a:hover { color: var(--ink); background: rgba(63, 98, 83, 0.07); }
+.profile-page-header { position: relative; display: grid; gap: 24px; padding-top: 58px; padding-bottom: 34px; }
+.profile-back-link { display: inline-flex; align-items: center; gap: 7px; width: max-content; color: var(--sage-dark); font-size: 12px; font-weight: 700; }
+.profile-back-link svg { width: 15px; height: 15px; }
+.profile-identity { display: flex; align-items: center; gap: 18px; }
+.profile-identity .avatar { width: 68px; height: 68px; font-size: 16px; }
+.profile-identity h1 { margin: 9px 0 4px; font-size: clamp(36px, 5vw, 62px); letter-spacing: -.065em; }
+.profile-identity p { margin: 0; color: var(--muted); font-size: 14px; }
+.profile-status { position: absolute; right: 0; bottom: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 700; }
+.profile-status > span { width: 6px; height: 6px; border-radius: 50%; }
+.profile-status.is-active { color: var(--sage-dark); background: var(--sage-soft); }.profile-status.is-active > span { background: var(--sage); }
+.profile-status.is-inactive { color: var(--terracotta); background: var(--terracotta-soft); }.profile-status.is-inactive > span { background: var(--terracotta); }
+.user-profile-content { display: grid; gap: 14px; }
+.profile-overview-grid, .profile-history-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.profile-info-card .bezel-core, .profile-history-card .bezel-core, .profile-documents-card .bezel-core { padding: clamp(24px, 4vw, 36px); }
+.profile-card-heading { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; }
+.profile-card-heading > svg { flex: 0 0 auto; width: 22px; height: 22px; margin-top: 3px; color: var(--sage-dark); }
+.profile-card-heading h2 { margin: 8px 0 0; font-size: 22px; letter-spacing: -.04em; }
+.profile-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; }
+.profile-details div { display: grid; gap: 7px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+.profile-details dt, .profile-metric-label { color: var(--muted); font: 600 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.profile-details dd { margin: 0; font-size: 13px; font-weight: 700; }
+.profile-metrics-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.profile-metrics-grid .bezel-core { display: grid; align-content: start; gap: 9px; min-height: 100%; padding: 22px; }
+.profile-metrics-grid strong { font-size: 35px; letter-spacing: -.06em; }
+.profile-metrics-grid small { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.profile-history-grid { align-items: start; }
+.profile-timeline { max-height: 430px; overflow-y: auto; }
+.profile-document-list { display: grid; gap: 4px; }
+.profile-document-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--hairline); }
+.profile-document-row:last-child { border-bottom: 0; }
+.profile-document-row > span:first-child { display: grid; gap: 4px; min-width: 0; }
+.profile-document-row strong { color: var(--ink); font-family: var(--mono); font-size: 12px; }
+.profile-document-row small { overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.profile-document-meta { display: grid; flex: 0 0 auto; justify-items: end; gap: 4px; color: var(--muted); font-size: 9px; }
+.profile-document-meta em { color: var(--sage-dark); font-style: normal; font-weight: 700; }
+.profile-empty { margin: 0; color: var(--muted); font-size: 12px; }
+.user-profile-link { color: inherit; }.user-profile-link:hover { color: var(--sage-dark); }
 .mobile-menu { position: fixed; z-index: 29; top: 88px; left: 16px; right: 16px; animation: pop-soft 700ms var(--spring) both; }
 .mobile-menu .bezel-core { padding: 14px; }
 .mobile-menu-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 10px 12px; color: var(--muted); font: 500 10px var(--mono); letter-spacing: 0.14em; }
@@ -748,6 +785,9 @@ footer > div { display: flex; justify-content: space-between; gap: 20px; width: 
   .section-heading { grid-template-columns: 1fr; align-items: start; gap: 19px; }
   .section-heading > .ghost-button { justify-self: start; }
   .overview-grid, .report-layout { grid-template-columns: 1fr; }
+  .profile-overview-grid, .profile-history-grid { grid-template-columns: 1fr; }
+  .profile-status { position: static; justify-self: start; }
+  .profile-details { grid-template-columns: 1fr 1fr; }
   .closing-band { align-items: flex-start; flex-direction: column; }
   .page-header { align-items: flex-start; flex-direction: column; padding-top: 90px; }
   .form-layout { grid-template-columns: 1fr; }
@@ -786,6 +826,12 @@ footer > div { display: flex; justify-content: space-between; gap: 20px; width: 
   .closing-band .primary-button { width: 100%; }
   .page-header { padding-top: 80px; padding-bottom: 35px; }
   .page-header h1 { font-size: 48px; }
+  .profile-page-header { padding-top: 66px; padding-bottom: 28px; }
+  .profile-identity { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .profile-identity h1 { font-size: 42px; }
+  .profile-details, .profile-metrics-grid { grid-template-columns: 1fr; }
+  .profile-document-row { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .profile-document-meta { justify-items: start; }
   .page-header .primary-button, .page-header > .ghost-button { width: 100%; }
   .filter-primary { flex-direction: column; }
   .filter-toggle { justify-content: center; }

@@ -56,6 +56,7 @@ import {
 } from "lucide-react";
 import { api, ApiClientError, queryString } from "./api.js";
 const DashboardPage = lazy(() => import("./pages/Dashboard.jsx"));
+const UserProfile = lazy(() => import("./pages/UserProfile.jsx"));
 import {
   DatePicker,
   SearchableSelect,
@@ -409,6 +410,9 @@ function Navigation({ session, onLogout }) {
                   <span>{roleLabels[session.role]}</span>
                 </div>
               </div>
+              <Link to={`/usuarios/${encodeURIComponent(session.id)}/perfil`} onClick={closeMenus}>
+                <UserRound /> Meu perfil
+              </Link>
               <Link to="/atividades" onClick={closeMenus}>
                 <Activity /> Histórico de atividades
               </Link>
@@ -2226,10 +2230,10 @@ function UsersPage({ users, refresh, notify }) {
                 {users.map((user) => (
                   <tr key={user.id}>
                     <td>
-                      <span className="person-cell">
+                      <Link className="person-cell user-profile-link" to={`/usuarios/${encodeURIComponent(user.id)}/perfil`}>
                         <Avatar name={user.name} small />
                         {user.name}
-                      </span>
+                      </Link>
                     </td>
                     <td>{user.email}</td>
                     <td>
@@ -2561,6 +2565,7 @@ function PageTitle() {
     else if (pathname === "/departamentos") title = "Departamentos · MemoryDoc";
     else if (pathname === "/tipos") title = "Tipos documentais · MemoryDoc";
     else if (pathname === "/usuarios") title = "Usuários · MemoryDoc";
+    else if (pathname.startsWith("/usuarios/") && pathname.endsWith("/perfil")) title = "Perfil do usuário · MemoryDoc";
     else if (pathname === "/relatorios") title = "Relatórios · MemoryDoc";
     else if (pathname === "/atividades") title = "Atividades · MemoryDoc";
     else title = "Página não encontrada · MemoryDoc";
@@ -2955,6 +2960,14 @@ export default function App() {
                       notify={notify}
                     />
                   </RequireRole>
+                }
+              />
+              <Route
+                path="/usuarios/:userId/perfil"
+                element={
+                  <Suspense fallback={<LoadingState text="Carregando perfil…" />}>
+                    <UserProfile session={session} />
+                  </Suspense>
                 }
               />
               <Route

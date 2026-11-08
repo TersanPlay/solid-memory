@@ -545,6 +545,7 @@ td small { display: block; max-width: 250px; margin-top: 5px; overflow: hidden; 
 .attachment-remove { color: #914a45; background: rgba(223, 130, 108, 0.09); box-shadow: inset 0 0 0 1px rgba(185, 101, 72, 0.12); }
 .attachment-remove:hover:not(:disabled) { background: rgba(223, 130, 108, 0.17); }
 .empty-inline { display: flex; align-items: center; gap: 8px; padding: 14px; border-radius: 14px; color: var(--muted); background: rgba(255, 253, 248, 0.5); font-size: 10.5px; }
+.detail-section .empty-inline { margin-bottom: 10px; }
 .attachment-upload { margin-top: 12px; cursor: pointer; width: max-content; }
 .timeline { display: grid; }
 .timeline-item { position: relative; display: grid; grid-template-columns: 13px 1fr; gap: 12px; min-height: 58px; }

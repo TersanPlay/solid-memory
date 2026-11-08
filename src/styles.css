@@ -176,9 +176,11 @@ svg { width: 1.1em; height: 1.1em; stroke-width: 1.8; }
 @keyframes pop-soft { from { opacity: 0; transform: translateY(-7px) scale(0.96); } }
 .profile-summary { display: flex; align-items: center; gap: 11px; padding: 10px 10px 14px; border-bottom: 1px solid var(--hairline); margin-bottom: 6px; }
 .profile-summary div { display: grid; gap: 2px; }
-.profile-summary strong { font-size: 12px; }
-.profile-summary span { color: var(--muted); font-size: 10px; }
-.profile-popover > button, .profile-popover > a { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 12px; border: 0; border-radius: 13px; background: transparent; cursor: pointer; color: var(--ink-soft); font-size: 11px; text-align: left; transition: background 700ms var(--ease), color 700ms var(--ease); }
+.profile-summary strong { font-size: 13px; font-weight: 750; }
+.profile-summary span { color: var(--ink-soft); font-size: 11px; font-weight: 600; }
+.profile-summary .avatar { color: #fffaf3; }
+.profile-popover > button, .profile-popover > a { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 12px; border: 0; border-radius: 13px; background: transparent; cursor: pointer; color: var(--ink); font-size: 13px; font-weight: 650; text-align: left; transition: background 700ms var(--ease), color 700ms var(--ease); }
+.profile-popover > button > svg, .profile-popover > a > svg { width: 16px; height: 16px; color: var(--sage-dark); }
 .profile-popover > button:hover, .profile-popover > a:hover { color: var(--ink); background: rgba(63, 98, 83, 0.07); }
 .profile-page-header { position: relative; display: grid; gap: 24px; padding-top: 58px; padding-bottom: 34px; }
 .profile-back-link { display: inline-flex; align-items: center; gap: 7px; width: max-content; color: var(--sage-dark); font-size: 12px; font-weight: 700; }

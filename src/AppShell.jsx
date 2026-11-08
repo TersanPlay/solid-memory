@@ -1209,6 +1209,16 @@ function NewDocument({
                       />
                     </label>
                   )}
+                  <label>
+                    Status inicial <span>*</span>
+                    <SoftSelect
+                      ariaLabel="Status inicial"
+                      value={form.status}
+                      onChange={(value) => update("status", value)}
+                      options={statusOptions.filter((item) => item.value !== "CANCELADO")}
+                      required
+                    />
+                  </label>
                 </div>
               </div>
               <label className="span-two">
@@ -1233,16 +1243,6 @@ function NewDocument({
                     keywords: [user.email],
                   }))}
                   disabled={session.role === "OPERATOR"}
-                  required
-                />
-              </label>
-              <label>
-                Status inicial <span>*</span>
-                <SoftSelect
-                  ariaLabel="Status inicial"
-                  value={form.status}
-                  onChange={(value) => update("status", value)}
-                  options={statusOptions.filter((item) => item.value !== "CANCELADO")}
                   required
                 />
               </label>

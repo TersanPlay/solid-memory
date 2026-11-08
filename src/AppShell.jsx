@@ -1246,20 +1246,23 @@ function NewDocument({
                   required
                 />
               </label>
-              <div className="document-link-fields span-two">
-                <div className="form-section-note">
-                  <button
-                    type="button"
-                    className="form-info-trigger"
-                    aria-label="Como os links documentais são armazenados"
-                  >
-                    <CircleHelp aria-hidden="true" />
-                    <span className="form-info-tooltip" role="tooltip">
-                      O conteúdo permanece no serviço externo. O MemoryDoc armazena apenas o link HTTPS para consulta e não faz upload, cópia ou hospedagem do arquivo.
-                    </span>
-                  </button>
-                </div>
-                <label>URL do documento<input type="url" value={link.url} onChange={(event) => setLink((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://drive.google.com/..." /></label>
+              <div className="document-link-fields">
+                <label>
+                  <span className="document-link-label">
+                    URL do documento
+                    <button
+                      type="button"
+                      className="form-info-trigger"
+                      aria-label="Como os links documentais são armazenados"
+                    >
+                      <CircleHelp aria-hidden="true" />
+                      <span className="form-info-tooltip" role="tooltip">
+                        O conteúdo permanece no serviço externo. O MemoryDoc armazena apenas o link HTTPS para consulta e não faz upload, cópia ou hospedagem do arquivo.
+                      </span>
+                    </button>
+                  </span>
+                  <input type="url" value={link.url} onChange={(event) => setLink((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://drive.google.com/..." />
+                </label>
               </div>
             </div>
           </BezelCard>

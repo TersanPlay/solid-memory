@@ -1184,7 +1184,7 @@ function NewDocument({
                     />
                   </label>
                   {form.destinationMode === "internal" ? (
-                    <label className="span-two">
+                    <label>
                       Destino <span>*</span>
                       <SearchableSelect
                         ariaLabel="Departamento de destino"
@@ -1199,7 +1199,7 @@ function NewDocument({
                       />
                     </label>
                   ) : (
-                    <label className="span-two">
+                    <label>
                       Destino externo <span>*</span>
                       <input
                         value={form.destinationText}

@@ -408,6 +408,12 @@ td small { display: block; max-width: 250px; margin-top: 5px; overflow: hidden; 
 .form-section-head h2 { margin: 0 0 3px; font-size: 20px; letter-spacing: -0.035em; }
 .form-section-head p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
 .fields-grid { display: grid; gap: 16px; }
+.document-form label { grid-template-columns: minmax(0, max-content) auto; align-content: start; }
+.document-form label > input,
+.document-form label > textarea,
+.document-form label > .soft-select-trigger,
+.document-form label > .searchable-select-trigger,
+.document-form label > .date-picker-trigger { grid-column: 1 / -1; }
 .document-flow-group { display: grid; gap: 14px; padding: 17px; border: 1px solid rgba(54, 45, 37, 0.1); border-radius: 18px; background: rgba(247, 244, 238, 0.56); }
 .document-flow-heading { display: grid; gap: 3px; }
 .document-flow-heading strong { color: var(--ink); font-size: 13px; letter-spacing: -0.01em; }

@@ -48,6 +48,7 @@ import {
   resetUserPassword,
   updateUser,
 } from "./users.js";
+import { createExcelReport, createPdfReport } from "./reports.js";
 
 const statuses = Object.keys(STATUS_LABELS);
 const initialStatuses = statuses.filter(
@@ -699,7 +700,7 @@ export function createApp({ prisma, config }) {
     requireRoles("admin"),
     asyncRoute(async (request, response) => {
       const format = z
-        .enum(["csv", "json"])
+        .enum(["csv", "json", "pdf", "xlsx"])
         .parse(request.query.format || "csv");
       const query = documentQuerySchema.parse(request.query);
       const documents = await prisma.document.findMany({
@@ -720,6 +721,20 @@ export function createApp({ prisma, config }) {
           status: document.statusLabel,
         }));
       const stamp = new Date().toISOString().slice(0, 10);
+      const metadata = {
+        dateFrom: query.dateFrom,
+        dateTo: query.dateTo,
+        typeLabel: query.typeId === "all" ? "Todos" : documents[0]?.type?.name || "Selecionado",
+        statusLabel: query.status === "all" ? "Todos" : documents[0]?.statusLabel || query.status,
+      };
+      if (format === "xlsx") {
+        response.set("Content-Disposition", `attachment; filename="relatorio-documentos-${stamp}.xlsx"`);
+        return response.type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").send(createExcelReport(data, metadata));
+      }
+      if (format === "pdf") {
+        response.set("Content-Disposition", `attachment; filename="relatorio-documentos-${stamp}.pdf"`);
+        return createPdfReport(data, metadata).then((buffer) => response.type("application/pdf").send(buffer));
+      }
       response.set(
         "Content-Disposition",
         `attachment; filename="relatorio-documentos-${stamp}.${format}"`,

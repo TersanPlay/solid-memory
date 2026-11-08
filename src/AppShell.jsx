@@ -33,9 +33,9 @@ import {
   FileBarChart,
   FileImage,
   FilePlus2,
-  FileSpreadsheet,
   Files,
   FileText,
+  FileSpreadsheet,
   Filter,
   FolderClock,
   Home,
@@ -2431,6 +2431,14 @@ function Reports({ types, notify }) {
             <button className="ghost-button" onClick={() => download("json")}>
               <Download />
               Exportar JSON
+            </button>
+            <button className="ghost-button" onClick={() => download("pdf")}>
+              <FileText />
+              Exportar PDF
+            </button>
+            <button className="ghost-button" onClick={() => download("xlsx")}>
+              <FileSpreadsheet />
+              Exportar Excel
             </button>
           </div>
         </BezelCard>

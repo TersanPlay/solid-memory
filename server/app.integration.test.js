@@ -546,6 +546,18 @@ describe("API integrada com SQLite", () => {
       .get("/api/reports/documents?format=csv")
       .expect(200);
     expect(report.text).toContain("MEMO-002/2026");
+    const pdfReport = await adminAgent
+      .get("/api/reports/documents?format=pdf")
+      .expect(200);
+    expect(pdfReport.headers["content-type"]).toContain("application/pdf");
+    expect(pdfReport.headers["content-disposition"]).toContain(".pdf");
+    expect(pdfReport.body.subarray(0, 5).toString()).toBe("%PDF-");
+    const excelReport = await adminAgent
+      .get("/api/reports/documents?format=xlsx")
+      .expect(200);
+    expect(excelReport.headers["content-type"]).toContain("spreadsheetml.sheet");
+    expect(excelReport.headers["content-disposition"]).toContain(".xlsx");
+    expect(excelReport.body.subarray(0, 2).toString()).toBe("PK");
     await viewerAgent.get("/api/reports/documents?format=csv").expect(403);
     await adminAgent.get("/api/documents?status=INVALIDO").expect(400);
     await adminAgent

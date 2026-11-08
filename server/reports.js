@@ -34,18 +34,17 @@ export function createPdfReport(data, metadata) {
   const columns = [70, 42, 55, 68, 68, 82, 72, 54];
   const headers = ['PROTOCOLO', 'TIPO', 'EMISSÃO', 'ORIGEM', 'DESTINO', 'ASSUNTO', 'RESPONSÁVEL', 'STATUS'];
   const drawSystemLogo = (x, y) => {
-    doc.save().translate(x, y).strokeColor('#ffffff').lineWidth(2);
-    doc.roundedRect(12, 7, 26, 34, 3).stroke();
-    doc.moveTo(29, 7).lineTo(38, 16).lineTo(29, 16).stroke();
-    doc.moveTo(18, 23).lineTo(32, 23).stroke();
-    doc.moveTo(18, 29).lineTo(32, 29).stroke();
+    doc.save().translate(x, y).strokeColor(palette.sage).lineWidth(1.7).lineCap('round').lineJoin('round');
+    doc.moveTo(6, 2).lineTo(23, 2).lineTo(31, 10).lineTo(31, 34).lineTo(6, 34).closePath().stroke();
+    doc.moveTo(23, 2).lineTo(23, 10).lineTo(31, 10).stroke();
+    doc.moveTo(12, 18).lineTo(25, 18).stroke();
+    doc.moveTo(12, 24).lineTo(25, 24).stroke();
     doc.restore();
   };
   const drawHeader = () => {
-    doc.roundedRect(42, 42, 52, 62, 4).fill(palette.sage);
-    drawSystemLogo(48, 53);
-    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(16).text('MEMORYDOC', 108, 57);
-    doc.fillColor(palette.sage).font('Helvetica-Bold').fontSize(8).text('GESTÃO DOCUMENTAL', 108, 80);
+    drawSystemLogo(42, 58);
+    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(16).text('MEMORYDOC', 84, 57);
+    doc.fillColor(palette.sage).font('Helvetica-Bold').fontSize(8).text('GESTÃO DOCUMENTAL', 84, 80);
     doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 184);
     doc.roundedRect(326, 42, 227, 120, 4).lineWidth(1).strokeColor(palette.sage).stroke();
     const info = [
@@ -59,7 +58,7 @@ export function createPdfReport(data, metadata) {
       doc.fillColor(palette.muted).font('Helvetica-Bold').fontSize(6.2).text(label, 340, rowY, { width: 105, lineBreak: false });
       doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(index === 2 ? 12 : 7.5).text(pdfText(value), index === 2 ? 460 : 445, index === 2 ? rowY - 3 : rowY, { width: 82, align: 'right', ellipsis: true, lineBreak: false });
     });
-    doc.moveTo(42, 226).lineTo(553, 226).strokeColor('#ded8cf').stroke();
+    doc.moveTo(42, 214).lineTo(553, 214).strokeColor('#ded8cf').stroke();
   };
   const drawTableHeader = (y) => {
     doc.roundedRect(42, y, pageWidth, 24, 4).fill(palette.ink);
@@ -68,7 +67,7 @@ export function createPdfReport(data, metadata) {
     return y + 24;
   };
   drawHeader();
-  let y = drawTableHeader(240);
+  let y = drawTableHeader(228);
   data.forEach((item, index) => {
     if (y > 735) { doc.addPage(); y = 42; y = drawTableHeader(y); }
     const values = [item.protocol, item.type, item.date, item.origin, item.destination, item.subject, item.responsible, item.status];

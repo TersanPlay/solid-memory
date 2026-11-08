@@ -113,14 +113,14 @@ if (Test-Path -LiteralPath '.\data\attachments') { Copy-Item -LiteralPath '.\dat
 
 Resultado esperado: o diretório datado contém `folio.db`, os arquivos WAL/SHM quando existentes e a pasta `attachments`. Restrinja permissões do backup: ele contém usuários, hashes, documentos e anexos.
 
-Se `ATTACHMENTS_DIR` for absoluto ou estiver fora de `data`, substitua o caminho do último `Copy-Item` pelo valor efetivo da variável. Banco e anexos devem pertencer ao mesmo instante lógico.
+O backup precisa conter o SQLite e seus arquivos WAL/SHM do mesmo instante lógico.
 
 Valide periodicamente a restauração em um ambiente isolado; cópia sem teste não comprova recuperabilidade.
 
 ## Restauração
 
 1. Pare a aplicação.
-2. Preserve o banco e `ATTACHMENTS_DIR` atuais em uma pasta de contingência.
+2. Preserve o banco atual em uma pasta de contingência.
 3. Copie o conjunto SQLite e a pasta de anexos do mesmo backup para seus caminhos configurados.
 4. Execute `npm run db:deploy` para aplicar migrations posteriores ao backup.
 5. Inicie a aplicação e verifique `/api/health`, login, contagens e download de um anexo conhecido.
@@ -215,7 +215,7 @@ Gere novamente após qualquer alteração do schema ou atualização do Prisma.
 ## Limitações conhecidas
 
 - única instância de escrita;
-- anexos aumentam diretamente o tamanho de `ATTACHMENTS_DIR` e do backup;
+- links externos não aumentam o armazenamento local da aplicação;
 - sem recuperação de senha por e-mail;
 - sem exclusão física de documentos, usuários ou tipos; departamentos somente podem ser excluídos quando não possuem vínculos, e anexos podem ser removidos com auditoria;
 - sem storage externo ou replicação;

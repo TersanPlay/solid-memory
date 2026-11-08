@@ -147,7 +147,7 @@ DATABASE_URL=file:/app/data/folio.db
 ### Dados desaparecem após redeploy
 
 Confirme que o volume pertence ao mesmo serviço, está montado em `/app/data` e
-que `DATABASE_URL` e `ATTACHMENTS_DIR` apontam para esse caminho.
+que `DATABASE_URL` aponta para esse caminho.
 
 ### Healthcheck retorna 502
 
@@ -171,7 +171,6 @@ Para uma base migrada de versão antiga, interrompa o serviço e execute uma vez
 com o volume conectado:
 
 ```text
-npm run attachments:migrate
 ```
 
 Não execute duas instâncias desse utilitário simultaneamente.

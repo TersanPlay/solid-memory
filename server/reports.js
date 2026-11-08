@@ -12,10 +12,7 @@ export function createExcelReport(data, metadata) {
     ['MEMORYDOC · RELATÓRIO DOCUMENTAL'],
     ['Período', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
     ['Tipo', metadata.typeLabel],
-    ['Status', metadata.statusLabel],
-    ['Assunto', metadata.subjectLabel],
-    ['Responsável', metadata.responsibleLabel],
-    ['Total de documentos', data.length],
+    ['Número de protocolos', data.length],
     [],
     ['Protocolo', 'Tipo', 'Data de emissão', 'Origem', 'Destino', 'Assunto', 'Responsável', 'Status'],
     ...data.map((item) => [item.protocol, item.type, item.date, item.origin, item.destination, item.subject, item.responsible, item.status]),
@@ -36,28 +33,32 @@ export function createPdfReport(data, metadata) {
   const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
   const columns = [70, 42, 55, 68, 68, 82, 72, 54];
   const headers = ['PROTOCOLO', 'TIPO', 'EMISSÃO', 'ORIGEM', 'DESTINO', 'ASSUNTO', 'RESPONSÁVEL', 'STATUS'];
-  const drawHeart = (x, y) => {
-    doc.save().translate(x, y).scale(0.72).path('M 24 42 C 19 37 4 28 4 15 C 4 5 16 1 24 10 C 32 1 44 5 44 15 C 44 28 29 37 24 42 Z').fill('#ffffff').restore();
+  const drawSystemLogo = (x, y) => {
+    doc.save().translate(x, y).strokeColor('#ffffff').lineWidth(2);
+    doc.roundedRect(12, 7, 26, 34, 3).stroke();
+    doc.moveTo(29, 7).lineTo(38, 16).lineTo(29, 16).stroke();
+    doc.moveTo(18, 23).lineTo(32, 23).stroke();
+    doc.moveTo(18, 29).lineTo(32, 29).stroke();
+    doc.restore();
   };
   const drawHeader = () => {
-    doc.roundedRect(42, 42, 52, 62, 4).fill(palette.terracotta);
-    drawHeart(48, 55);
+    doc.roundedRect(42, 42, 52, 62, 4).fill(palette.sage);
+    drawSystemLogo(48, 53);
     doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(16).text('MEMORYDOC', 108, 57);
-    doc.fillColor(palette.terracotta).font('Helvetica-Bold').fontSize(8).text('GESTÃO DOCUMENTAL', 108, 80);
+    doc.fillColor(palette.sage).font('Helvetica-Bold').fontSize(8).text('GESTÃO DOCUMENTAL', 108, 80);
     doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 145);
     doc.fillColor(palette.muted).font('Helvetica').fontSize(9).text('Recorte para conferência e prestação de contas', 42, 180);
-    doc.roundedRect(326, 42, 227, 120, 4).lineWidth(1).strokeColor('#1555d6').stroke();
+    doc.roundedRect(326, 42, 227, 120, 4).lineWidth(1).strokeColor(palette.sage).stroke();
     const info = [
       ['PERÍODO', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
       ['TIPO', metadata.typeLabel],
-      ['STATUS', metadata.statusLabel],
-      ['ASSUNTO', metadata.subjectLabel],
-      ['RESPONSÁVEL', metadata.responsibleLabel],
+      ['NÚMERO DE PROTOCOLOS', data.length],
     ];
     info.forEach(([label, value], index) => {
-      const rowY = 55 + index * 20;
-      doc.fillColor(palette.muted).font('Helvetica-Bold').fontSize(6.2).text(label, 340, rowY, { width: 76, lineBreak: false });
-      doc.fillColor(palette.ink).font('Helvetica').fontSize(7.2).text(pdfText(value), 420, rowY, { width: 120, ellipsis: true, lineBreak: false });
+      const rowY = 58 + index * 28;
+      if (index > 0) doc.moveTo(340, rowY - 10).lineTo(539, rowY - 10).strokeColor(palette.line).stroke();
+      doc.fillColor(palette.muted).font('Helvetica-Bold').fontSize(6.2).text(label, 340, rowY, { width: 105, lineBreak: false });
+      doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(index === 2 ? 12 : 7.5).text(pdfText(value), index === 2 ? 460 : 445, index === 2 ? rowY - 3 : rowY, { width: 82, align: 'right', ellipsis: true, lineBreak: false });
     });
     doc.moveTo(42, 218).lineTo(553, 218).strokeColor(palette.line).stroke();
     doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(17).text(String(data.length), 42, 246);

@@ -24,6 +24,7 @@ MemoryDoc/
 │   ├── db.js                        # Prisma/SQLite
 │   ├── index.js                     # processo HTTP
 │   ├── users.js                     # regras compartilhadas entre API e CLI
+│   ├── reports.js                   # geração de relatórios PDF e Excel
 │   ├── spa-routing.test.js          # fallback de URLs profundas em produção
 │   └── prepare-database.js          # diretório/arquivo SQLite
 ├── src/
@@ -71,7 +72,7 @@ MemoryDoc/
 
 - `server/auth.test.js`: e-mail, scrypt, hash de sessão e máscara.
 - `server/config.test.js`: porta padrão e configuração do servidor.
-- `server/app.integration.test.js`: migrations reais em SQLite temporário, sessão, RBAC, concorrência, cancelamento, links documentais, histórico, filtros e relatórios.
+- `server/app.integration.test.js`: migrations reais em SQLite temporário, sessão, RBAC, concorrência, cancelamento, links documentais, histórico, filtros e relatórios, incluindo validação dos downloads PDF e Excel.
 - `server/attachment-storage.test.js`: preservação de nome, neutralização de nomes incompatíveis, bloqueio de traversal, escrita, leitura e remoção.
 - `server/spa-routing.test.js`: fallback de produção para acesso direto a rotas do frontend.
 - `prisma/seed-catalogs.test.js`: primeira carga dos catálogos e preservação de edições/exclusões em novas execuções.

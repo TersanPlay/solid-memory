@@ -68,6 +68,7 @@ Todas as rotas abaixo exigem `admin`.
 | Método e rota              | Corpo/observação                                           |
 | -------------------------- | ---------------------------------------------------------- |
 | `GET /users`               | Lista usuários ativos e inativos; retorna 200.                          |
+| `GET /users/:id/profile`   | Perfil público, métricas, histórico recente e documentos relacionados; o próprio usuário ou `admin`; retorna 200. |
 | `POST /users`              | `name`, `email`, `password` com 10+ caracteres e `role`; retorna 201.   |
 | `PATCH /users/:id`         | Um ou mais: `name`, `email`, `role`, `active`; retorna 200.             |
 | `POST /users/:id/password` | `{ "password": "..." }`; encerra as sessões desse usuário e retorna 204. |
@@ -203,9 +204,11 @@ O sistema não recebe, armazena, copia ou serve arquivos. A API aceita somente U
 
 ## Relatórios
 
-`GET /reports/documents?format=csv|json` exige `admin` e aceita os filtros documentais de conteúdo. `page` e `pageSize` não limitam a exportação: todos os registros correspondentes são retornados. A resposta é um download, não um envelope JSON.
+`GET /reports/documents?format=csv|json|pdf|xlsx` exige `admin` e aceita os filtros documentais de conteúdo. `page` e `pageSize` não limitam a exportação: todos os registros correspondentes são retornados. A resposta é um download, não um envelope JSON.
 
 O CSV usa `;`, BOM UTF-8 e escapa aspas/fórmulas. Os relatórios incluem registros cancelados quando o filtro não os exclui.
+
+PDF e Excel incluem data, usuário gerador, período, tipo e número de protocolos. O PDF usa layout institucional; o Excel é um `.xlsx` formatado com filtros e cabeçalho congelado.
 
 ## Códigos de resposta relevantes
 

@@ -136,6 +136,7 @@ O navegador é a fonte de verdade da página atual. A aplicação usa `BrowserRo
 | `/documentos/novo` | Novo registro | `admin` ou `OPERATOR` |
 | `/documentos/:documentId` | Drawer de detalhes | Qualquer sessão |
 | `/departamentos`, `/tipos`, `/usuarios`, `/relatorios` | Administração | `admin` |
+| `/usuarios/:userId/perfil` | Perfil e histórico do usuário | Próprio usuário ou `admin` |
 | `/atividades` | Histórico global | Qualquer sessão |
 
 Ao receber `401`, uma URL protegida redireciona para `/login` e é preservada como destino de retorno. Depois do login, o usuário volta ao endereço solicitado. Rotas sem permissão exibem uma página interna de acesso negado sem substituir a autorização do backend.
@@ -145,6 +146,10 @@ O detalhe de documento é uma rota filha do acervo. Isso mantém lista, filtros 
 Em produção, o Express entrega `dist/index.html` para qualquer `GET` que não comece com `/api/`. Assim, atualizar ou abrir diretamente uma rota do frontend não produz 404 no servidor.
 
 Os guardas do frontend evitam apresentar páginas incompatíveis com o perfil, mas não concedem autorização. Toda leitura ou mutação protegida continua dependendo da sessão e das verificações do Express.
+
+O avatar do menu superior abre o acesso ao perfil do usuário autenticado. Na administração de usuários, o nome de cada usuário também aponta para seu perfil. O backend permite que cada usuário consulte apenas o próprio perfil, enquanto `admin` pode consultar qualquer usuário.
+
+As exportações são geradas no backend por `server/reports.js`: CSV e JSON mantêm formatos tabulares/estruturados, PDF recebe composição institucional e Excel é gerado como `.xlsx` com estilos, filtros e cabeçalho congelado.
 
 ## Execução
 

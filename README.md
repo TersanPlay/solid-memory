@@ -15,8 +15,8 @@ Este README é a porta de entrada do projeto: apresenta os módulos disponíveis
 | Links documentais | Cadastro, consulta e remoção de links HTTPS para serviços externos. |
 | Departamentos | Cadastro, edição, ativação/desativação e exclusão quando não há vínculos documentais. |
 | Tipos documentais | Cadastro e manutenção de tipos, prefixos, quantidade de dígitos e status ativo. |
-| Usuários | Listagem, criação, edição, ativação/desativação e redefinição de senha. |
-| Relatórios | Exportação dos documentos filtrados em CSV ou JSON. |
+| Usuários | Listagem, criação, edição, ativação/desativação, redefinição de senha e perfil detalhado com histórico e documentos relacionados. |
+| Relatórios | Exportação dos documentos filtrados em CSV, JSON, PDF e Excel (`.xlsx`), com contexto da geração e tabela documental formatada. |
 | Atividades | Histórico global de movimentações e ações do sistema. |
 
 ## Perfis e acesso
@@ -38,6 +38,7 @@ A autorização é aplicada no backend e também refletida visualmente no fronte
 | `/departamentos` | Departamentos | `admin` |
 | `/tipos` | Tipos documentais | `admin` |
 | `/usuarios` | Usuários | `admin` |
+| `/usuarios/:userId/perfil` | Perfil, métricas, histórico e documentos relacionados | Próprio usuário ou `admin` |
 | `/relatorios` | Exportações | `admin` |
 | `/atividades` | Histórico global | Qualquer sessão |
 

@@ -722,6 +722,8 @@ export function createApp({ prisma, config }) {
         }));
       const stamp = new Date().toISOString().slice(0, 10);
       const metadata = {
+        generatedAt: new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "America/Sao_Paulo" }).format(new Date()),
+        generatedBy: request.user.name,
         dateFrom: query.dateFrom,
         dateTo: query.dateTo,
         typeLabel: query.typeId === "all" ? "Todos" : documents[0]?.type?.name || "Selecionado",

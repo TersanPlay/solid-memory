@@ -10,6 +10,8 @@ function pdfText(value) {
 export function createExcelReport(data, metadata) {
   const rows = [
     ['MEMORYDOC · RELATÓRIO DOCUMENTAL'],
+    ['Data do relatório', metadata.generatedAt],
+    ['Gerado por', metadata.generatedBy],
     ['Período', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
     ['Tipo', metadata.typeLabel],
     ['Número de protocolos', data.length],
@@ -45,20 +47,22 @@ export function createPdfReport(data, metadata) {
     drawSystemLogo(42, 58);
     doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(16).text('MEMORYDOC', 84, 57);
     doc.fillColor(palette.sage).font('Helvetica-Bold').fontSize(8).text('GESTÃO DOCUMENTAL', 84, 80);
-    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 184);
-    doc.roundedRect(326, 42, 227, 120, 4).lineWidth(1).strokeColor('#ded8cf').stroke();
+    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 198);
+    doc.roundedRect(326, 42, 227, 142, 4).lineWidth(1).strokeColor('#ded8cf').stroke();
     const info = [
+      ['DATA DO RELATÓRIO', metadata.generatedAt],
+      ['GERADO POR', metadata.generatedBy],
       ['PERÍODO', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
       ['TIPO', metadata.typeLabel],
       ['NÚMERO DE PROTOCOLOS', data.length],
     ];
     info.forEach(([label, value], index) => {
-      const rowY = 58 + index * 28;
+      const rowY = 54 + index * 24;
       if (index > 0) doc.moveTo(340, rowY - 10).lineTo(539, rowY - 10).strokeColor(palette.line).stroke();
-      doc.fillColor(palette.muted).font('Helvetica-Bold').fontSize(6.2).text(label, 340, rowY, { width: 105, lineBreak: false });
-      doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(index === 2 ? 12 : 7.5).text(pdfText(value), index === 2 ? 460 : 445, index === 2 ? rowY - 3 : rowY, { width: 82, align: 'right', ellipsis: true, lineBreak: false });
+      doc.fillColor(palette.muted).font('Helvetica-Bold').fontSize(5.8).text(label, 340, rowY, { width: 110, lineBreak: false });
+      doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(index === 4 ? 12 : 7.2).text(pdfText(value), index === 4 ? 460 : 445, index === 4 ? rowY - 3 : rowY, { width: 82, align: 'right', ellipsis: true, lineBreak: false });
     });
-    doc.moveTo(42, 214).lineTo(553, 214).strokeColor('#ded8cf').stroke();
+    doc.moveTo(42, 228).lineTo(553, 228).strokeColor('#ded8cf').stroke();
   };
   const drawTableHeader = (y) => {
     doc.roundedRect(42, y, pageWidth, 24, 4).fill(palette.ink);
@@ -67,7 +71,7 @@ export function createPdfReport(data, metadata) {
     return y + 24;
   };
   drawHeader();
-  let y = drawTableHeader(228);
+  let y = drawTableHeader(242);
   data.forEach((item, index) => {
     if (y > 735) { doc.addPage(); y = 42; y = drawTableHeader(y); }
     const values = [item.protocol, item.type, item.date, item.origin, item.destination, item.subject, item.responsible, item.status];

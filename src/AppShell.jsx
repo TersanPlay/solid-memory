@@ -904,10 +904,7 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
                             </span>
                           </td>
                           <td data-label="Responsável">
-                            <span className="person-cell">
-                              <Avatar name={document.responsible} small />
-                              {document.responsible}
-                            </span>
+                            <span className="person-cell">{document.responsible}</span>
                           </td>
                           <td data-label="Status">
                             <StatusBadge status={document.status} />

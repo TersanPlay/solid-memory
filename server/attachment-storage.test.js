@@ -42,7 +42,7 @@ describe("armazenamento de anexos em arquivos", () => {
     expect(filesystemAttachmentName("CON.pdf")).toBe("_CON.pdf");
   });
 
-  it("grava, lê e remove o arquivo sem aceitar traversal", async () => {
+  it("recusa qualquer operação física de escrita, leitura ou remoção", async () => {
     const key = buildAttachmentStorageKey({
       documentId: "doc_1",
       originalName: "arquivo.pdf",
@@ -50,15 +50,19 @@ describe("armazenamento de anexos em arquivos", () => {
       storageId: "storage_1",
     });
     const expected = Buffer.from("conteúdo do teste");
-    const storedPath = await writeAttachmentFile(tempRoot, key, expected);
-    expect(fs.existsSync(storedPath)).toBe(true);
-    expect(await readAttachmentFile(tempRoot, key)).toEqual(expected);
+    await expect(writeAttachmentFile(tempRoot, key, expected)).rejects.toThrow(
+      "Armazenamento físico",
+    );
+    await expect(readAttachmentFile(tempRoot, key)).rejects.toThrow(
+      "Download físico",
+    );
 
     expect(() => resolveAttachmentPath(tempRoot, "../segredo.txt")).toThrow(
       "Chave de armazenamento",
     );
 
-    await removeAttachmentFile(tempRoot, key);
-    expect(fs.existsSync(storedPath)).toBe(false);
+    await expect(removeAttachmentFile(tempRoot, key)).rejects.toThrow(
+      "Remoção física",
+    );
   });
 });

@@ -472,6 +472,33 @@ describe("API integrada com SQLite", () => {
     expect((await adminAgent.get(`/api/documents/${created.id}`).expect(200)).body.data.links).toHaveLength(0);
   });
 
+  it("recusa upload e download físico sem alterar dados legados", async () => {
+    const created = (await adminAgent.post("/api/documents").send({
+      typeId: type.id,
+      date: "2026-07-22",
+      originDepartmentId: origin.id,
+      destinationDepartmentId: destination.id,
+      subject: "Protocolo sem upload físico",
+      responsibleUserId: admin.id,
+      status: "ENVIADO",
+    }).expect(201)).body.data;
+
+    await adminAgent
+      .post(`/api/documents/${created.id}/attachments`)
+      .send({ filename: "arquivo.pdf" })
+      .expect(410)
+      .expect((response) => expect(response.body.error.code).toBe("PHYSICAL_ATTACHMENTS_DISABLED"));
+    await adminAgent
+      .get("/api/attachments/nao-existente")
+      .expect(410)
+      .expect((response) => expect(response.body.error.code).toBe("PHYSICAL_ATTACHMENTS_DISABLED"));
+    await adminAgent
+      .delete("/api/attachments/nao-existente")
+      .expect(410);
+
+    expect((await adminAgent.get(`/api/documents/${created.id}`).expect(200)).body.data.links).toHaveLength(0);
+  });
+
   it.skip("remove anexos fisicamente com permissão e histórico auditável", async () => {
     const payload = {
       typeId: type.id,

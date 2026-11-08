@@ -20,7 +20,7 @@ function ActivityPage() {
       <PageHeader
         eyebrow="RASTREABILIDADE"
         title="Histórico de atividades"
-        description="Uma trilha transparente de tudo o que mudou nos documentos."
+        description="Uma trilha transparente de consultas, visualizações e movimentações dos protocolos."
       />
       <main className="page-content wrap">
         <InlineError error={error} />

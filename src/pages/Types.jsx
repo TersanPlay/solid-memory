@@ -28,7 +28,7 @@ function Types({ types, refresh, notify }) {
       await refresh();
       setAdding(false);
       setForm({ name: "", prefix: "", digits: 3 });
-      notify("Tipo documental criado.");
+      notify("Tipo de protocolo criado.");
     } catch (err) {
       setError(err.message);
     }
@@ -44,8 +44,8 @@ function Types({ types, refresh, notify }) {
   return (
     <>
       <PageHeader
-        eyebrow="CONFIGURAÇÃO DOCUMENTAL"
-        title="Tipos de documento"
+        eyebrow="CONFIGURAÇÃO DE PROTOCOLOS"
+        title="Tipos de protocolo"
         description="Cada tipo mantém prefixo, formato e sequência anual próprios."
         action={
           <PrimaryButton onClick={() => setAdding(true)} icon={<Plus />}>
@@ -54,7 +54,7 @@ function Types({ types, refresh, notify }) {
         }
       />
       <main className="page-content wrap">
-        <div className="type-grid reveal">
+        <div className="type-grid reveal" aria-label="Tipos de protocolo cadastrados">
           {types.map((type, index) => (
             <BezelCard className="type-card" key={type.id}>
               <div className={`type-monogram tone-${index % 4}`}>
@@ -76,7 +76,7 @@ function Types({ types, refresh, notify }) {
                   <span />
                 </label>
               </div>
-              <div className="type-protocol">
+              <div className="type-protocol" aria-label="Exemplo de numeração de protocolo">
                 {formatProtocol(type, 1, currentYear)}
               </div>
               <div className="type-meta">
@@ -93,7 +93,7 @@ function Types({ types, refresh, notify }) {
       </main>
       {adding && (
         <SimpleModal
-          title="Novo tipo de documento"
+          title="Novo tipo de protocolo"
           description="Defina como os próximos protocolos serão formados."
           onClose={() => setAdding(false)}
         >

@@ -86,22 +86,22 @@ export default function Dashboard({
       <header className="dashboard-heading">
         <div>
           <Eyebrow>PAINEL ADMINISTRATIVO · {formatDate(today)}</Eyebrow>
-          <h1>Documentos em ordem. Visão geral do protocolo</h1>
-          <p>Acompanhe o acervo, o fluxo documental e as atividades mais recentes.</p>
+          <h1>Protocolos em ordem. Visão geral do registro</h1>
+          <p>Acompanhe os protocolos, o fluxo de registros e as atividades mais recentes.</p>
         </div>
-        {canCreate && <button className="primary-button" onClick={onNew}><FilePlus2 /> Novo documento</button>}
+        {canCreate && <button className="primary-button" onClick={onNew}><FilePlus2 /> Novo protocolo</button>}
       </header>
 
       <section className="dashboard-kpis" aria-label="Indicadores principais">
-        <KpiCard icon={<Files />} label="Acervo total" value={data.total} detail="documentos registrados" tone="sage" />
+        <KpiCard icon={<Files />} label="Protocolos registrados" value={data.total} detail="registros no sistema" tone="sage" />
         <KpiCard icon={<CalendarDays />} label="Neste mês" value={data.monthTotal} detail="novos registros" tone="terracotta" />
         <KpiCard icon={<Activity />} label="Em andamento" value={inFlow} detail="exigem acompanhamento" tone="blue" />
-        <KpiCard icon={<FileArchive />} label={`Ano ${currentYear}`} value={data.yearTotal} detail="documentos protocolados" tone="coral" />
+        <KpiCard icon={<FileArchive />} label={`Ano ${currentYear}`} value={data.yearTotal} detail="protocolos registrados" tone="coral" />
       </section>
 
       <section className="dashboard-main-grid">
         <BezelCard className="dashboard-card dashboard-recent-card">
-          <CardHeading eyebrow="ATIVIDADE RECENTE" title="Últimos documentos" icon={<FileText />} action={<button className="text-action" onClick={onViewDocuments}>Ver acervo <ChevronRight /></button>} />
+          <CardHeading eyebrow="ATIVIDADE RECENTE" title="Últimos protocolos" icon={<FileText />} action={<button className="text-action" onClick={onViewDocuments}>Ver protocolos <ChevronRight /></button>} />
           <div className="dashboard-document-list">
             {data.recent.length ? data.recent.map((document) => (
               <button className="dashboard-document-row" key={document.id} onClick={() => onSelect(document)}>
@@ -128,19 +128,26 @@ export default function Dashboard({
 
       <section className="dashboard-bottom-grid">
         <BezelCard className="dashboard-card dashboard-protocol-card">
-          <div className="dashboard-card-topline"><span className="dashboard-icon-badge sage"><Sparkles /></span><span className="dashboard-live-pill"><i /> sequência disponível</span></div>
-          <Eyebrow>PRÓXIMO PROTOCOLO</Eyebrow>
-          <strong className="dashboard-protocol-number">{protocol}</strong>
-          <p>Prévia do próximo número para {memo?.name || "tipo documental"}. A sequência só é reservada ao confirmar o cadastro.</p>
-          {canCreate && <button className="secondary-action" onClick={onNew}>Registrar documento <ArrowUpRight /></button>}
+          <div className="dashboard-card-topline"><span className="dashboard-sequence-year">{currentYear}</span></div>
+          <div className="dashboard-sequence-main"><Eyebrow>PRÓXIMO REGISTRO</Eyebrow><strong className="dashboard-protocol-number">{protocol}</strong><span className="dashboard-sequence-type">{memo?.name || "Tipo de protocolo"}</span></div>
+          <div className="dashboard-sequence-rail" aria-label="Progresso da sequência">
+            <span className="is-complete" data-step="Sequência inicializada" aria-label="Sequência inicializada" title="Sequência inicializada" />
+            <span className="is-active" data-step="Próximo protocolo disponível" aria-label="Próximo protocolo disponível" title="Próximo protocolo disponível" />
+            <span data-step="Próximo número após confirmação" aria-label="Próximo número após confirmação" title="Próximo número após confirmação" />
+            <span data-step="Continuidade anual preservada" aria-label="Continuidade anual preservada" title="Continuidade anual preservada" />
+            <span data-step="Sequência pronta para novos registros" aria-label="Sequência pronta para novos registros" title="Sequência pronta para novos registros" />
+          </div>
+          <div className="dashboard-sequence-meta"><span><strong>01</strong><small>disponível agora</small></span><span><strong>02</strong><small>próximo após registro</small></span><span><strong>∞</strong><small>sequência contínua</small></span></div>
+          <p>O número só é reservado ao confirmar o cadastro do protocolo.</p>
+          {canCreate && <button className="secondary-action" onClick={onNew}>Registrar protocolo <ArrowUpRight /></button>}
           <div className="dashboard-security-note"><ShieldCheck /> Números cancelados não são reutilizados.</div>
         </BezelCard>
 
         <BezelCard className="dashboard-card dashboard-modules-card">
           <CardHeading eyebrow="MÓDULOS" title="Acessos rápidos" icon={<FolderClock />} />
           <div className="dashboard-module-links">
-            <button onClick={onViewDocuments}><Files /><span><strong>Documentos</strong><small>Consultar e acompanhar o acervo</small></span><ChevronRight /></button>
-            <button onClick={onNew} disabled={!canCreate}><FilePlus2 /><span><strong>Novo registro</strong><small>Protocolar um documento</small></span><ChevronRight /></button>
+            <button onClick={onViewDocuments}><Files /><span><strong>Protocolos</strong><small>Consultar e acompanhar registros</small></span><ChevronRight /></button>
+            <button onClick={onNew} disabled={!canCreate}><FilePlus2 /><span><strong>Novo protocolo</strong><small>Registrar um protocolo</small></span><ChevronRight /></button>
             <button onClick={() => window.location.assign("/atividades")}><Users /><span><strong>Atividades</strong><small>Histórico de movimentações</small></span><ChevronRight /></button>
           </div>
         </BezelCard>

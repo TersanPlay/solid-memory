@@ -841,6 +841,24 @@ export function createApp({ prisma, config }) {
     }
   }
 
+  // Upload/download físico nunca é um endpoint válido do produto. O 410 evita
+  // que clientes antigos atinjam um fallback de SPA ou sejam reintroduzidos.
+  app.use("/api/documents/:id/attachments", (_request, response) => {
+    response.status(410).json({
+      error: {
+        code: "PHYSICAL_ATTACHMENTS_DISABLED",
+        message: "Upload de arquivos desativado. Registre um link HTTPS.",
+      },
+    });
+  });
+  app.use("/api/attachments", (_request, response) => {
+    response.status(410).json({
+      error: {
+        code: "PHYSICAL_ATTACHMENTS_DISABLED",
+        message: "Download físico de arquivos desativado. Use o link HTTPS registrado.",
+      },
+    });
+  });
   app.use(notFound);
   app.use(errorHandler);
   return app;

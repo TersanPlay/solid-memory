@@ -31,17 +31,17 @@ function Login({ onLogin }) {
       <section className="login-intro reveal-now">
         <Brand />
         <div>
-          <Eyebrow>GESTÃO DOCUMENTAL</Eyebrow>
+          <Eyebrow>REGISTRO DE PROTOCOLOS</Eyebrow>
           <h1>Organização que acolhe a rotina.</h1>
           <p>
-            Protocolos seguros, histórico preservado e documentos fáceis de
-            encontrar — em um só lugar.
+            Protocolos seguros, histórico preservado e consultas fáceis de
+            realizar — em um só lugar.
           </p>
         </div>
         <div className="login-proof">
           <ShieldCheck />
           <span>
-            <strong>Sequências protegidas</strong> por tipo de documento e por
+            <strong>Sequências protegidas</strong> por tipo de protocolo e por
             ano.
           </span>
         </div>

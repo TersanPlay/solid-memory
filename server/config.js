@@ -1,7 +1,6 @@
 import path from 'node:path';
 
 const DEFAULT_DATABASE_URL = 'file:./data/folio.db';
-const DEFAULT_ATTACHMENTS_DIR = './data/attachments';
 
 export function loadConfig(overrides = {}) {
   const databaseUrl = overrides.databaseUrl ?? process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
@@ -10,9 +9,6 @@ export function loadConfig(overrides = {}) {
   const railwayEnvironmentId = overrides.railwayEnvironmentId
     ?? process.env.RAILWAY_ENVIRONMENT_ID
     ?? '';
-  const attachmentsDir = path.resolve(
-    overrides.attachmentsDir ?? process.env.ATTACHMENTS_DIR ?? DEFAULT_ATTACHMENTS_DIR,
-  );
 
   if (!databaseUrl.startsWith('file:')) {
     throw new Error('DATABASE_URL deve apontar para um arquivo SQLite usando file:.');
@@ -33,8 +29,6 @@ export function loadConfig(overrides = {}) {
     isProduction: nodeEnv === 'production',
     isRailway: Boolean(railwayEnvironmentId),
     rootDir: path.resolve(process.cwd()),
-    attachmentsDir,
     sessionHours,
-    maxAttachmentBytes: 10 * 1024 * 1024,
   };
 }

@@ -61,9 +61,9 @@ export default function UserProfile({ session }) {
             </dl>
           </BezelCard>
           <div className="profile-metrics-grid">
-            <BezelCard><span className="profile-metric-label">Documentos criados</span><strong>{metrics.createdDocuments}</strong><small>protocolos alimentados por este usuário</small></BezelCard>
-            <BezelCard><span className="profile-metric-label">Responsável por</span><strong>{metrics.responsibleDocuments}</strong><small>documentos sob acompanhamento</small></BezelCard>
-            <BezelCard><span className="profile-metric-label">Atividades</span><strong>{metrics.activityEntries}</strong><small>registros no histórico documental</small></BezelCard>
+            <BezelCard><span className="profile-metric-label">Protocolos registrados</span><strong>{metrics.createdDocuments}</strong><small>protocolos registrados por este usuário</small></BezelCard>
+            <BezelCard><span className="profile-metric-label">Responsável por</span><strong>{metrics.responsibleDocuments}</strong><small>protocolos sob acompanhamento</small></BezelCard>
+            <BezelCard><span className="profile-metric-label">Atividades</span><strong>{metrics.activityEntries}</strong><small>registros no histórico</small></BezelCard>
           </div>
         </section>
 
@@ -73,8 +73,8 @@ export default function UserProfile({ session }) {
             {history.length ? <div className="timeline profile-timeline">{history.map((item) => <div className="timeline-item" key={item.id}><i /><div><strong>{item.description}</strong><span><b>{item.document.protocol}</b> · {formatDateTime(item.createdAt)}</span></div></div>)}</div> : <p className="profile-empty">Nenhuma atividade registrada para este usuário.</p>}
           </BezelCard>
           <BezelCard className="profile-documents-card">
-            <div className="profile-card-heading"><FileText /><div><Eyebrow>ACERVO</Eyebrow><h2>Documentos relacionados</h2></div></div>
-            {documents.length ? <div className="profile-document-list">{documents.map((document) => <Link to={`/documentos/${encodeURIComponent(document.id)}`} className="profile-document-row" key={document.id}><span><strong>{document.protocol}</strong><small>{document.subject}</small></span><span className="profile-document-meta">{document.createdById === user.id ? "Criado" : "Responsável"}<em>{statusLabel(document.status)}</em></span></Link>)}</div> : <p className="profile-empty">Nenhum documento relacionado a este usuário.</p>}
+            <div className="profile-card-heading"><FileText /><div><Eyebrow>PROTOCOLOS</Eyebrow><h2>Protocolos relacionados</h2></div></div>
+            {documents.length ? <div className="profile-document-list">{documents.map((document) => <Link to={`/documentos/${encodeURIComponent(document.id)}`} className="profile-document-row" key={document.id}><span><strong>{document.protocol}</strong><small>{document.subject}</small></span><span className="profile-document-meta">{document.createdById === user.id ? "Registrado" : "Responsável"}<em>{statusLabel(document.status)}</em></span></Link>)}</div> : <p className="profile-empty">Nenhum protocolo relacionado a este usuário.</p>}
           </BezelCard>
         </section>
       </main>

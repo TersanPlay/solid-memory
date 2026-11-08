@@ -186,17 +186,17 @@ describe("roteamento e autenticação do frontend", () => {
     renderAt("/inicio");
 
     await screen.findByRole("heading", {
-      name: /Documentos em ordem/i,
+      name: /Protocolos em ordem/i,
     });
-    const documentsLinks = screen.getAllByRole("link", { name: "Documentos" });
+    const documentsLinks = screen.getAllByRole("link", { name: "Protocolos" });
     fireEvent.click(documentsLinks[0]);
 
     expect(
-      await screen.findByRole("heading", { name: "Documentos" }),
+      await screen.findByRole("heading", { name: "Protocolos" }),
     ).toBeInTheDocument();
     expect(screen.getByTestId("location")).toHaveTextContent("/documentos");
     expect(documentsLinks[0]).toHaveClass("active");
-    expect(document.title).toBe("Documentos · MemoryDoc");
+    expect(document.title).toBe("Protocolos · MemoryDoc");
   });
 
   it("cria tipo documental sem oferecer ou enviar separador", async () => {
@@ -272,7 +272,7 @@ describe("roteamento e autenticação do frontend", () => {
       expect(document.title).toBe(`${documentFixture.protocol} · MemoryDoc`),
     );
     expect(
-      screen.getAllByRole("link", { name: "Documentos" })[0],
+      screen.getAllByRole("link", { name: "Protocolos" })[0],
     ).toHaveClass("active");
 
     fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
@@ -309,7 +309,7 @@ describe("roteamento e autenticação do frontend", () => {
     vi.stubGlobal("fetch", authenticatedFetch(admin));
     renderAt("/inicio");
 
-    await screen.findByRole("heading", { name: /Documentos em ordem/i });
+    await screen.findByRole("heading", { name: /Protocolos em ordem/i });
     fireEvent.click(screen.getByRole("button", { name: /Dev/ }));
     fireEvent.click(screen.getByRole("button", { name: "Sair" }));
     await screen.findByRole("heading", { name: "Boas-vindas de volta" });

@@ -1,5 +1,4 @@
 // @vitest-environment node
-import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { rateLimitClientIp } from './app.js';
 import { loadConfig } from './config.js';
@@ -23,12 +22,9 @@ describe('configuração padrão do servidor', () => {
     expect(loadConfig({ databaseUrl: 'file:./data/test.db', nodeEnv: 'test' }).port).toBe(3000);
   });
 
-  it('usa data/attachments como pasta padrão de anexos', () => {
-    delete process.env.ATTACHMENTS_DIR;
-    expect(
-      loadConfig({ databaseUrl: 'file:./data/test.db', nodeEnv: 'test' })
-        .attachmentsDir,
-    ).toBe(path.resolve('data/attachments'));
+  it('não expõe configuração de armazenamento físico de anexos', () => {
+    expect(loadConfig({ databaseUrl: 'file:./data/test.db', nodeEnv: 'test' }))
+      .not.toHaveProperty('attachmentsDir');
   });
 
   it('reconhece o ambiente Railway e usa somente seu X-Real-IP validado no rate limit', () => {

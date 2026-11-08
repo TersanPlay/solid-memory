@@ -91,56 +91,31 @@ async function pruneEmptyDirectories(startDirectory, storageRoot) {
 }
 
 export async function writeAttachmentFile(storageRoot, storageKey, content) {
-  const target = resolveAttachmentPath(storageRoot, storageKey);
-  const directory = path.dirname(target);
-  const temporary = path.join(directory, `.${crypto.randomUUID()}.upload`);
-  await fs.mkdir(directory, { recursive: true });
-  try {
-    await fs.writeFile(temporary, content, { flag: "wx" });
-    await fs.rename(temporary, target);
-  } catch (error) {
-    await fs.rm(temporary, { force: true }).catch(() => {});
-    throw error;
-  }
-  return target;
+  void storageRoot; void storageKey; void content;
+  throw new Error("Armazenamento físico de anexos foi desativado; use links HTTPS.");
 }
 
 export async function readAttachmentFile(storageRoot, storageKey) {
-  return fs.readFile(resolveAttachmentPath(storageRoot, storageKey));
+  void storageRoot; void storageKey;
+  throw new Error("Download físico de anexos foi desativado; use links HTTPS.");
 }
 
 export async function removeAttachmentFile(storageRoot, storageKey) {
-  const target = resolveAttachmentPath(storageRoot, storageKey);
-  try {
-    await fs.unlink(target);
-  } catch (error) {
-    if (error.code !== "ENOENT") throw error;
-  }
-  await pruneEmptyDirectories(path.dirname(target), storageRoot);
+  void storageRoot; void storageKey;
+  throw new Error("Remoção física de anexos foi desativada para preservar dados históricos.");
 }
 
 export async function stageAttachmentFileRemoval(storageRoot, storageKey) {
-  const originalPath = resolveAttachmentPath(storageRoot, storageKey);
-  const stagedPath = path.join(
-    path.dirname(originalPath),
-    `.${crypto.randomUUID()}.deleting`,
-  );
-  try {
-    await fs.rename(originalPath, stagedPath);
-  } catch (error) {
-    if (error.code === "ENOENT") return null;
-    throw error;
-  }
-  return { originalPath, stagedPath, storageRoot };
+  void storageRoot; void storageKey;
+  throw new Error("Remoção física de anexos foi desativada para preservar dados históricos.");
 }
 
 export async function restoreStagedAttachmentFile(staged) {
-  if (!staged) return;
-  await fs.rename(staged.stagedPath, staged.originalPath);
+  void staged;
+  throw new Error("Operações físicas de anexos estão desativadas.");
 }
 
 export async function finalizeStagedAttachmentRemoval(staged) {
-  if (!staged) return;
-  await fs.rm(staged.stagedPath, { force: true });
-  await pruneEmptyDirectories(path.dirname(staged.stagedPath), staged.storageRoot);
+  void staged;
+  throw new Error("Operações físicas de anexos estão desativadas.");
 }

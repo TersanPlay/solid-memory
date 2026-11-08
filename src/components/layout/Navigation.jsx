@@ -6,7 +6,7 @@ import { Avatar } from "../shared/Avatar";
 
 const navigationItems = [
   { path: "/inicio", label: "Início", icon: Home },
-  { path: "/documentos", label: "Documentos", icon: Files },
+  { path: "/documentos", label: "Protocolos", icon: Files },
   { path: "/departamentos", label: "Departamentos", icon: Building2, admin: true },
   { path: "/tipos", label: "Tipos", icon: FolderClock, admin: true },
   { path: "/usuarios", label: "Usuários", icon: Users, admin: true },
@@ -124,13 +124,31 @@ function Navigation({ session, onLogout }) {
             {session.role !== "VIEWER" && (
               <Link to="/documentos/novo" onClick={closeMenus}>
                 <FilePlus2 />
-                Novo documento
+                Novo protocolo
                 <ChevronRight />
               </Link>
             )}
           </div>
         </div>
       )}
+      <nav className="mobile-bottom-nav" aria-label="Navegação rápida">
+        <NavLink to="/inicio" end onClick={closeMenus}>
+          <Home />
+          <span>Início</span>
+        </NavLink>
+        <NavLink to="/documentos" onClick={closeMenus}>
+          <Files />
+          <span>Protocolos</span>
+        </NavLink>
+        <NavLink to="/atividades" onClick={closeMenus}>
+          <Activity />
+          <span>Atividades</span>
+        </NavLink>
+        <button type="button" onClick={() => setProfileOpen((open) => !open)} aria-expanded={profileOpen}>
+          <UserRound />
+          <span>Perfil</span>
+        </button>
+      </nav>
     </>
   );
 }

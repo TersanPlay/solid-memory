@@ -348,6 +348,14 @@ const legalLinks = {
 };
 
 const isLgpdAttention = (value) => /ainda falta|falta implementar|faltam|pendente|pendentes|precisa ser|precisam ser|não foi|não há|não possui|deve ser definido|revisar|reavalia|não identificado|não implementado|roadmap/i.test(String(value));
+const lgpdStatusPattern = /^\[(IMPLEMENTADO|OK|PARCIAL|PENDENTE)\]\s*/i;
+const lgpdStatusMeta = (value) => {
+  const match = String(value).match(lgpdStatusPattern);
+  if (!match) return { status: '', text: String(value) };
+  const normalized = match[1].toUpperCase();
+  return { status: normalized === 'OK' ? 'IMPLEMENTADO' : normalized, text: String(value).replace(lgpdStatusPattern, '') };
+};
+const lgpdStatusLabel = (status) => status === 'IMPLEMENTADO' ? 'OK' : status === 'PARCIAL' ? 'Parcial' : status === 'PENDENTE' ? 'Pendente' : '';
 const lgpdPriorityClass = (value) => {
   const normalized = String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
   if (normalized === 'alta') return 'lgpd-priority-alta';
@@ -397,6 +405,15 @@ function renderLgpdMarkdown(content) {
       if (rows.length) nodes.push(<div className="lgpd-table-wrap" key={`table-${index}`}><table><thead><tr>{rows[0].map((cell, cellIndex) => <th className={lgpdPriorityClass(cell)} key={cellIndex}>{renderLgpdInline(cell)}</th>)}</tr></thead><tbody>{rows.slice(1).map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) => <td className={lgpdPriorityClass(cell)} key={cellIndex}>{renderLgpdInline(cell)}</td>)}</tr>)}</tbody></table></div>);
       continue;
     }
+    if (/^\s*\d+[.)]\s+/.test(line)) {
+      const items = [];
+      while (index < lines.length && /^\s*\d+[.)]\s+/.test(lines[index])) {
+        const raw = lines[index++].replace(/^\s*\d+[.)]\s+/, '');
+        const status = lgpdStatusMeta(raw);
+        items.push(<li className={`${isLgpdAttention(status.text) ? 'lgpd-attention ' : ''}${status.status ? `lgpd-status-${status.status.toLowerCase()}` : ''}`} key={items.length}><span className="lgpd-list-number">{items.length + 1}</span>{status.status && <span className={`lgpd-status-tag lgpd-status-tag-${status.status.toLowerCase()}`}>{lgpdStatusLabel(status.status)}</span>}<span>{renderLgpdInline(status.text)}</span></li>);
+      }
+      nodes.push(<ol className="lgpd-ordered-list" key={`ordered-list-${index}`}>{items}</ol>); continue;
+    }
     if (/^\s*-\s+/.test(line)) {
       const items = [];
       while (index < lines.length && /^\s*-\s+/.test(lines[index])) {
@@ -408,7 +425,7 @@ function renderLgpdMarkdown(content) {
       nodes.push(<ul key={`list-${index}`}>{items}</ul>); continue;
     }
     const paragraph = [line.trim()]; index += 1;
-    while (index < lines.length && lines[index].trim() && !/^(#{1,4})\s+|^\s*-\s+|^\s*>\s?|^\s*\|/.test(lines[index])) paragraph.push(lines[index++].trim());
+    while (index < lines.length && lines[index].trim() && !/^(#{1,4})\s+|^\s*-\s+|^\s*\d+[.)]\s+|^\s*>\s?|^\s*\|/.test(lines[index])) paragraph.push(lines[index++].trim());
     const paragraphText = paragraph.join(' ');
     nodes.push(<p className={isLgpdAttention(paragraphText) ? 'lgpd-attention' : ''} key={`paragraph-${index}`}>{renderLgpdInline(paragraphText)}</p>);
   }
@@ -425,7 +442,7 @@ function PublicPrivacyRequestPage() {
     try { const response = await api.post('/public/privacy-requests', form); setResult(response.data); }
     catch (err) { setError(err.message); } finally { setSaving(false); }
   };
-  return <main className="public-privacy-page"><div className="ambient-mesh" aria-hidden="true" /><section className="public-privacy-shell"><Link className="lgpd-guide-brand" to="/login"><Brand /></Link><Eyebrow>CANAL PÚBLICO · LGPD</Eyebrow><h1>Solicitação de privacidade</h1><p className="public-privacy-intro">Use este formulário para registrar um pedido de acesso, correção, eliminação ou outro direito previsto na LGPD. O pedido será encaminhado para tratamento administrativo.</p>{result ? <BezelCard className="public-privacy-success"><span className="soft-icon"><Check /></span><h2>Solicitação registrada</h2><p>Guarde esta referência para acompanhamento:</p><strong>{result.reference}</strong><small>O canal público ainda não envia respostas por e-mail. O administrador deverá validar a solicitação antes do tratamento.</small><Link className="ghost-button" to="/lgpd">Conhecer o guia LGPD</Link></BezelCard> : <BezelCard className="public-privacy-form-card"><form className="form-stack" onSubmit={submit}><label>Nome<input value={form.requesterName} onChange={(event) => setForm({ ...form, requesterName: event.target.value })} maxLength="120" required /></label><label>E-mail<input type="email" value={form.requesterEmail} onChange={(event) => setForm({ ...form, requesterEmail: event.target.value })} maxLength="254" required /></label><label>Tipo de solicitação<select value={form.type} onChange={(event) => setForm({ ...form, type: event.target.value })}>{privacyRequestTypes.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label>Descrição<textarea rows="6" maxLength="2000" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Descreva o pedido sem enviar dados desnecessários." /></label><InlineError error={error} /><PrimaryButton type="submit" disabled={saving} icon={saving ? <span className="spinner" /> : <ArrowUpRight />}>{saving ? 'Enviando…' : 'Registrar solicitação'}</PrimaryButton></form><p className="public-privacy-disclaimer">Não envie senhas, documentos completos ou dados sensíveis desnecessários. O canal está em fase de MVP e a validação de identidade será feita pelo responsável administrativo.</p></BezelCard>}<Link className="public-privacy-back" to="/login"><ArrowLeft /> Voltar ao acesso</Link></section></main>;
+  return <main className="public-privacy-page"><div className="ambient-mesh" aria-hidden="true" /><section className="public-privacy-shell"><Link className="lgpd-guide-brand" to="/login"><Brand /></Link><Eyebrow>CANAL PÚBLICO · LGPD</Eyebrow><h1>Solicitação de privacidade</h1><p className="public-privacy-intro">Use este formulário para registrar um pedido de acesso, correção, eliminação ou outro direito previsto na LGPD. O pedido será encaminhado para tratamento administrativo.</p>{result ? <BezelCard className="public-privacy-success"><span className="soft-icon"><Check /></span><h2>Solicitação registrada</h2><p>Guarde esta referência para acompanhamento:</p><strong>{result.reference}</strong><small>O canal público ainda não envia respostas por e-mail. O administrador deverá validar a solicitação antes do tratamento.</small><Link className="ghost-button" to="/lgpd">Conhecer o guia LGPD</Link></BezelCard> : <BezelCard className="public-privacy-form-card"><form className="form-stack" onSubmit={submit}><label>Nome<input value={form.requesterName} onChange={(event) => setForm({ ...form, requesterName: event.target.value })} maxLength="120" required /></label><label>E-mail<input type="email" value={form.requesterEmail} onChange={(event) => setForm({ ...form, requesterEmail: event.target.value })} maxLength="254" required /></label><label>Tipo de solicitação<SoftSelect value={form.type} onChange={(value) => setForm({ ...form, type: value })} options={privacyRequestTypes.map(([value, label]) => ({ value, label }))} ariaLabel="Tipo de solicitação" required /></label><label>Descrição<textarea rows="6" maxLength="2000" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Descreva o pedido sem enviar dados desnecessários." /></label><InlineError error={error} /><PrimaryButton type="submit" disabled={saving} icon={saving ? <span className="spinner" /> : <ArrowUpRight />}>{saving ? 'Enviando…' : 'Registrar solicitação'}</PrimaryButton></form><p className="public-privacy-disclaimer">Não envie senhas, documentos completos ou dados sensíveis desnecessários. O canal está em fase de MVP e a validação de identidade será feita pelo responsável administrativo.</p></BezelCard>}<Link className="public-privacy-back" to="/login"><ArrowLeft /> Voltar ao acesso</Link></section></main>;
 }
 
 function PublicPolicyPage({ kind }) {
@@ -447,6 +464,10 @@ function PublicPolicyPage({ kind }) {
 
 const COOKIE_PREFERENCES_KEY = 'memorydoc-cookie-preferences-v1';
 
+function PreferenceSwitch({ checked, disabled = false, onChange, label, description }) {
+  return <div className={`cookie-category ${disabled && !checked ? 'is-unavailable' : ''}`}><button type="button" className="cookie-category-control" role="switch" aria-checked={checked} aria-disabled={disabled} disabled={disabled} onClick={() => onChange(!checked)}><span className={`preference-switch ${checked ? 'is-on' : ''} ${disabled ? 'is-disabled' : ''}`} aria-hidden="true"><span /></span><span className="cookie-category-copy"><strong>{label}</strong><small>{description}</small></span></button><em>{disabled && !checked ? 'Indisponível' : checked ? 'Ativo' : 'Desativado'}</em></div>;
+}
+
 function CookiePreferences() {
   const [preferences, setPreferences] = useState(null);
   const [open, setOpen] = useState(false);
@@ -467,8 +488,7 @@ function CookiePreferences() {
   const showBanner = preferences === null && !open;
   return <>
     {showBanner && <aside className="cookie-banner" aria-label="Preferências de cookies"><div><strong>Cookies necessários</strong><p>Usamos apenas o cookie técnico de sessão para autenticar usuários. Não ativamos analytics ou marketing neste MVP.</p></div><div className="cookie-banner-actions"><button type="button" className="ghost-button" onClick={() => setOpen(true)}>Configurar</button><button type="button" className="primary-button" onClick={() => save({ analytics: false, marketing: false })}>Continuar</button></div></aside>}
-    {preferences && !open && <button type="button" className="cookie-preferences-trigger" onClick={() => setOpen(true)}>Preferências de cookies</button>}
-    {open && <><button type="button" className="cookie-preferences-overlay" aria-label="Fechar preferências" onClick={() => setOpen(false)} /><aside className="cookie-preferences" role="dialog" aria-modal="true" aria-labelledby="cookie-preferences-title"><div className="cookie-preferences-head"><div><Eyebrow>PREFERÊNCIAS</Eyebrow><h2 id="cookie-preferences-title">Gerenciar cookies</h2></div><button type="button" className="icon-button" aria-label="Fechar preferências" onClick={() => setOpen(false)}><X /></button></div><p>Escolha as categorias opcionais. O cookie de sessão é necessário para o acesso e não pode ser desativado neste gerenciador.</p><div className="cookie-category"><label><input type="checkbox" checked readOnly disabled /><span><strong>Necessários</strong><small>Autenticação e segurança da sessão. Sempre ativos.</small></span></label><em>Ativo</em></div><div className="cookie-category is-unavailable"><label><input type="checkbox" checked={analytics} onChange={(event) => setAnalytics(event.target.checked)} disabled /><span><strong>Analytics</strong><small>Não disponível no MVP; nenhum cookie analítico é instalado.</small></span></label><em>Indisponível</em></div><div className="cookie-category is-unavailable"><label><input type="checkbox" checked={marketing} onChange={(event) => setMarketing(event.target.checked)} disabled /><span><strong>Marketing</strong><small>Não disponível no MVP; nenhum cookie de publicidade é instalado.</small></span></label><em>Indisponível</em></div><div className="cookie-preferences-actions"><Link to="/cookies" className="ghost-button" onClick={() => setOpen(false)}>Ler política</Link><button type="button" className="primary-button" onClick={() => save({ analytics, marketing })}>Salvar preferências</button></div></aside></>}
+    {open && <><button type="button" className="cookie-preferences-overlay" aria-label="Fechar preferências" onClick={() => setOpen(false)} /><aside className="cookie-preferences" role="dialog" aria-modal="true" aria-labelledby="cookie-preferences-title"><div className="cookie-preferences-head"><div><Eyebrow>PREFERÊNCIAS</Eyebrow><h2 id="cookie-preferences-title">Gerenciar cookies</h2></div><button type="button" className="icon-button" aria-label="Fechar preferências" onClick={() => setOpen(false)}><X /></button></div><p>Escolha as categorias opcionais. O cookie de sessão é necessário para o acesso e não pode ser desativado neste gerenciador.</p><PreferenceSwitch checked onChange={() => undefined} disabled label="Necessários" description="Autenticação e segurança da sessão. Sempre ativos." /><PreferenceSwitch checked={analytics} onChange={setAnalytics} disabled label="Analytics" description="Não disponível no MVP; nenhum cookie analítico é instalado." /><PreferenceSwitch checked={marketing} onChange={setMarketing} disabled label="Marketing" description="Não disponível no MVP; nenhum cookie de publicidade é instalado." /><div className="cookie-preferences-actions"><Link to="/cookies" className="ghost-button" onClick={() => setOpen(false)}>Ler política</Link><button type="button" className="primary-button" onClick={() => save({ analytics, marketing })}>Salvar preferências</button></div></aside></>}
   </>;
 }
 
@@ -502,7 +522,7 @@ function PublicLgpdGuide() {
 
 const navigationItems = [
   { path: "/inicio", label: "Início", icon: Home },
-  { path: "/documentos", label: "Documentos", icon: Files },
+  { path: "/documentos", label: "Protocolos", icon: Files },
   { path: "/departamentos", label: "Departamentos", icon: Building2, admin: true },
   { path: "/tipos", label: "Tipos", icon: FolderClock, admin: true },
   { path: "/usuarios", label: "Usuários", icon: Users, admin: true },
@@ -624,13 +644,32 @@ function Navigation({ session, onLogout }) {
             {session.role !== "VIEWER" && (
               <Link to="/documentos/novo" onClick={closeMenus}>
                 <FilePlus2 />
-                Novo documento
+                Novo protocolo
                 <ChevronRight />
               </Link>
             )}
           </div>
         </div>
       )}
+      <nav className="mobile-bottom-nav" aria-label="Navegação rápida">
+        <div className="mobile-bottom-nav-scroll">
+          {items.map(({ path, label, icon: Icon }) => (
+            <NavLink
+              key={path}
+              to={path}
+              end={path !== "/documentos"}
+              onClick={closeMenus}
+            >
+              <Icon />
+              <span>{label}</span>
+            </NavLink>
+          ))}
+        <button type="button" onClick={() => setProfileOpen((open) => !open)} aria-expanded={profileOpen}>
+          <UserRound />
+          <span>Perfil</span>
+        </button>
+        </div>
+      </nav>
     </>
   );
 }
@@ -705,7 +744,7 @@ function Dashboard({
         <div className="hero-copy">
           <Eyebrow>AMBIENTE SEGURO · {formatDate(today).toUpperCase()}</Eyebrow>
           <h1>
-            Documentos em ordem. <span>Rotinas mais leves.</span>
+            Protocolos em ordem. <span>Rotinas mais leves.</span>
           </h1>
           <p className="lede">
             Registre, acompanhe e encontre cada documento administrativo com a
@@ -952,13 +991,13 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
   return (
     <>
       <PageHeader
-        eyebrow="ACERVO DOCUMENTAL"
-        title="Documentos"
+        eyebrow="REGISTRO DE PROTOCOLOS"
+        title="Protocolos"
         description="Consulte protocolos, acompanhe situações e encontre informações sem percorrer planilhas."
         action={
           canCreate ? (
             <PrimaryButton onClick={onNew} icon={<Plus />}>
-              Novo documento
+              Novo protocolo
             </PrimaryButton>
           ) : null
         }
@@ -989,7 +1028,7 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
             <label>
               Tipo
               <SearchableSelect
-                ariaLabel="Tipo documental"
+                ariaLabel="Tipo de protocolo"
                 value={typeId}
                 onChange={setTypeId}
                 options={[
@@ -1005,7 +1044,7 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
             <label>
               Status
               <SoftSelect
-                ariaLabel="Status documental"
+                ariaLabel="Status do protocolo"
                 value={status}
                 onChange={setStatus}
                 options={[
@@ -1036,7 +1075,7 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
           <>
             <div className="results-meta">
               <span>
-                <strong>{result.pagination.total}</strong> documento(s)
+                <strong>{result.pagination.total}</strong> protocolo(s)
                 encontrado(s)
               </span>
               <span>Ordenados pelos mais recentes</span>
@@ -1048,7 +1087,7 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
                     <thead>
                       <tr>
                         <th>Protocolo</th>
-                        <th>Documento</th>
+                        <th>Registro</th>
                         <th>Emissão</th>
                         <th>Origem → destino</th>
                         <th>Responsável</th>
@@ -1066,7 +1105,7 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
                               {document.protocol}
                             </strong>
                           </td>
-                          <td data-label="Documento">
+                          <td data-label="Registro">
                             <strong>{document.type.name}</strong>
                             <small>{document.subject}</small>
                           </td>
@@ -1094,12 +1133,12 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
               ) : (
                 <EmptyState
                   icon={<Search />}
-                  title="Nenhum documento encontrado"
-                  text="Revise os filtros ou registre um novo documento."
+                  title="Nenhum protocolo encontrado"
+                  text="Revise os filtros ou registre um novo protocolo."
                   action={
                     canCreate ? (
                       <PrimaryButton onClick={onNew} icon={<Plus />}>
-                        Novo documento
+                        Novo protocolo
                       </PrimaryButton>
                     ) : null
                   }
@@ -1135,62 +1174,6 @@ function Documents({ types, onNew, onSelect, reloadKey, canCreate }) {
   );
 }
 
-export function AttachmentPicker({ file, onChange, disabled = false }) {
-  const inputRef = useRef(null);
-  const remove = () => {
-    if (inputRef.current) inputRef.current.value = "";
-    onChange(null);
-  };
-  return (
-    <div className="span-two attachment-picker">
-      <label
-        className={`file-drop ${file ? "has-file" : ""} ${disabled ? "disabled" : ""}`}
-      >
-        {!file && <Upload className="file-upload-icon" />}
-        <span>
-          <strong>{file?.name || "Adicionar documento anexo"}</strong>
-          <small>
-            {file
-              ? `${formatFileSize(file.size)} · ${getAttachmentType(file).label}`
-              : "PDF, DOCX, XLSX, JPEG ou PNG · até 10 MB"}
-          </small>
-        </span>
-        {file && <span className={`file-type-icon ${getAttachmentType(file).className}`} aria-label={`Tipo de arquivo: ${getAttachmentType(file).label}`}>
-          {getAttachmentType(file).icon}
-        </span>}
-        <input
-          ref={inputRef}
-          type="file"
-          disabled={disabled}
-          accept=".pdf,.docx,.xlsx,.jpg,.jpeg,.png"
-          onChange={(event) => onChange(event.target.files?.[0] || null)}
-        />
-      </label>
-      {file && (
-        <button
-          type="button"
-          className="selected-file-remove"
-          disabled={disabled}
-          onClick={remove}
-        >
-          <Trash2 />
-          Remover anexo selecionado
-        </button>
-      )}
-    </div>
-  );
-}
-
-function getAttachmentType(file) {
-  const name = file?.name?.toLowerCase() || "";
-  const mime = file?.type?.toLowerCase() || "";
-  if (mime.includes("pdf") || name.endsWith(".pdf")) return { label: "PDF", className: "file-type-pdf", icon: <FileText /> };
-  if (mime.includes("spreadsheet") || mime.includes("excel") || /\.(xlsx?|csv)$/.test(name)) return { label: "Planilha Excel", className: "file-type-spreadsheet", icon: <FileSpreadsheet /> };
-  if (mime.includes("word") || mime.includes("document") || /\.(docx?|odt)$/.test(name)) return { label: "Documento", className: "file-type-document", icon: <FileText /> };
-  if (mime.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/.test(name)) return { label: "Imagem", className: "file-type-image", icon: <FileImage /> };
-  return { label: "Arquivo", className: "file-type-file", icon: <FileArchive /> };
-}
-
 function NewDocument({
   types,
   departments,
@@ -1215,7 +1198,6 @@ function NewDocument({
     responsibleUserId: session.id,
     status: "ENVIADO",
   });
-  const [file, setFile] = useState(null);
   const [link, setLink] = useState({ url: "" });
   const [preview, setPreview] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -1233,6 +1215,10 @@ function NewDocument({
   }, [form.typeId, form.date]);
   const submit = async (event) => {
     event.preventDefault();
+    if (link.url.trim() && !/^https:\/\//i.test(link.url.trim())) {
+      setError("O link relacionado deve começar com https://.");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -1256,14 +1242,14 @@ function NewDocument({
         try {
           await api.post(`/documents/${document.id}/links`, link);
           document = (await api.get(`/documents/${document.id}`)).data;
-        } catch (uploadError) {
+        } catch (linkError) {
           notify(
-            `Documento ${document.protocol} salvo, mas o link falhou: ${uploadError.message}`,
+            `Protocolo ${document.protocol} salvo, mas o link falhou: ${linkError.message}`,
             true,
           );
         }
       }
-      notify(`Documento ${document.protocol} registrado com sucesso.`);
+      notify(`Protocolo ${document.protocol} registrado com sucesso.`);
       onSaved(document);
     } catch (requestError) {
       setError(requestError.message);
@@ -1275,8 +1261,8 @@ function NewDocument({
     <>
       <PageHeader
         eyebrow="NOVO REGISTRO"
-        title="Registrar documento"
-        description="Preencha os dados essenciais. O protocolo definitivo será emitido pelo servidor ao confirmar."
+        title="Registrar protocolo"
+        description="Preencha os dados essenciais. O número do protocolo será emitido pelo servidor ao confirmar."
       />
       <main className="page-content wrap form-layout">
         <form className="document-form" onSubmit={submit}>
@@ -1298,14 +1284,14 @@ function NewDocument({
               <span>01</span>
               <div>
                 <h2>Identificação</h2>
-                <p>Tipo, data e percurso do documento.</p>
+                <p>Tipo, data e percurso do protocolo.</p>
               </div>
             </div>
             <div className="fields-grid two-cols">
               <label>
-                Tipo de documento <span>*</span>
+                Tipo de protocolo <span>*</span>
                 <SearchableSelect
-                  ariaLabel="Tipo de documento"
+                  ariaLabel="Tipo de protocolo"
                   value={form.typeId}
                   onChange={(value) => update("typeId", value)}
                   options={activeTypes.map((type) => ({
@@ -1327,8 +1313,8 @@ function NewDocument({
               </label>
               <div className="document-flow-group span-two">
                 <div className="document-flow-heading">
-                  <strong>Fluxo documental</strong>
-                  <span>Defina de onde o documento parte e para onde ele será encaminhado.</span>
+                    <strong>Fluxo do protocolo</strong>
+                    <span>Defina de onde o protocolo parte e para onde ele será encaminhado.</span>
                 </div>
                 <div className="document-flow-grid">
                   <label>
@@ -1423,11 +1409,11 @@ function NewDocument({
               <div className="document-link-fields">
                 <label>
                   <span className="document-link-label">
-                    URL do documento
+                    Link HTTPS do arquivo relacionado
                     <button
                       type="button"
                       className="form-info-trigger"
-                      aria-label="Como os links documentais são armazenados"
+                      aria-label="Como os links dos arquivos são armazenados"
                     >
                       <CircleHelp aria-hidden="true" />
                       <span className="form-info-tooltip" role="tooltip">
@@ -1435,7 +1421,8 @@ function NewDocument({
                       </span>
                     </button>
                   </span>
-                  <input type="url" value={link.url} onChange={(event) => setLink((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://drive.google.com/..." />
+                  <input type="url" inputMode="url" autoComplete="url" value={link.url} onChange={(event) => setLink((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://..." pattern="https://.*" aria-describedby="new-protocol-link-help" />
+                  <small id="new-protocol-link-help" className="field-help">Opcional. O arquivo permanece no serviço externo; este registro guarda somente o endereço HTTPS.</small>
                 </label>
               </div>
             </div>
@@ -1463,16 +1450,19 @@ function NewDocument({
 
 function DetailPanel({ document, session, onClose, onUpdate, notify }) {
   const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [linkDraft, setLinkDraft] = useState({ url: "" });
   useEffect(() => {
     if (!document) return;
+    setHistoryLoading(true);
     api
       .get(`/documents/${document.id}/history`)
       .then((result) => setHistory(result.data))
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(err.message))
+      .finally(() => setHistoryLoading(false));
   }, [document]);
   if (!document) return null;
   const canEdit = canEditDocument(session, document);
@@ -1509,6 +1499,10 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
   const addLink = async (event) => {
     event.preventDefault();
     if (!linkDraft.url.trim()) return;
+    if (!/^https:\/\//i.test(linkDraft.url.trim())) {
+      setError("O link relacionado deve começar com https://.");
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -1516,7 +1510,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
       const updated = (await api.get(`/documents/${document.id}`)).data;
       onUpdate(updated);
       setLinkDraft({ url: "" });
-      notify("Link documental adicionado.");
+      notify("Link HTTPS adicionado ao protocolo.");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -1534,7 +1528,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
       ]);
       onUpdate(updated.data);
       setHistory(latestHistory.data);
-      notify(`Link ${link.title} removido.`);
+      notify(`Link ${link.title} removido do protocolo.`);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -1568,9 +1562,9 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
             </div>
           </div>
           <div className="drawer-content">
-            <div className="detail-hero">
+              <div className="detail-hero" aria-labelledby="protocol-detail-title">
               <Eyebrow>{document.type.name}</Eyebrow>
-              <h2>{document.protocol}</h2>
+              <h2 id="protocol-detail-title">{document.protocol}</h2>
               <p>{document.subject}</p>
               <StatusBadge status={document.status} />
             </div>
@@ -1595,7 +1589,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
             <InlineError error={error} />
             <section className="detail-section detail-status-section">
               <div className="detail-section-title">
-                <h3>Situação do documento</h3>
+                <h3>Situação do protocolo</h3>
                 <Activity />
               </div>
               {canEdit ? (
@@ -1625,7 +1619,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
               {session.role === "admin" && document.status !== "CANCELADO" && (
                 <button
                   className="danger-text"
-                  aria-label="Cancelar documento e preservar número"
+                  aria-label="Cancelar protocolo e preservar número"
                   disabled={busy}
                   onClick={() => setConfirmingCancel(true)}
                 >
@@ -1633,7 +1627,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
                     <X />
                   </span>
                   <span className="danger-text-copy">
-                    <strong>Cancelar documento</strong>
+                    <strong>Cancelar protocolo</strong>
                     <small>O número do protocolo será preservado</small>
                   </span>
                   <ChevronRight aria-hidden="true" />
@@ -1642,20 +1636,23 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
             </section>
             <section className="detail-section">
               <div className="detail-section-title">
-                <h3>Links documentais</h3>
+                <div>
+                  <h3>Arquivo relacionado</h3>
+                  <p className="detail-section-subtitle">Acesso externo por link HTTPS</p>
+                </div>
                 <ExternalLink />
               </div>
               {document.links?.map((link) => (
-                <div className="attachment-row" key={link.id}>
-                  <a className="attachment-download" href={link.url} target="_blank" rel="noopener noreferrer">
+                <div className="protocol-link-row" key={link.id}>
+                  <a className="protocol-link-action" href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`Abrir arquivo relacionado: ${link.provider}`}>
                     <span className="doc-file-icon"><ExternalLink /></span>
                     <span><strong>{link.provider}</strong><small>{link.url}</small></span>
-                    <ArrowUpRight />
+                    <span className="protocol-link-open">Abrir <ArrowUpRight /></span>
                   </a>
                   {canEdit && (
                     <IconButton
                       label={`Remover link ${link.provider}`}
-                      className="attachment-remove"
+                      className="protocol-link-remove"
                       disabled={busy}
                       onClick={() => removeLink(link)}
                     >
@@ -1665,15 +1662,16 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
                 </div>
               ))}
               {!document.links?.length && (
-                <div className="empty-inline">
+                <div className="protocol-link-empty">
                   <ExternalLink />
-                  Nenhum link documental adicionado
+                  <span><strong>Este protocolo não possui link relacionado</strong><small>O arquivo permanece no serviço externo. Nenhum upload ou hospedagem é feito pelo MemoryDoc.</small></span>
                 </div>
               )}
               {canEdit && (
                 <form className="document-link-fields" onSubmit={addLink}>
-                  <label>URL HTTPS<input type="url" required value={linkDraft.url} onChange={(event) => setLinkDraft((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://..." /></label>
-                  <button type="submit" className="ghost-button" disabled={busy}><ExternalLink /> Adicionar link</button>
+                  <label>{document.links?.length ? "Adicionar outro link HTTPS" : "Adicionar link HTTPS"}<input type="url" inputMode="url" autoComplete="url" required pattern="https://.*" value={linkDraft.url} onChange={(event) => setLinkDraft((current) => ({ ...current, url: event.target.value }))} maxLength="2000" placeholder="https://..." aria-describedby="detail-link-help" /></label>
+                  <small id="detail-link-help" className="field-help">Use um endereço HTTPS para abrir o arquivo no serviço externo.</small>
+                  <button type="submit" className="primary-button protocol-link-submit" disabled={busy}><ExternalLink /> Salvar link HTTPS</button>
                 </form>
               )}
             </section>
@@ -1682,7 +1680,9 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
                 <h3>Histórico</h3>
                 <FolderClock />
               </div>
-              <div className="timeline">
+              {historyLoading && <div className="detail-inline-state">Carregando histórico…</div>}
+              {!historyLoading && !history.length && <div className="detail-inline-state">Nenhuma movimentação registrada ainda.</div>}
+              {!historyLoading && history.length > 0 && <div className="timeline">
                 {history.map((item) => (
                   <div className="timeline-item" key={item.id}>
                     <i />
@@ -1694,7 +1694,7 @@ function DetailPanel({ document, session, onClose, onUpdate, notify }) {
                     </div>
                   </div>
                 ))}
-              </div>
+              </div>}
             </section>
             <div className="detail-footer">
               <small>
@@ -1813,69 +1813,6 @@ export function CancelDocumentModal({
   );
 }
 
-export function RemoveAttachmentModal({
-  attachment,
-  busy = false,
-  onClose,
-  onConfirm,
-}) {
-  return (
-    <SimpleModal
-      role="alertdialog"
-      className="remove-attachment-modal"
-      title="Remover anexo?"
-      description="O arquivo será excluído permanentemente do banco de dados."
-      onClose={onClose}
-    >
-      <div className="remove-attachment-body">
-        <div className="remove-attachment-card">
-          <span aria-hidden="true">
-            <FileText />
-          </span>
-          <div>
-            <small>ARQUIVO</small>
-            <strong title={attachment.originalName}>
-              {attachment.originalName}
-            </strong>
-            <p>{formatFileSize(attachment.size)}</p>
-          </div>
-        </div>
-        <div className="removal-audit-note">
-          <CircleHelp aria-hidden="true" />
-          <div>
-            <strong>Conteúdo irrecuperável</strong>
-            <p>
-              Nome, tamanho, usuário e data permanecerão registrados no
-              histórico.
-            </p>
-          </div>
-        </div>
-        <div className="modal-actions remove-attachment-actions">
-          <button
-            type="button"
-            className="ghost-button"
-            disabled={busy}
-            onClick={onClose}
-          >
-            Manter anexo
-          </button>
-          <button
-            type="button"
-            className="confirm-danger-button"
-            disabled={busy}
-            onClick={onConfirm}
-          >
-            <span>{busy ? "Removendo…" : "Remover definitivamente"}</span>
-            <span aria-hidden="true">
-              <Trash2 />
-            </span>
-          </button>
-        </div>
-      </div>
-    </SimpleModal>
-  );
-}
-
 export function RemoveDepartmentModal({
   department,
   busy = false,
@@ -1944,6 +1881,7 @@ const departmentReferenceCount = (department) =>
   (department._count?.destinationDocuments || 0);
 
 export function Departments({ departments, refresh, notify }) {
+  const [search, setSearch] = useState("");
   const [formMode, setFormMode] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [departmentToDelete, setDepartmentToDelete] = useState(null);
@@ -2043,6 +1981,11 @@ export function Departments({ departments, refresh, notify }) {
     }
   };
 
+  const visibleDepartments = departments.filter((department) => {
+    const query = search.trim().toLowerCase();
+    return !query || `${department.name} ${department.code}`.toLowerCase().includes(query);
+  });
+
   return (
     <>
       <PageHeader
@@ -2056,6 +1999,13 @@ export function Departments({ departments, refresh, notify }) {
         }
       />
       <main className="page-content wrap">
+        <div className="admin-toolbar reveal">
+          <label className="admin-search">
+            <Search aria-hidden="true" />
+            <span className="sr-only">Buscar departamento</span>
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar departamento ou código" />
+          </label>
+        </div>
         <div className="summary-strip reveal">
           <span>
             <strong>{departments.length}</strong> departamentos cadastrados
@@ -2065,8 +2015,8 @@ export function Departments({ departments, refresh, notify }) {
             {departments.filter((item) => item.active).length} ativos
           </span>
         </div>
-        <div className="cards-list reveal">
-          {departments.map((department) => {
+        {visibleDepartments.length === 0 ? <div className="empty-state admin-empty reveal"><span><Building2 /></span><h3>{departments.length ? "Nenhum departamento encontrado" : "Nenhum departamento cadastrado"}</h3><p>{departments.length ? "Tente buscar por outro nome ou código." : "Adicione o primeiro departamento para organizar os protocolos."}</p></div> : <div className="cards-list reveal">
+          {visibleDepartments.map((department) => {
             const references = departmentReferenceCount(department);
             const deleteLabel =
               references > 0
@@ -2124,7 +2074,7 @@ export function Departments({ departments, refresh, notify }) {
               </BezelCard>
             );
           })}
-        </div>
+        </div>}
       </main>
       {formMode && (
         <SimpleModal
@@ -2202,6 +2152,7 @@ export function Departments({ departments, refresh, notify }) {
 }
 
 function Types({ types, refresh, notify }) {
+  const [search, setSearch] = useState("");
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -2232,6 +2183,10 @@ function Types({ types, refresh, notify }) {
       notify(err.message, true);
     }
   };
+  const visibleTypes = types.filter((type) => {
+    const query = search.trim().toLowerCase();
+    return !query || `${type.name} ${type.prefix}`.toLowerCase().includes(query);
+  });
   return (
     <>
       <PageHeader
@@ -2245,8 +2200,11 @@ function Types({ types, refresh, notify }) {
         }
       />
       <main className="page-content wrap">
-        <div className="type-grid reveal">
-          {types.map((type, index) => (
+        <div className="admin-toolbar reveal">
+          <label className="admin-search"><Search aria-hidden="true" /><span className="sr-only">Buscar tipo de protocolo</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar tipo ou prefixo" /></label>
+        </div>
+        {visibleTypes.length === 0 ? <div className="empty-state admin-empty reveal"><span><FolderClock /></span><h3>{types.length ? "Nenhum tipo encontrado" : "Nenhum tipo cadastrado"}</h3><p>{types.length ? "Tente buscar por outro nome ou prefixo." : "Crie um tipo para começar a numerar protocolos."}</p></div> : <div className="type-grid reveal">
+          {visibleTypes.map((type, index) => (
             <BezelCard className="type-card" key={type.id}>
               <div className={`type-monogram tone-${index % 4}`}>
                 {type.prefix}
@@ -2280,7 +2238,7 @@ function Types({ types, refresh, notify }) {
               </div>
             </BezelCard>
           ))}
-        </div>
+        </div>}
       </main>
       {adding && (
         <SimpleModal
@@ -2347,6 +2305,7 @@ function Types({ types, refresh, notify }) {
 }
 
 function UsersPage({ users, refresh, notify }) {
+  const [search, setSearch] = useState("");
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -2375,6 +2334,10 @@ function UsersPage({ users, refresh, notify }) {
       notify(err.message, true);
     }
   };
+  const visibleUsers = users.filter((user) => {
+    const query = search.trim().toLowerCase();
+    return !query || `${user.name} ${user.email}`.toLowerCase().includes(query);
+  });
   return (
     <>
       <PageHeader
@@ -2388,7 +2351,8 @@ function UsersPage({ users, refresh, notify }) {
         }
       />
       <main className="page-content wrap">
-        <BezelCard className="table-card">
+        <div className="admin-toolbar reveal"><label className="admin-search"><Search aria-hidden="true" /><span className="sr-only">Buscar usuário</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar por nome ou e-mail" /></label></div>
+        {visibleUsers.length === 0 ? <div className="empty-state admin-empty reveal"><span><Users /></span><h3>{users.length ? "Nenhum usuário encontrado" : "Nenhum usuário cadastrado"}</h3><p>{users.length ? "Tente buscar por outro nome ou e-mail." : "Adicione um usuário para liberar o acesso ao sistema."}</p></div> : <BezelCard className="table-card">
           <div className="table-scroll">
             <table>
               <thead>
@@ -2400,7 +2364,7 @@ function UsersPage({ users, refresh, notify }) {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {visibleUsers.map((user) => (
                   <tr key={user.id}>
                     <td>
                       <Link className="person-cell user-profile-link" to={`/usuarios/${encodeURIComponent(user.id)}/perfil`}>
@@ -2439,7 +2403,8 @@ function UsersPage({ users, refresh, notify }) {
               </tbody>
             </table>
           </div>
-        </BezelCard>
+        </BezelCard>}
+        <div className="user-mobile-list">{visibleUsers.map((user) => <BezelCard className="user-mobile-card" key={`mobile-${user.id}`}><div className="user-mobile-heading"><Link className="person-cell user-profile-link" to={`/usuarios/${encodeURIComponent(user.id)}/perfil`}><Avatar name={user.name} small /><span><strong>{user.name}</strong><small className="user-mobile-email">{user.email}</small></span></Link><span className={`user-mobile-status ${user.active ? "is-active" : "is-inactive"}`}>{user.active ? "Ativo" : "Inativo"}</span></div><div className="user-mobile-controls"><label>Perfil<SoftSelect ariaLabel={`Perfil de ${user.name}`} value={user.role} onChange={(value) => update(user, { role: value })} options={Object.entries(roleLabels).map(([optionValue, label]) => ({ value: optionValue, label }))} /></label><label className="user-mobile-switch">Acesso<label className="switch"><input type="checkbox" checked={user.active} onChange={() => update(user, { active: !user.active })} /><span /></label></label></div></BezelCard>)}</div>
       </main>
       {adding && (
         <SimpleModal
@@ -2614,6 +2579,7 @@ function Reports({ types, notify }) {
               Exportar Excel
             </button>
           </div>
+          <p className="report-mobile-note">Os arquivos exportados contêm somente registros de protocolos dentro do recorte selecionado.</p>
         </BezelCard>
       </main>
     </>
@@ -2623,39 +2589,81 @@ function Reports({ types, notify }) {
 function ActivityPage() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
-  useEffect(() => {
+  const [query, setQuery] = useState("");
+  const [kind, setKind] = useState("all");
+  const [loading, setLoading] = useState(true);
+
+  const loadActivity = () => {
+    setLoading(true);
+    setError("");
     api
       .get("/activity?pageSize=100")
-      .then(setResult)
-      .catch((err) => setError(err.message));
+      .then((data) => setResult(data))
+      .catch((err) => setError(err.message || "Não foi possível carregar o histórico."))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadActivity();
   }, []);
+
+  const displayDescription = (event) => {
+    const raw = String(event.description || "Atividade registrada");
+    if (event.action === "ATTACHMENT_ADD" || /^Anexo adicionado/i.test(raw)) {
+      return raw.replace(/^Anexo adicionado/i, "Link relacionado registrado");
+    }
+    if (event.action === "ATTACHMENT_REMOVE" || /^Anexo removido/i.test(raw)) {
+      return raw.replace(/^Anexo removido/i, "Link relacionado removido");
+    }
+    return raw.replace(/^Documento registrado/i, "Protocolo registrado");
+  };
+
+  const events = result?.data || [];
+  const filteredEvents = events.filter((event) => {
+    const description = displayDescription(event).toLowerCase();
+    const protocol = String(event.document?.protocol || "").toLowerCase();
+    const user = String(event.user?.name || "").toLowerCase();
+    const matchesQuery = !query.trim() || `${description} ${protocol} ${user}`.includes(query.trim().toLowerCase());
+    const matchesKind = kind === "all" || description.includes(kind);
+    return matchesQuery && matchesKind;
+  });
+
   return (
     <>
       <PageHeader
         eyebrow="RASTREABILIDADE"
         title="Histórico de atividades"
-        description="Uma trilha transparente de tudo o que mudou nos documentos."
+        description="Consulte visualizações, registros e movimentações dos protocolos."
       />
       <main className="page-content wrap">
-        <InlineError error={error} />
-        {!result ? (
-          <LoadingState />
+        {error ? (
+          <BezelCard className="activity-state-card activity-error-card">
+            <div className="activity-state-icon" aria-hidden="true"><Activity /></div>
+            <div><strong>Não foi possível carregar as atividades</strong><p>{error}</p></div>
+            <button type="button" className="secondary-button activity-retry" onClick={loadActivity}>Tentar novamente</button>
+          </BezelCard>
+        ) : loading ? (
+          <BezelCard className="activity-state-card"><LoadingState text="Carregando histórico de protocolos…" /></BezelCard>
         ) : (
           <BezelCard className="activity-card reveal">
-            <div className="timeline activity-timeline">
-              {result.data.map((event) => (
-                <div className="timeline-item" key={event.id}>
-                  <i />
-                  <div>
-                    <strong>{event.description}</strong>
-                    <span>
-                      <b>{event.document.protocol}</b> ·{" "}
-                      {formatDateTime(event.createdAt)} · {event.user.name}
-                    </span>
-                  </div>
-                </div>
-              ))}
+            <div className="activity-toolbar" aria-label="Filtros de atividades">
+              <label className="activity-search-field">Buscar atividade
+                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Protocolo, pessoa ou ação…" type="search" />
+              </label>
+              <label className="activity-filter-field">Tipo de atividade
+                <select value={kind} onChange={(event) => setKind(event.target.value)}>
+                  <option value="all">Todas as atividades</option>
+                  <option value="visual">Visualizações</option>
+                  <option value="registr">Registros</option>
+                  <option value="moviment">Movimentações</option>
+                  <option value="link">Links relacionados</option>
+                </select>
+              </label>
             </div>
+            <div className="activity-summary" aria-live="polite"><strong>{filteredEvents.length}</strong> {filteredEvents.length === 1 ? "atividade encontrada" : "atividades encontradas"}</div>
+            {filteredEvents.length === 0 ? (
+              <div className="activity-empty-state"><div className="activity-state-icon" aria-hidden="true"><Activity /></div><strong>{events.length ? "Nenhuma atividade corresponde aos filtros" : "Ainda não há atividades"}</strong><p>{events.length ? "Tente limpar a busca ou escolher outro tipo de atividade." : "As consultas e movimentações dos protocolos aparecerão aqui."}</p>{events.length > 0 && <button type="button" className="secondary-button" onClick={() => { setQuery(""); setKind("all"); }}>Limpar filtros</button>}</div>
+            ) : <div className="timeline activity-timeline">{filteredEvents.map((event) => <div className="timeline-item" key={event.id}><i aria-hidden="true" /><div><strong>{displayDescription(event)}</strong><span><b>{event.document?.protocol || "Protocolo sem número"}</b><em>{formatDateTime(event.createdAt)}</em><em>{event.user?.name || "Usuário"}</em></span></div></div>)}</div>}
           </BezelCard>
         )}
       </main>
@@ -2745,7 +2753,7 @@ function Footer() {
   return (
     <footer>
       <div>
-        <span>MEMORYDOC · GESTÃO DOCUMENTAL</span>
+        <span>MEMORYDOC · REGISTRO DE PROTOCOLOS</span>
         <span>SQLITE · SEQUÊNCIAS SEGURAS · HISTÓRICO PRESERVADO</span>
       </div>
     </footer>
@@ -2794,7 +2802,7 @@ function PageTitle() {
     else if (pathname === "/cookies") title = "Política de Cookies · MemoryDoc";
     else if (pathname === "/privacidade/solicitar") title = "Solicitação de privacidade · MemoryDoc";
     else if (pathname === "/inicio" || pathname === "/") title = "Início · MemoryDoc";
-    else if (pathname === "/documentos") title = "Documentos · MemoryDoc";
+    else if (pathname === "/documentos") title = "Protocolos · MemoryDoc";
     else if (pathname === "/documentos/novo") title = "Novo registro · MemoryDoc";
     else if (pathname.startsWith("/documentos/"))
       title = "Detalhes do documento · MemoryDoc";

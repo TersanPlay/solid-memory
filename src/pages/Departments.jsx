@@ -133,12 +133,12 @@ export default function Departments({ departments, refresh, notify }) {
             {departments.filter((item) => item.active).length} ativos
           </span>
         </div>
-        <div className="cards-list reveal">
+        <div className="cards-list reveal" aria-label="Departamentos cadastrados">
           {departments.map((department) => {
             const references = departmentReferenceCount(department);
             const deleteLabel =
               references > 0
-                ? `Não é possível excluir ${department.name}: ${references} vínculo${references === 1 ? "" : "s"} com documentos`
+                ? `Não é possível excluir ${department.name}: ${references} vínculo${references === 1 ? "" : "s"} com protocolos`
                 : `Excluir ${department.name}`;
             return (
               <BezelCard className="department-card" key={department.id}>
@@ -203,7 +203,7 @@ export default function Departments({ departments, refresh, notify }) {
           }
           description={
             formMode === "edit"
-              ? "As alterações serão usadas nos próximos registros; documentos emitidos preservam os dados históricos."
+              ? "As alterações serão usadas nos próximos registros; protocolos emitidos preservam os dados históricos."
               : "A unidade ficará disponível nos campos de origem e destino."
           }
           onClose={closeEditor}

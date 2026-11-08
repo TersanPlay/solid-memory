@@ -96,7 +96,7 @@ try {
           subject: "Encaminhamento de inventário de equipamentos",
           responsibleUserId: admin.id,
           status: "ENVIADO",
-          notes: "Registro demonstrativo sem anexo.",
+          notes: "Registro demonstrativo sem link externo.",
         },
         admin,
       );

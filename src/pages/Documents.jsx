@@ -55,8 +55,8 @@ export default function Documents({ types, onNew, onSelect, reloadKey, canCreate
   return (
     <>
       <PageHeader
-        eyebrow="ACERVO DOCUMENTAL"
-        title="Protocolo"
+        eyebrow="REGISTRO DE PROTOCOLOS"
+        title="Protocolos"
         description="Consulte protocolos, acompanhe situações e encontre informações sem percorrer planilhas."
         description="Consulte protocolos, acompanhe situações e encontre informações sem percorrer planilhas."
         action={
@@ -93,7 +93,7 @@ export default function Documents({ types, onNew, onSelect, reloadKey, canCreate
             <label>
               Tipo
               <SearchableSelect
-                ariaLabel="Tipo documental"
+                ariaLabel="Tipo de protocolo"
                 value={typeId}
                 onChange={setTypeId}
                 options={[
@@ -109,7 +109,7 @@ export default function Documents({ types, onNew, onSelect, reloadKey, canCreate
             <label>
               Status
               <SoftSelect
-                ariaLabel="Status documental"
+                ariaLabel="Status do protocolo"
                 value={status}
                 onChange={setStatus}
                 options={[
@@ -144,7 +144,7 @@ export default function Documents({ types, onNew, onSelect, reloadKey, canCreate
                   <thead>
                     <tr>
                       <th>Protocolo</th>
-                      <th>Documento</th>
+                      <th>Assunto do protocolo</th>
                       <th>Emissão</th>
                       <th>Origem → destino</th>
                       <th>Responsável</th>
@@ -199,12 +199,12 @@ export default function Documents({ types, onNew, onSelect, reloadKey, canCreate
             ) : (
               <EmptyState
                 icon={<Search />}
-                title="Nenhum documento encontrado"
-                text="Revise os filtros ou registre um novo documento."
+                title="Nenhum protocolo encontrado"
+                text="Revise os filtros ou registre um novo protocolo."
                 action={
                   canCreate ? (
                     <PrimaryButton onClick={onNew} icon={<Plus />}>
-                      Novo documento
+                      Novo protocolo
                     </PrimaryButton>
                   ) : null
                 }

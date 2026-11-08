@@ -20,7 +20,7 @@ export default function Reports({ types, notify }) {
     try {
       await api.download(
         `/reports/documents${queryString({ ...filters, format })}`,
-        `relatorio-documentos.${format}`,
+        `relatorio-protocolos.${format}`,
       );
       notify(`Relatório ${format.toUpperCase()} gerado.`);
     } catch (err) {
@@ -49,7 +49,7 @@ export default function Reports({ types, notify }) {
             <label>
               Tipo
               <SearchableSelect
-                ariaLabel="Tipo documental do relatório"
+                ariaLabel="Tipo de protocolo do relatório"
                 value={filters.typeId}
                 onChange={(value) => setFilters({ ...filters, typeId: value })}
                 options={[
@@ -103,6 +103,7 @@ export default function Reports({ types, notify }) {
               Exportar JSON
             </button>
           </div>
+          <p className="report-mobile-note">O arquivo exportado reúne registros de protocolos conforme os filtros selecionados.</p>
         </BezelCard>
         <aside className="report-side reveal">
           <div className="help-card">
@@ -110,7 +111,7 @@ export default function Reports({ types, notify }) {
             <div>
               <strong>Dados preservados</strong>
               <p>
-                As exportações incluem documentos cancelados e sua numeração.
+                As exportações incluem protocolos cancelados e sua numeração.
               </p>
             </div>
           </div>

@@ -104,6 +104,34 @@ export default function UsersPage({ users, refresh, notify }) {
             </table>
           </div>
         </BezelCard>
+        <div className="user-mobile-list" aria-label="Usuários cadastrados">
+          {users.map((user) => (
+            <BezelCard className="user-mobile-card" key={user.id}>
+              <div className="user-mobile-heading">
+                <span className="person-cell"><Avatar name={user.name} small /><strong>{user.name}</strong></span>
+                <span className={`user-mobile-status ${user.active ? "is-active" : "is-inactive"}`}>
+                  {user.active ? "Ativo" : "Inativo"}
+                </span>
+              </div>
+              <span className="user-mobile-email">{user.email}</span>
+              <div className="user-mobile-controls">
+                <label>
+                  <span>Perfil de acesso</span>
+                  <SoftSelect
+                    ariaLabel={`Perfil de ${user.name}`}
+                    value={user.role}
+                    onChange={(value) => update(user, { role: value })}
+                    options={Object.entries(roleLabels).map(([optionValue, label]) => ({ value: optionValue, label }))}
+                  />
+                </label>
+                <label className="user-mobile-switch">
+                  <span>Acesso ativo</span>
+                  <span className="switch"><input type="checkbox" checked={user.active} onChange={() => update(user, { active: !user.active })} /><span /></span>
+                </label>
+              </div>
+            </BezelCard>
+          ))}
+        </div>
       </main>
       {adding && (
         <SimpleModal

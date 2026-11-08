@@ -65,6 +65,7 @@ model User {
   createdDocuments Document[]        @relation("CreatedByUser")
   updatedDocuments Document[]        @relation("UpdatedByUser")
   historyEntries   DocumentHistory[]
+  // Legacy read-only compatibility. New protocol flows use DocumentLink.
   attachments      Attachment[]
   documentLinks    DocumentLink[]
   privacyRequests  DataSubjectRequest[] @relation("SubjectUser")
@@ -153,6 +154,7 @@ model Document {
   createdBy               User              @relation("CreatedByUser", fields: [createdById], references: [id], onDelete: Restrict)
   updatedBy               User              @relation("UpdatedByUser", fields: [updatedById], references: [id], onDelete: Restrict)
   history                 DocumentHistory[]
+  // Legacy read-only compatibility. Do not use for new protocol records.
   attachments             Attachment[]
   links                   DocumentLink[]
 
@@ -184,6 +186,9 @@ model DocumentHistory {
   @@index([createdAt])
 }
 
+// Historical uploads are retained so existing databases remain readable.
+// The active product flow must use DocumentLink and must not create new rows.
+// Do not remove this model without a separately planned archival migration.
 model Attachment {
   id           String   @id @default(cuid())
   documentId   String

@@ -355,6 +355,8 @@ textarea { resize: vertical; line-height: 1.55; }
 .date-picker-content .rdp-button_previous:hover, .date-picker-content .rdp-button_next:hover { background: #ccdace; }
 .date-picker-content .rdp-chevron { fill: currentColor; }
 .date-picker-content .rdp-weekday { color: var(--muted); font: 600 9px var(--mono); text-transform: uppercase; }
+.date-picker-content .rdp-weekday:first-child,
+.date-picker-content .rdp-weekday:last-child { color: var(--sage-dark); background: rgba(63, 98, 83, 0.055); outline: 1px solid rgba(63, 98, 83, 0.12); outline-offset: -1px; }
 .date-picker-content .rdp-day_button { border: 0; font-size: 12px; font-weight: 650; }
 .date-picker-content .rdp-day_button:hover:not(:disabled) { background: rgba(63, 98, 83, 0.09); }
 .date-picker-content .rdp-selected .rdp-day_button { color: #fff; background: var(--sage); box-shadow: 0 7px 16px -9px rgba(47, 73, 63, 0.7); }

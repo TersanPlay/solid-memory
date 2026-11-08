@@ -342,6 +342,7 @@ textarea { resize: vertical; line-height: 1.55; }
 .date-picker-content .rdp-root { margin: 0; --rdp-accent-color: var(--sage); --rdp-accent-background-color: var(--sage-soft); --rdp-day-height: 40px; --rdp-day-width: 40px; --rdp-day_button-height: 36px; --rdp-day_button-width: 36px; --rdp-day_button-border-radius: 12px; --rdp-selected-border: 0; --rdp-animation_duration: 420ms; --rdp-animation_timing: var(--ease); }
 .date-picker-content .rdp-months, .date-picker-content .rdp-month { width: 100%; max-width: none; }
 .date-picker-content .rdp-month_grid { display: table; width: 100%; border-collapse: collapse; }
+.date-picker-content .rdp-month_grid { margin-top: 8px; }
 .date-picker-content .rdp-month_grid thead { display: table-header-group; }
 .date-picker-content .rdp-month_grid tbody { display: table-row-group; }
 .date-picker-content .rdp-month_grid tr { display: table-row; cursor: default; background: transparent; }

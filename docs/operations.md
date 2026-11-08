@@ -6,7 +6,7 @@ O MemoryDoc opera com uma única instância Node/Express e um arquivo SQLite loc
 
 Em produção:
 
-1. use armazenamento persistente para o SQLite e para `ATTACHMENTS_DIR`; no padrão, ambos ficam em `data`;
+1. use armazenamento persistente para o SQLite, que fica em `data` por padrão;
 2. execute `npm run build` antes de iniciar;
 3. execute `npm run db:deploy` antes de cada versão;
 4. publique o processo por HTTPS, pois o cookie de produção usa `Secure`;
@@ -21,7 +21,6 @@ npm ci
 npm run db:generate
 npm run build
 npm run db:deploy
-npm run attachments:migrate
 npm run db:seed
 $env:NODE_ENV='production'
 npm start
@@ -208,7 +207,7 @@ Gere novamente após qualquer alteração do schema ou atualização do Prisma.
 3. Gere o cliente e execute `npm run verify`.
 4. Pare a instância atual.
 5. Execute `npm run db:deploy`.
-6. Ainda com a aplicação parada, execute `npm run attachments:migrate`.
+6. Valide os links externos HTTPS cadastrados nos documentos.
 7. Inicie a nova versão.
 8. Verifique saúde, autenticação, criação, histórico e download de anexos novos e antigos.
 9. Mantenha caminho de rollback do código; restaure banco e anexos juntos quando a migration não for retrocompatível, sempre usando backup validado.

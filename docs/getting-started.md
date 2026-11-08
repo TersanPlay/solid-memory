@@ -156,12 +156,12 @@ Sintoma: código `SQLITE_BUSY` ou `database is locked`.
 
 Desenvolvimento: `npm run db:migrate`. Produção: `npm run db:deploy`. Não use `migrate dev` em produção.
 
-### Conteúdo do anexo não encontrado
+### Link documental indisponível
 
 Sintoma: código `ATTACHMENT_CONTENT_MISSING` ao baixar.
 
-- confirme que `ATTACHMENTS_DIR` aponta para a mesma pasta usada nos uploads;
-- restaure banco e pasta de anexos do mesmo backup;
-- para registros antigos ainda no SQLite, pare a aplicação e execute `npm run attachments:migrate` depois de aplicar as migrations.
+- confirme se a URL HTTPS continua válida;
+- confirme as permissões de compartilhamento no serviço externo;
+- verifique se o provedor externo está disponível.
 
 Procedimentos de reset e restauração estão em [Operação](operations.md).

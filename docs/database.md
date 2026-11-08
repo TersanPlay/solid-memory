@@ -98,7 +98,6 @@ erDiagram
 - A máscara aceita de 3 a 6 dígitos e o protocolo usa sempre `PREFIXO-NÚMERO/ANO`, como `MEMO-001/2026`.
 - Um documento deve ter exatamente um destino: `destinationDepartmentId` ou `destinationText`.
 - Foreign keys impedem excluir referências usadas. Departamentos sem vínculos podem ser excluídos fisicamente pela API; os demais devem ser desativados.
-- `Attachment.storageKey` é único e relativo a `ATTACHMENTS_DIR`; `content` permanece opcional apenas para leitura e migração de `BLOBs` legados.
 - A constraint `Attachment_storage_check` exige exatamente uma origem de conteúdo: arquivo ou `BLOB` legado.
 - A remoção apaga a linha e o arquivo, mas grava antes os metadados no `detailsJson` de `DocumentHistory`.
 
@@ -136,7 +135,7 @@ Exemplo:
 - `originalName` continua preservado no SQLite para apresentação, auditoria e `Content-Disposition`.
 - O banco guarda somente a chave relativa, nunca um caminho absoluto controlado pelo cliente.
 
-Anexos criados antes desta mudança continuam disponíveis pelo campo `content`. Com a aplicação parada, `npm run attachments:migrate` processa esses registros em lotes de 50, grava cada arquivo primeiro e somente então troca o `BLOB` pela `storageKey`. Uma falha remove o arquivo incompleto e mantém o registro legado.
+Documentos são referenciados pela entidade `DocumentLink`, que contém somente `url`, `provider`, autoria e timestamps. A aplicação não migra nem serve conteúdo binário.
 
 ## Emissão do protocolo
 

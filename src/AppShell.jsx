@@ -1150,62 +1150,66 @@ function NewDocument({
                   required
                 />
               </label>
-              <label>
-                Origem <span>*</span>
-                <SearchableSelect
-                  ariaLabel="Departamento de origem"
-                  value={form.originDepartmentId}
-                  onChange={(value) => update("originDepartmentId", value)}
-                  options={activeDepartments.map((department) => ({
-                    value: department.id,
-                    label: `${department.code} · ${department.name}`,
-                    keywords: [department.name],
-                  }))}
-                  required
-                />
-              </label>
-              <label>
-                Tipo de destino
-                <SoftSelect
-                  ariaLabel="Tipo de destino"
-                  value={form.destinationMode}
-                  onChange={(value) => update("destinationMode", value)}
-                  options={[
-                    { value: "internal", label: "Departamento interno" },
-                    { value: "external", label: "Destino externo" },
-                  ]}
-                />
-              </label>
-              {form.destinationMode === "internal" ? (
-                <label className="span-two">
-                  Destino <span>*</span>
-                  <SearchableSelect
-                    ariaLabel="Departamento de destino"
-                    value={form.destinationDepartmentId}
-                    onChange={(value) =>
-                      update("destinationDepartmentId", value)
-                    }
-                    options={activeDepartments.map((department) => ({
-                      value: department.id,
-                      label: `${department.code} · ${department.name}`,
-                      keywords: [department.name],
-                    }))}
-                    required
-                  />
-                </label>
-              ) : (
-                <label className="span-two">
-                  Destino externo <span>*</span>
-                  <input
-                    value={form.destinationText}
-                    onChange={(event) =>
-                      update("destinationText", event.target.value)
-                    }
-                    maxLength="160"
-                    required
-                  />
-                </label>
-              )}
+              <div className="document-flow-group span-two">
+                <div className="document-flow-heading">
+                  <strong>Fluxo documental</strong>
+                  <span>Defina de onde o documento parte e para onde ele será encaminhado.</span>
+                </div>
+                <div className="document-flow-grid">
+                  <label>
+                    Origem <span>*</span>
+                    <SearchableSelect
+                      ariaLabel="Departamento de origem"
+                      value={form.originDepartmentId}
+                      onChange={(value) => update("originDepartmentId", value)}
+                      options={activeDepartments.map((department) => ({
+                        value: department.id,
+                        label: `${department.code} · ${department.name}`,
+                        keywords: [department.name],
+                      }))}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Tipo de destino
+                    <SoftSelect
+                      ariaLabel="Tipo de destino"
+                      value={form.destinationMode}
+                      onChange={(value) => update("destinationMode", value)}
+                      options={[
+                        { value: "internal", label: "Departamento interno" },
+                        { value: "external", label: "Destino externo" },
+                      ]}
+                    />
+                  </label>
+                  {form.destinationMode === "internal" ? (
+                    <label className="span-two">
+                      Destino <span>*</span>
+                      <SearchableSelect
+                        ariaLabel="Departamento de destino"
+                        value={form.destinationDepartmentId}
+                        onChange={(value) => update("destinationDepartmentId", value)}
+                        options={activeDepartments.map((department) => ({
+                          value: department.id,
+                          label: `${department.code} · ${department.name}`,
+                          keywords: [department.name],
+                        }))}
+                        required
+                      />
+                    </label>
+                  ) : (
+                    <label className="span-two">
+                      Destino externo <span>*</span>
+                      <input
+                        value={form.destinationText}
+                        onChange={(event) => update("destinationText", event.target.value)}
+                        maxLength="160"
+                        required
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
               <label className="span-two">
                 Assunto <span>*</span>
                 <textarea

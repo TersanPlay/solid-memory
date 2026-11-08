@@ -356,7 +356,9 @@ textarea { resize: vertical; line-height: 1.55; }
 .date-picker-content .rdp-chevron { fill: currentColor; }
 .date-picker-content .rdp-weekday { color: var(--muted); font: 600 9px var(--mono); text-transform: uppercase; }
 .date-picker-content .rdp-weekday:first-child,
-.date-picker-content .rdp-weekday:last-child { color: var(--sage-dark); background: rgba(63, 98, 83, 0.055); border-radius: 7px; outline: 1px solid rgba(63, 98, 83, 0.12); outline-offset: -1px; }
+.date-picker-content .rdp-weekday:last-child { position: relative; z-index: 0; color: var(--sage-dark); background: transparent; outline: 0; }
+.date-picker-content .rdp-weekday:first-child::before,
+.date-picker-content .rdp-weekday:last-child::before { content: ""; position: absolute; z-index: -1; inset: 4px 2px 10px; border: 1px solid rgba(63, 98, 83, 0.12); border-radius: 7px; background: rgba(63, 98, 83, 0.055); }
 .date-picker-content .rdp-day_button { border: 0; font-size: 12px; font-weight: 650; }
 .date-picker-content .rdp-day_button:hover:not(:disabled) { background: rgba(63, 98, 83, 0.09); }
 .date-picker-content .rdp-selected .rdp-day_button { color: #fff; background: var(--sage); box-shadow: 0 7px 16px -9px rgba(47, 73, 63, 0.7); }

@@ -872,6 +872,9 @@ footer > div { display: flex; justify-content: space-between; gap: 20px; width: 
 .dashboard-card-heading > div { flex: 1; }
 .dashboard-card-heading h2 { margin: 8px 0 0; font-size: 21px; letter-spacing: -.035em; }
 .dashboard-card-heading .text-action { align-self: center; }
+.dashboard-recent-card .dashboard-card-heading { position: relative; min-height: 58px; padding-right: 42px; }
+.dashboard-recent-card .dashboard-card-heading > .dashboard-icon-badge { position: absolute; top: 0; right: 0; }
+.dashboard-recent-card .dashboard-card-heading > .text-action { position: absolute; top: 32px; right: 46px; }
 .text-action { display: inline-flex; align-items: center; gap: 3px; border: 0; color: var(--sage-dark); background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; }
 .text-action svg, .row-chevron { width: 15px; height: 15px; }
 .dashboard-document-list { display: grid; gap: 4px; }

@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleHelp,
+  ClipboardList,
   Clock3,
   Download,
   ExternalLink,
@@ -1107,7 +1108,7 @@ function NewDocument({
         <form className="document-form" onSubmit={submit}>
           <div className="inline-protocol reveal">
             <span className="soft-icon">
-              <Sparkles />
+              <ClipboardList />
             </span>
             <div>
               <span className="micro-label">PRÉVIA · NÃO RESERVADA</span>

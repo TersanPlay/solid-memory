@@ -46,7 +46,7 @@ export function createPdfReport(data, metadata) {
     doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(16).text('MEMORYDOC', 84, 57);
     doc.fillColor(palette.sage).font('Helvetica-Bold').fontSize(8).text('GESTÃO DOCUMENTAL', 84, 80);
     doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 184);
-    doc.roundedRect(326, 42, 227, 120, 4).lineWidth(1).strokeColor(palette.sage).stroke();
+    doc.roundedRect(326, 42, 227, 120, 4).lineWidth(1).strokeColor('#ded8cf').stroke();
     const info = [
       ['PERÍODO', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
       ['TIPO', metadata.typeLabel],

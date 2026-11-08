@@ -183,7 +183,8 @@ svg { width: 1.1em; height: 1.1em; stroke-width: 1.8; }
 .profile-popover > button > svg, .profile-popover > a > svg { width: 16px; height: 16px; color: var(--sage-dark); }
 .profile-popover > button:hover, .profile-popover > a:hover { color: var(--ink); background: rgba(63, 98, 83, 0.07); }
 .profile-page-header { position: relative; display: grid; gap: 24px; padding-top: 58px; padding-bottom: 34px; }
-.profile-back-link { position: absolute; right: 28px; bottom: 84px; display: inline-flex; align-items: center; gap: 8px; width: max-content; color: var(--sage-dark); font-size: 13px; font-weight: 750; }
+.profile-back-link { position: absolute; right: 28px; bottom: 84px; display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 9px 14px; border: 1px solid var(--hairline-strong); border-radius: var(--radius-control); color: var(--sage-dark); background: rgba(255, 255, 255, 0.42); font-size: 13px; font-weight: 750; transition: background 300ms var(--ease), border-color 300ms var(--ease), transform 300ms var(--ease); }
+.profile-back-link:hover { border-color: rgba(63, 98, 83, 0.25); background: rgba(255, 255, 255, 0.78); transform: translateY(-1px); }
 .profile-back-link svg { width: 16px; height: 16px; }
 .profile-identity { display: flex; align-items: center; gap: 18px; }
 .profile-identity .avatar { width: 68px; height: 68px; font-size: 16px; }

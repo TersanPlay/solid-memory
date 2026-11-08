@@ -13,6 +13,9 @@
   --terracotta-soft: #f0d6c9;
   --coral: #df826c;
   --coral-soft: #f7ddd5;
+  --status-progress: #416a68;
+  --status-progress-bg: #dcebea;
+  --status-progress-dot: #5f8f8a;
   --espresso: #2b231f;
   --hairline: rgba(54, 45, 37, 0.08);
   --hairline-strong: rgba(54, 45, 37, 0.13);
@@ -250,7 +253,7 @@ svg { width: 1.1em; height: 1.1em; stroke-width: 1.8; }
 .status-badge { display: inline-flex; align-items: center; gap: 6px; width: max-content; padding: 7px 10px; border-radius: 999px; color: var(--ink-soft); background: #ede9e2; white-space: nowrap; font-size: 10.5px; font-weight: 700; }
 .status-badge > span { width: 5px; height: 5px; border-radius: 50%; background: #8b837b; }
 .status-registrado { color: #3f6551; background: #deeadf; }.status-registrado > span { background: #4f8064; }
-.status-enviado { color: #8c4b37; background: #f4d9cd; }.status-enviado > span { background: #c36b50; }
+.status-enviado { color: var(--status-progress); background: var(--status-progress-bg); }.status-enviado > span { background: var(--status-progress-dot); }
 .status-recebido { color: #4c627b; background: #dde6ee; }.status-recebido > span { background: #607e9c; }
 .status-arquivado { color: #625b55; background: #e8e4df; }.status-arquivado > span { background: #7b736d; }
 .status-cancelado, .status-inativo { color: #8b4c4b; background: #f3dedd; }.status-cancelado > span, .status-inativo > span { background: #b9615f; }

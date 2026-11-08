@@ -709,7 +709,7 @@ td small { display: block; max-width: 250px; margin-top: 5px; overflow: hidden; 
 .report-result > span { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 13px; color: var(--sage); background: rgba(255, 255, 255, 0.62); }
 .report-result div { display: grid; gap: 3px; }
 .report-result strong { font-size: 12.5px; }.report-result small { color: var(--muted); font-size: 10.5px; }
-.export-actions { display: flex; gap: 9px; }
+.export-actions { display: flex; gap: 9px; margin-top: var(--space-4); }
 .report-side { display: grid; gap: 12px; }
 .insight-number { margin: 28px 0 3px; font-size: 58px; line-height: 1; letter-spacing: -0.06em; font-weight: 800; }
 .report-insight p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.55; }

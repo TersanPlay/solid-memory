@@ -1216,17 +1216,6 @@ function NewDocument({
                   required
                 />
               </label>
-            </div>
-          </BezelCard>
-          <BezelCard className="form-section reveal">
-            <div className="form-section-head">
-              <span>02</span>
-              <div>
-                <h2>Acompanhamento</h2>
-                <p>Responsável, situação e informações complementares.</p>
-              </div>
-            </div>
-            <div className="fields-grid two-cols">
               <label>
                 Responsável <span>*</span>
                 <SearchableSelect

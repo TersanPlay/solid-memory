@@ -62,7 +62,6 @@ MemoryDoc/
 | `npm run db:deploy` | Prepara o arquivo e aplica migrations versionadas. |
 | `npm run db:seed` | Inicializa catálogos em tabelas vazias e garante o administrador de bootstrap. |
 | `npm run db:studio` | Abre Prisma Studio. |
-| `npm run attachments:migrate` | Move anexos legados do SQLite para `ATTACHMENTS_DIR`; execute com a aplicação parada. |
 | `npm run users -- <comando>` | Lista, cria ou edita usuários diretamente no SQLite; consulte `npm run users -- help`. |
 | `npm test` | Executa Vitest uma vez. |
 | `npm run test:watch` | Vitest em modo interativo. |
@@ -72,7 +71,7 @@ MemoryDoc/
 
 - `server/auth.test.js`: e-mail, scrypt, hash de sessão e máscara.
 - `server/config.test.js`: porta padrão e configuração do servidor.
-- `server/app.integration.test.js`: migrations reais em SQLite temporário, sessão, RBAC, concorrência, cancelamento, anexos em arquivo/legados, histórico, filtros e relatórios.
+- `server/app.integration.test.js`: migrations reais em SQLite temporário, sessão, RBAC, concorrência, cancelamento, links documentais, histórico, filtros e relatórios.
 - `server/attachment-storage.test.js`: preservação de nome, neutralização de nomes incompatíveis, bloqueio de traversal, escrita, leitura e remoção.
 - `server/spa-routing.test.js`: fallback de produção para acesso direto a rotas do frontend.
 - `prisma/seed-catalogs.test.js`: primeira carga dos catálogos e preservação de edições/exclusões em novas execuções.

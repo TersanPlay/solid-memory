@@ -70,7 +70,7 @@ Na aba **Variables** do serviço, informe:
 PORT=3000
 NODE_ENV=production
 DATABASE_URL=file:/app/data/folio.db
-ATTACHMENTS_DIR=/app/data/attachments
+ # Documentos são referenciados por links HTTPS externos; não há diretório de anexos.
 BOOTSTRAP_ADMIN_NAME=Administrador do sistema
 BOOTSTRAP_ADMIN_EMAIL=admin@example.invalid
 BOOTSTRAP_ADMIN_PASSWORD=SUBSTITUA_POR_UMA_SENHA_FORTE

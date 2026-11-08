@@ -2,7 +2,7 @@
 
 ## Modelo operacional
 
-O MemoryDoc opera com uma única instância Node/Express, um arquivo SQLite local e uma pasta local de anexos. Não há Docker, fila, storage externo ou escala horizontal.
+O MemoryDoc opera com uma única instância Node/Express e um arquivo SQLite local. Os documentos permanecem nos serviços externos indicados pelos links HTTPS; não há upload ou storage de arquivos na aplicação.
 
 Em produção:
 

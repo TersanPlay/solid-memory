@@ -1,6 +1,6 @@
 # MemoryDoc
 
-Sistema web para registrar, numerar, localizar e acompanhar documentos administrativos. A aplicação usa React/Vite no frontend, Express na API, Prisma com SQLite para os dados relacionais e o filesystem para armazenar anexos.
+Sistema web para registrar, numerar, localizar e acompanhar documentos administrativos. A aplicação usa React/Vite no frontend, Express na API e Prisma com SQLite. O conteúdo documental permanece em serviços externos; o sistema armazena apenas links HTTPS.
 
 Este README é a porta de entrada do projeto: apresenta os módulos disponíveis, explica o fluxo principal e mostra como instalar e executar uma cópia local.
 
@@ -12,7 +12,7 @@ Este README é a porta de entrada do projeto: apresenta os módulos disponíveis
 | Documentos | Consulta paginada, busca por protocolo/assunto/origem, filtros por tipo/status/ano e abertura do detalhe do documento. |
 | Cadastro de documentos | Criação de protocolos com numeração atômica por tipo e ano, origem, destino, responsável, status e link documental externo. |
 | Detalhe do documento | Alteração de status, histórico de movimentações, cancelamento terminal e informações de autoria. |
-| Anexos | Upload, download e remoção de PDF, DOCX, XLSX, JPEG e PNG, com limite de 10 MB e validação de assinatura. |
+| Links documentais | Cadastro, consulta e remoção de links HTTPS para serviços externos. |
 | Departamentos | Cadastro, edição, ativação/desativação e exclusão quando não há vínculos documentais. |
 | Tipos documentais | Cadastro e manutenção de tipos, prefixos, quantidade de dígitos e status ativo. |
 | Usuários | Listagem, criação, edição, ativação/desativação e redefinição de senha. |

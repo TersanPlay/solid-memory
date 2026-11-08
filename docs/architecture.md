@@ -19,7 +19,7 @@ flowchart TB
     end
     HTTP -->|"/api · JSON · cookie HttpOnly"| Express
     Prisma --> SQLite[("SQLite · data/folio.db")]
-    Express --> Attachments[("Arquivos · data/attachments")]
+    Express --> External["Links HTTPS · serviços externos"]
     Express -->|"produção"| Dist["dist/ · frontend compilado"]
 ```
 
@@ -29,7 +29,7 @@ O frontend e o backend compartilham o mesmo `package.json`, mas mantêm responsa
 - `server/app.js`: composição do Express, validações Zod e rotas;
 - `server/auth.js`: hash de senha, tokens, cookies e perfis;
 - `server/documents.js`: filtros, numeração, permissões por documento e histórico;
-- `server/attachment-storage.js`: nomes seguros, chaves relativas e operações atômicas de arquivo;
+- Links documentais são apenas referências HTTPS; o conteúdo permanece no serviço externo;
 - `server/attachment-migration.js`: migração em lotes dos `BLOBs` legados;
 - `server/db.js`: adapter Prisma e pragmas SQLite;
 - `prisma/`: schema, migration e seed.
@@ -44,7 +44,7 @@ O frontend e o backend compartilham o mesmo `package.json`, mas mantêm responsa
 | Navegação | React Router `7.18.1` | History API, links, rotas, retorno pós-login e parâmetros de URL. |
 | Build e desenvolvimento | Vite `8.1.5` | Servidor web em `127.0.0.1:5173`, proxy `/api` e build `dist/`. |
 | API | Express `5.2.1`, Zod `4.4.3` | HTTP, validação, autenticação, RBAC e respostas. |
-| Persistência | Prisma `7.9.0`, adapter `better-sqlite3` e filesystem local | Dados relacionais no SQLite e conteúdo dos anexos fora do banco. |
+| Persistência | Prisma `7.9.0` e adapter `better-sqlite3` | Dados relacionais e metadados dos links no SQLite; arquivos fora da aplicação. |
 | Testes | Vitest `4.1.10`, Testing Library, Supertest | Testes unitários, DOM, CLI, API e fallback SPA. |
 
 As versões completas e autoritativas estão no `package.json` e no `package-lock.json`.
@@ -79,11 +79,11 @@ sequenceDiagram
 
 | Capacidade                               |                admin                |                    OPERATOR                     | VIEWER |
 | ---------------------------------------- | :---------------------------------: | :---------------------------------------------: | :----: |
-| Consultar documentos, histórico e anexos |                 Sim                 |                       Sim                       |  Sim   |
+| Consultar documentos, histórico e links  |                 Sim                 |                       Sim                       |  Sim   |
 | Criar documento                          |                 Sim                 |                       Sim                       |  Não   |
 | Definir outro responsável                |                 Sim                 |     Não; o servidor força o próprio usuário     |  Não   |
 | Alterar documento não cancelado          |              Qualquer               |         Apenas documento criado por si          |  Não   |
-| Adicionar ou remover anexo               | Em qualquer documento não cancelado | Apenas em documento não cancelado criado por si |  Não   |
+| Adicionar ou remover link                | Em qualquer documento não cancelado | Apenas em documento não cancelado criado por si |  Não   |
 | Cancelar documento                       |                 Sim                 |                       Não                       |  Não   |
 | Manter usuários, tipos e departamentos   |                 Sim                 |                       Não                       |  Não   |
 | Exportar relatórios                      |                 Sim                 |                       Não                       |  Não   |
@@ -103,7 +103,7 @@ Administradores podem editar nome e código de departamentos. A exclusão físic
 - Pino registra método, URL, status, duração e request ID; cookies e autorização são ocultados e o corpo não é incluído.
 - Toda resposta contém `X-Request-Id`; erros internos não devolvem stack trace.
 - CSV protege células iniciadas por `=`, `+`, `-` ou `@` contra execução de fórmula.
-- Anexos são limitados a 10 MB e validados por extensão e assinatura antes da gravação em `ATTACHMENTS_DIR`.
+- Links documentais aceitam somente URLs HTTPS e são classificados pelo provedor.
 - O caminho persistido é relativo à raiz autorizada e nunca deriva diretamente de um caminho informado pelo navegador.
 - O nome original é preservado no banco e no arquivo quando compatível com o sistema operacional; caracteres de controle, separadores e nomes reservados são neutralizados somente no nome físico.
 - A remoção apaga o arquivo, mas preserva metadados e autoria em `DocumentHistory`; documentos cancelados permanecem terminais.
@@ -150,7 +150,7 @@ Os guardas do frontend evitam apresentar páginas incompatíveis com o perfil, m
 
 - Desenvolvimento: Vite serve o frontend e encaminha `/api` para a porta definida por `API_PORT` ou 3000.
 - Produção: `npm run build` cria `dist/`; Express serve os arquivos e a API no mesmo processo/host.
-- A pasta definida por `ATTACHMENTS_DIR` deve estar em volume persistente e acompanhar o banco nos backups.
+- O serviço externo referenciado é responsável pela disponibilidade e pelas permissões do conteúdo.
 - O Express escuta em `0.0.0.0` na porta definida por `PORT`; localmente, o navegador continua acessando `127.0.0.1`.
 - No Railway, `railway.json` força o processo Express completo, evitando que a detecção do Vite publique apenas os arquivos estáticos.
 - O volume Railway deve ser montado em `/app/data`; migrations e seed são executados no comando de inicialização, quando o volume já está disponível.

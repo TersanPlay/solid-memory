@@ -6,7 +6,7 @@ O datasource é SQLite e seu endereço vem exclusivamente de `DATABASE_URL`. O v
 
 ```dotenv
 DATABASE_URL="file:./data/folio.db"
-ATTACHMENTS_DIR="./data/attachments"
+O conteúdo dos documentos não é armazenado pela aplicação. O banco mantém somente metadados documentais e URLs HTTPS na entidade `DocumentLink`.
 ```
 
 `server/prepare-database.js` cria o diretório e o arquivo vazio quando necessário. `prisma.config.ts` converte o caminho relativo em absoluto para o engine de migrations no Windows. Na inicialização, o backend aplica:
@@ -187,7 +187,6 @@ Migrations versionadas atualmente:
 | Alterar schema em desenvolvimento | `npm run db:migrate -- --name nome_da_alteracao` | Gera e aplica uma migration.                             |
 | Gerar cliente                     | `npm run db:generate`                            | Necessário após alterar o schema.                        |
 | Aplicar em produção               | `npm run db:deploy`                              | Aplica somente migrations existentes.                    |
-| Migrar anexos legados             | `npm run attachments:migrate`                    | Move `BLOBs` existentes para `ATTACHMENTS_DIR`.           |
 | Inspecionar localmente            | `npm run db:studio`                              | Abre Prisma Studio. Não exponha essa porta publicamente. |
 
 O Prisma 7 não executa automaticamente seed nem geração do cliente após `migrate dev`; mantenha os comandos explícitos.

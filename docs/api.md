@@ -4,7 +4,7 @@ Base local: `http://127.0.0.1:3000/api`. O Express ouve em `0.0.0.0`; em desenvo
 
 ## Convenções
 
-- JSON UTF-8, exceto download de anexos e relatórios.
+- JSON UTF-8, exceto relatórios.
 - Data administrativa: `YYYY-MM-DD`.
 - Timestamp: ISO 8601.
 - Cookie de sessão: `folio_session`, não acessível por JavaScript.
@@ -184,19 +184,15 @@ O `admin` deve informar o responsável. Para `OPERATOR`, o servidor usa o própr
 
 Documentos cancelados retornam `CANCELLED_TERMINAL` em tentativas de alteração. Use o endpoint específico para cancelar; `PATCH status` rejeita `CANCELADO`.
 
-## Anexos
+## Links documentais
 
-| Método e rota                     | Regra                                                                                |
-| --------------------------------- | ------------------------------------------------------------------------------------ |
-| `POST /documents/:id/attachments` | `multipart/form-data`, campo `file`; `admin` ou operador proprietário.               |
-| `GET /attachments/:id`            | Qualquer sessão; resposta binária com `Content-Disposition: attachment`.             |
-| `DELETE /attachments/:id`         | Retorna `204`; `admin` ou operador proprietário, somente em documento não cancelado. |
+| Método e rota | Regra |
+|---|---|
+| `POST /documents/:id/links` | `{ "url": "https://..." }`; `admin` ou operador proprietário. |
+| `PATCH /links/:id` | `{ "url": "https://..." }`; altera somente a URL. |
+| `DELETE /links/:id` | Retorna `204`; `admin` ou operador proprietário. |
 
-Formatos: PDF, DOCX, XLSX, JPEG e PNG. Limite: 10 MB. A API compara extensão e assinatura detectada. O conteúdo binário é gravado em `ATTACHMENTS_DIR` e nunca é incluído no JSON de documento; listagens recebem somente ID, nome, MIME, tamanho e data.
-
-A chave física segue `AAAA/MM/<documentId>/<storageId>/<nome-original-seguro>`. O nome original permanece nos metadados e é usado no download. O diretório intermediário aleatório evita colisões entre arquivos de mesmo nome.
-
-A remoção exclui fisicamente o arquivo, atualiza o documento e registra `ATTACHMENT_REMOVE`. O histórico preserva em `detailsJson` o ID, nome, MIME, tamanho, usuário e data do upload; o usuário e a data da remoção vêm do próprio registro de histórico. Anexos de documentos cancelados não podem ser removidos.
+O sistema não recebe, armazena, copia ou serve arquivos. A API aceita somente URLs HTTPS, identifica o provedor automaticamente e registra as operações no histórico. Não existem campos de título ou descrição.
 
 ## Painel e atividades
 

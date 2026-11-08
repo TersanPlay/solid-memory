@@ -33,7 +33,9 @@ O projeto usa um módulo nativo para SQLite. Em instalações comuns do Node 22 
 
 ```dotenv
 DATABASE_URL="file:./data/folio.db"
-ATTACHMENTS_DIR="./data/attachments"
+## Armazenamento documental
+
+O sistema não recebe nem armazena arquivos. Cadastre somente links HTTPS para o serviço externo onde o documento está hospedado.
 PORT=3000
 API_PORT=3000
 NODE_ENV=development
@@ -48,9 +50,9 @@ Antes de executar o seed, substitua `SUBSTITUA_POR_UMA_SENHA_FORTE` por uma senh
 - nome, e-mail e senha do administrador são obrigatórios;
 - a senha deve ter ao menos 10 caracteres e o placeholder literal do exemplo é rejeitado;
 - a senha é usada somente para criar um administrador ainda inexistente e não é redefinida em execuções posteriores;
-- `SEED_DEMO_DATA=true` cria dois documentos sanitizados, sem anexos; o padrão `false` não cria documentos fictícios.
+- `SEED_DEMO_DATA=true` cria dois documentos sanitizados com links externos; o padrão `false` não cria documentos fictícios.
 
-`ATTACHMENTS_DIR` aceita caminho relativo à raiz ou absoluto. A aplicação cria os subdiretórios no primeiro upload. Nunca versione `.env`, bancos ou anexos; `data/` já está no `.gitignore`.
+O sistema não possui armazenamento local de documentos. Nunca versione `.env` ou bancos; `data/` já está no `.gitignore`.
 
 Em desenvolvimento, mantenha `PORT` e `API_PORT` iguais. `PORT` define onde o Express escuta; `API_PORT` define o destino do proxy `/api` do Vite.
 
@@ -83,7 +85,6 @@ Na raiz, depois de disponibilizar o código e um `.env` seguro:
 | 2 | `npm run db:generate` | Gerar o cliente Prisma. | Cliente disponível para o backend. |
 | 3 | `npm run build` | Compilar o React. | Arquivos estáticos em `dist/`. |
 | 4 | `npm run db:deploy` | Aplicar somente migrations versionadas. | Banco atualizado sem criar migration nova. |
-| 5 | `npm run attachments:migrate` | Transferir para a pasta configurada qualquer anexo legado ainda armazenado no SQLite. | Contagem migrada ou mensagem `Nenhum anexo legado pendente`. |
 | 6 | `npm run db:seed` | Inicializar catálogos em tabelas vazias e garantir o administrador de bootstrap. | Seed idempotente concluído sem sobrescrever alterações administrativas. |
 | 7 | `$env:NODE_ENV='production'; npm start` | Iniciar o processo único. | API e frontend na porta configurada em `PORT`. |
 

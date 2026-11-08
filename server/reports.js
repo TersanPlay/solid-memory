@@ -46,7 +46,7 @@ export function createPdfReport(data, metadata) {
     drawSystemLogo(48, 53);
     doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(16).text('MEMORYDOC', 108, 57);
     doc.fillColor(palette.sage).font('Helvetica-Bold').fontSize(8).text('GESTÃO DOCUMENTAL', 108, 80);
-    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 142);
+    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 184);
     doc.roundedRect(326, 42, 227, 120, 4).lineWidth(1).strokeColor(palette.sage).stroke();
     const info = [
       ['PERÍODO', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
@@ -59,7 +59,7 @@ export function createPdfReport(data, metadata) {
       doc.fillColor(palette.muted).font('Helvetica-Bold').fontSize(6.2).text(label, 340, rowY, { width: 105, lineBreak: false });
       doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(index === 2 ? 12 : 7.5).text(pdfText(value), index === 2 ? 460 : 445, index === 2 ? rowY - 3 : rowY, { width: 82, align: 'right', ellipsis: true, lineBreak: false });
     });
-    doc.moveTo(42, 192).lineTo(553, 192).strokeColor(palette.line).stroke();
+    doc.moveTo(42, 226).lineTo(553, 226).strokeColor('#ded8cf').stroke();
   };
   const drawTableHeader = (y) => {
     doc.rect(42, y, pageWidth, 24).fill(palette.ink);
@@ -68,7 +68,7 @@ export function createPdfReport(data, metadata) {
     return y + 24;
   };
   drawHeader();
-  let y = drawTableHeader(224);
+  let y = drawTableHeader(240);
   data.forEach((item, index) => {
     if (y > 735) { doc.addPage(); y = 42; y = drawTableHeader(y); }
     const values = [item.protocol, item.type, item.date, item.origin, item.destination, item.subject, item.responsible, item.status];

@@ -18,6 +18,7 @@ Este README é a porta de entrada do projeto: apresenta os módulos disponíveis
 | Usuários | Listagem, criação, edição, ativação/desativação, redefinição de senha e perfil detalhado com histórico e documentos relacionados. |
 | Relatórios | Exportação dos documentos filtrados em CSV, JSON, PDF e Excel (`.xlsx`), com contexto da geração e tabela documental formatada. |
 | Atividades | Histórico global de movimentações e ações do sistema. |
+| Privacidade e LGPD | Guia público baseado em `.lgpd/`, canal de solicitações de titulares, políticas em rascunho e gerenciador de cookies. |
 
 ## Perfis e acesso
 
@@ -41,6 +42,12 @@ A autorização é aplicada no backend e também refletida visualmente no fronte
 | `/usuarios/:userId/perfil` | Perfil, métricas, histórico e documentos relacionados | Próprio usuário ou `admin` |
 | `/relatorios` | Exportações | `admin` |
 | `/atividades` | Histórico global | Qualquer sessão |
+| `/lgpd` | Guia público da documentação LGPD | Público |
+| `/privacidade` | Política de Privacidade v1 | Público; rascunho |
+| `/cookies` | Política de Cookies v1 e preferências | Público; rascunho |
+| `/privacidade/solicitar` | Canal público para solicitações de titulares | Público; MVP |
+
+As políticas públicas não são uma declaração de conformidade. O MVP ainda depende da definição do controlador, CNPJ, endereço, Encarregado, canal institucional e revisão jurídica. O canal público registra a solicitação e a trilha técnica, mas não valida identidade de forma conclusiva nem envia notificações por e-mail.
 
 O detalhe do documento é uma rota filha de `/documentos`, portanto a lista permanece montada enquanto o drawer de detalhes está aberto. Atualização ou acesso direto a uma rota profunda é suportado pelo fallback da SPA em produção.
 
@@ -59,6 +66,8 @@ flowchart LR
 - `prisma/`: schema, migrations e seed.
 - `scripts/`: CLI de usuários e manutenção do banco.
 - `docs/`: documentação operacional e técnica detalhada.
+- `.lgpd/`: especificação, mapa de dados, bases legais, políticas em rascunho, gaps, workflow DSAR e controles de segurança. A página `/lgpd` lê esses arquivos diretamente.
+- `public/lgpd-*-card.png`: ilustrações usadas nos cards do Guia LGPD.
 
 Em desenvolvimento, o Vite atende `127.0.0.1:5173` e encaminha `/api` para a API em `3000`. Em produção, o Express atende a API e o frontend compilado no mesmo processo.
 
@@ -109,6 +118,12 @@ npm run dev
 Abra [http://127.0.0.1:5173/login](http://127.0.0.1:5173/login) e use o e-mail e a senha definidos no `.env`.
 
 O seed é idempotente: cria os catálogos quando as tabelas estão vazias e cria ou regulariza o administrador de bootstrap. Ele não redefine a senha de um usuário já existente. Para criar dados demonstrativos sanitizados, defina `SEED_DEMO_DATA=true` antes de executar `npm run db:seed`.
+
+### Transparência, cookies e direitos dos titulares
+
+O frontend exibe um banner e um gerenciador de preferências de cookies. Atualmente somente o cookie técnico de sessão `folio_session` está ativo; analytics e marketing não são instalados. A escolha é armazenada localmente no navegador e pode ser reaberta em “Preferências de cookies”.
+
+O canal público em `/privacidade/solicitar` registra pedidos de acesso, correção, eliminação, anonimização, portabilidade e oposição. Administradores tratam as solicitações em `/privacidade/solicitacoes`, com histórico de eventos. O campo de link documental continua limitado a URLs HTTPS; o MemoryDoc não acessa o conteúdo dos serviços externos.
 
 ### Executar frontend e API separadamente
 

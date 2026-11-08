@@ -61,6 +61,38 @@ Content-Type: application/json
 
 Não envie nem registre senhas reais em exemplos, issues ou logs.
 
+## Direitos dos titulares
+
+As solicitações exigem sessão autenticada. Usuários comuns só podem abrir e consultar as próprias solicitações; administradores podem consultar e tratar todas.
+
+| Método e rota | Autorização | Corpo/resultado |
+|---|---|---|
+| `POST /privacy-requests` | Sessão | `{ type, description?, subjectUserId? }`; usuário comum sempre fica vinculado a si próprio; retorna 201. |
+| `GET /privacy-requests` | Sessão | Próprias solicitações ou todas para `admin`; retorna 200. |
+| `PATCH /privacy-requests/:id` | `admin` | `{ status?, responseNote? }`; conclusão registra responsável e data. |
+
+O canal público MVP não exige sessão, mas aplica rate limit e validação de entrada:
+
+| Método e rota | Autorização | Corpo/resultado |
+|---|---|---|
+| `POST /public/privacy-requests` | Pública, rate limitada | `{ requesterName, requesterEmail, type, description? }`; retorna uma referência `DSAR-XXXXXXXX` e prazo operacional inicial. |
+
+Solicitações públicas são consultáveis e tratáveis apenas por administradores em `GET /privacy-requests` e `PATCH /privacy-requests/:id`. Cada criação, alteração de status ou nota gera evento de trilha técnica. O canal não valida identidade de forma conclusiva, não envia e-mails e não acessa o conteúdo de URLs documentais.
+
+## Transparência pública
+
+| Rota | Conteúdo |
+|---|---|
+| `/lgpd` | Guia técnico com os documentos versionados de `.lgpd/`. |
+| `/privacidade` | Política de Privacidade v1 em rascunho, carregada de `.lgpd/policies/privacy-policy-v1-draft.md`. |
+| `/cookies` | Política de Cookies v1 em rascunho, carregada de `.lgpd/policies/cookie-policy-v1-draft.md`. |
+
+As páginas são informativas e não substituem a definição do controlador, do Encarregado ou a revisão jurídica.
+
+O frontend também exibe um banner de cookies e um gerenciador de preferências. No MVP, apenas o cookie técnico de sessão existe; analytics e marketing permanecem indisponíveis e nenhum cookie opcional é instalado. A escolha do usuário é armazenada localmente no navegador.
+
+Tipos aceitos: `ACCESS`, `CORRECTION`, `ANONYMIZATION`, `DELETION`, `PORTABILITY`, `OPPOSITION` e `CONSENT_REVOCATION`. O prazo inicial registrado é de 15 dias corridos como referência operacional; o canal institucional e a verificação adicional de identidade ainda dependem de definição do controlador.
+
 ## Usuários
 
 Todas as rotas abaixo exigem `admin`.
@@ -193,7 +225,7 @@ Documentos cancelados retornam `CANCELLED_TERMINAL` em tentativas de alteração
 | `PATCH /links/:id` | `{ "url": "https://..." }`; altera somente a URL. |
 | `DELETE /links/:id` | Retorna `204`; `admin` ou operador proprietário. |
 
-O sistema não recebe, armazena, copia ou serve arquivos. A API aceita somente URLs HTTPS, identifica o provedor automaticamente e registra as operações no histórico. Não existem campos de título ou descrição.
+O campo de link é opcional. A API aceita somente URLs HTTPS, armazena a URL e identifica o provedor automaticamente. O sistema não acessa, baixa, sincroniza, hospeda ou analisa o conteúdo desses links. Anexos são um recurso separado e seguem as rotas de upload/download documentadas no código.
 
 ## Painel e atividades
 

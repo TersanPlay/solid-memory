@@ -2,7 +2,7 @@
 
 ## Modelo operacional
 
-O MemoryDoc opera com uma única instância Node/Express e um arquivo SQLite local. Os documentos permanecem nos serviços externos indicados pelos links HTTPS; não há upload ou storage de arquivos na aplicação.
+O MemoryDoc opera atualmente em uma máquina local, com uma única instância Node/Express e um arquivo SQLite local. Não há hospedagem em nuvem nem operador de infraestrutura externo nesta fase. O conteúdo documental pode ser armazenado como anexo local quando o recurso de anexos é usado; links HTTPS são opcionais e apontam para serviços externos cujo conteúdo não é acessado pela aplicação.
 
 Em produção:
 
@@ -40,7 +40,15 @@ Retorna 200 somente depois de executar `SELECT 1` no SQLite. Monitore status HTT
 
 Pino escreve logs JSON em stdout com método, URL, status, duração e request ID. Cookies e autorização são ocultados. Encaminhe stdout/stderr ao gerenciador de serviço; não grave segredos em mensagens manuais.
 
+## Transparência e cookies
+
+As rotas públicas `/lgpd`, `/privacidade`, `/cookies` e `/privacidade/solicitar` podem ser verificadas sem autenticação. O frontend mantém um gerenciador de preferências: `folio_session` é necessário para autenticação, enquanto analytics e marketing permanecem indisponíveis e não são instalados. A preferência do usuário é local ao navegador.
+
+Antes de publicar uma política como versão final, confirme controlador, CNPJ, endereço, Encarregado, canal institucional e revisão jurídica. Alterações futuras de finalidade, cookies opcionais, hospedagem ou fornecedores devem ser refletidas nos documentos `.lgpd/`.
+
 O Express mantém `trust proxy=false`. No Railway, detectado por `RAILWAY_ENVIRONMENT_ID`, o rate limiter usa o `X-Real-IP` validado que o edge proxy fornece; localmente e em outros ambientes usa `request.ip`. Não habilite confiança irrestrita em cabeçalhos encaminhados.
+
+`SESSION_HOURS` controla a duração máxima das sessões (padrão: 8 horas; máximo: 720). Sessões expiradas são removidas na inicialização da aplicação. A limpeza não exclui usuários, documentos ou anexos.
 
 Para o procedimento completo de volume, variáveis, build, healthcheck e primeiro
 deploy, consulte [Deploy no Railway](railway.md).
@@ -220,3 +228,5 @@ Gere novamente após qualquer alteração do schema ou atualização do Prisma.
 - sem exclusão física de documentos, usuários ou tipos; departamentos somente podem ser excluídos quando não possuem vínculos, e anexos podem ser removidos com auditoria;
 - sem storage externo ou replicação;
 - sem workflow rígido entre status não cancelados;
+- sem canal público de privacidade, Encarregado ou dados institucionais definidos no MVP;
+- sem exclusão automática de documentos/anexos: a política de retenção institucional ainda precisa ser aprovada;

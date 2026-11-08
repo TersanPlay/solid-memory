@@ -165,6 +165,8 @@ Antes de concluir:
 - Não calcule protocolo definitivo no frontend.
 - Não introduza nova fonte de persistência no navegador.
 - Não registre corpos de login, cookies, tokens ou anexos.
+- Mantenha as páginas públicas de transparência alinhadas aos arquivos `.lgpd/`; não invente dados institucionais nas políticas.
+- Ao adicionar cookies opcionais, atualize a Política de Cookies, o gerenciador de preferências e os testes antes de ativá-los.
 
 ## Checklist para mudanças
 

@@ -271,6 +271,10 @@ function Login({ onLogin }) {
             ano.
           </span>
         </div>
+        <Link to="/lgpd" className="login-lgpd-card" aria-label="Abrir o Guia LGPD do MemoryDoc">
+          <div className="login-lgpd-art" aria-hidden="true" />
+          <div className="login-lgpd-copy"><Eyebrow>TRANSPARÊNCIA</Eyebrow><h2>Guia LGPD do MemoryDoc</h2><p>Veja o que já foi implementado, o que falta e o roadmap de privacidade do MVP.</p><span className="login-lgpd-link">Abrir guia <ArrowUpRight /></span></div>
+        </Link>
       </section>
       <section className="login-card-wrap">
         <BezelCard className="login-card">
@@ -329,12 +333,171 @@ function Login({ onLogin }) {
             </PrimaryButton>
           </form>
           <div className="login-note">
-            <CircleHelp /> Solicite acesso ao administrador responsável.
+            <CircleHelp /> Solicite acesso ao administrador responsável. <Link to="/lgpd">Guia LGPD</Link> · <Link to="/privacidade">Privacidade</Link> · <Link to="/cookies">Cookies</Link>
           </div>
         </BezelCard>
       </section>
     </main>
   );
+}
+
+const legalLinks = {
+  lgpd: 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm',
+  ecaDigital: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15211.htm',
+  anpd: 'https://www.gov.br/anpd/pt-br/assuntos/legislacao',
+};
+
+const isLgpdAttention = (value) => /ainda falta|falta implementar|faltam|pendente|pendentes|precisa ser|precisam ser|não foi|não há|não possui|deve ser definido|revisar|reavalia|não identificado|não implementado|roadmap/i.test(String(value));
+const lgpdPriorityClass = (value) => {
+  const normalized = String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  if (normalized === 'alta') return 'lgpd-priority-alta';
+  if (normalized === 'media') return 'lgpd-priority-media';
+  if (normalized === 'baixa') return 'lgpd-priority-baixa';
+  if (normalized.includes('resolvido')) return 'lgpd-priority-resolvido';
+  return '';
+};
+
+function renderLegalText(value, keyPrefix) {
+  const parts = String(value).split(/(Arts?\.?\s*\d+(?:º|°)?(?:\s*(?:e|,|–|-)?\s*\d+(?:º|°)?)*|LGPD|Lei nº\s*13\.709\/2018|Lei nº\s*15\.211\/2025|Res\.\s*(?:CD\/)?ANPD\s*nº\s*\d+\/\d{4})/gi).filter(Boolean);
+  return parts.map((part, index) => {
+    const normalized = part.toLowerCase();
+    const isEca = normalized.includes('15.211/2025');
+    const isResolution = normalized.includes('res.') || normalized.includes('anpd nº');
+    const isLegal = isEca || isResolution || normalized === 'lgpd' || normalized.includes('13.709/2018') || /^arts?\.?\s*\d/i.test(part);
+    if (!isLegal) return part;
+    const href = isEca ? legalLinks.ecaDigital : isResolution ? legalLinks.anpd : legalLinks.lgpd;
+    return <a className="lgpd-legal-link" key={`${keyPrefix}-${index}`} href={href} target="_blank" rel="noreferrer" title="Abrir referência oficial">{part}</a>;
+  });
+}
+
+function renderLgpdInline(value) {
+  const parts = String(value).split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g).filter(Boolean);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) return <strong key={index}>{renderLegalText(part.slice(2, -2), `strong-${index}`)}</strong>;
+    if (part.startsWith('`') && part.endsWith('`')) return <code key={index}>{part.slice(1, -1)}</code>;
+    const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (link) return <a key={index} href={link[2]} target="_blank" rel="noreferrer">{link[1]}</a>;
+    return <span key={index}>{renderLegalText(part, `text-${index}`)}</span>;
+  });
+}
+
+function renderLgpdMarkdown(content) {
+  const lines = String(content).split(/\r?\n/);
+  const nodes = [];
+  for (let index = 0; index < lines.length;) {
+    const line = lines[index];
+    if (!line.trim()) { index += 1; continue; }
+    const heading = line.match(/^(#{1,4})\s+(.+)$/);
+    if (heading) { const Tag = `h${heading[1].length}`; nodes.push(<Tag className={isLgpdAttention(heading[2]) ? 'lgpd-attention-heading' : ''} key={index}>{renderLgpdInline(heading[2])}</Tag>); index += 1; continue; }
+    if (line.trim().startsWith('>')) { const quote = line.replace(/^\s*>\s?/, ''); nodes.push(<blockquote className={isLgpdAttention(quote) ? 'lgpd-attention' : ''} key={index}>{renderLgpdInline(quote)}</blockquote>); index += 1; continue; }
+    if (line.trim().startsWith('|')) {
+      const tableLines = [];
+      while (index < lines.length && lines[index].trim().startsWith('|')) tableLines.push(lines[index++]);
+      const rows = tableLines.filter((row) => !/^\s*\|?\s*:?-{2,}/.test(row)).map((row) => row.split('|').slice(1, -1).map((cell) => cell.trim()));
+      if (rows.length) nodes.push(<div className="lgpd-table-wrap" key={`table-${index}`}><table><thead><tr>{rows[0].map((cell, cellIndex) => <th className={lgpdPriorityClass(cell)} key={cellIndex}>{renderLgpdInline(cell)}</th>)}</tr></thead><tbody>{rows.slice(1).map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) => <td className={lgpdPriorityClass(cell)} key={cellIndex}>{renderLgpdInline(cell)}</td>)}</tr>)}</tbody></table></div>);
+      continue;
+    }
+    if (/^\s*-\s+/.test(line)) {
+      const items = [];
+      while (index < lines.length && /^\s*-\s+/.test(lines[index])) {
+        const raw = lines[index++].replace(/^\s*-\s+/, '');
+        const checked = raw.match(/^\[([ xX])\]\s*(.*)$/);
+        const itemText = checked ? checked[2] : raw;
+        items.push(<li className={`${checked ? (checked[1].toLowerCase() === 'x' ? 'is-complete' : 'is-pending') : ''}${isLgpdAttention(itemText) ? ' lgpd-attention' : ''}`} key={items.length}><span className="lgpd-list-marker">{checked ? (checked[1].toLowerCase() === 'x' ? '✓' : '·') : '•'}</span><span>{renderLgpdInline(itemText)}</span></li>);
+      }
+      nodes.push(<ul key={`list-${index}`}>{items}</ul>); continue;
+    }
+    const paragraph = [line.trim()]; index += 1;
+    while (index < lines.length && lines[index].trim() && !/^(#{1,4})\s+|^\s*-\s+|^\s*>\s?|^\s*\|/.test(lines[index])) paragraph.push(lines[index++].trim());
+    const paragraphText = paragraph.join(' ');
+    nodes.push(<p className={isLgpdAttention(paragraphText) ? 'lgpd-attention' : ''} key={`paragraph-${index}`}>{renderLgpdInline(paragraphText)}</p>);
+  }
+  return nodes;
+}
+
+function PublicPrivacyRequestPage() {
+  const [form, setForm] = useState({ requesterName: '', requesterEmail: '', type: 'ACCESS', description: '' });
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const submit = async (event) => {
+    event.preventDefault(); setSaving(true); setError('');
+    try { const response = await api.post('/public/privacy-requests', form); setResult(response.data); }
+    catch (err) { setError(err.message); } finally { setSaving(false); }
+  };
+  return <main className="public-privacy-page"><div className="ambient-mesh" aria-hidden="true" /><section className="public-privacy-shell"><Link className="lgpd-guide-brand" to="/login"><Brand /></Link><Eyebrow>CANAL PÚBLICO · LGPD</Eyebrow><h1>Solicitação de privacidade</h1><p className="public-privacy-intro">Use este formulário para registrar um pedido de acesso, correção, eliminação ou outro direito previsto na LGPD. O pedido será encaminhado para tratamento administrativo.</p>{result ? <BezelCard className="public-privacy-success"><span className="soft-icon"><Check /></span><h2>Solicitação registrada</h2><p>Guarde esta referência para acompanhamento:</p><strong>{result.reference}</strong><small>O canal público ainda não envia respostas por e-mail. O administrador deverá validar a solicitação antes do tratamento.</small><Link className="ghost-button" to="/lgpd">Conhecer o guia LGPD</Link></BezelCard> : <BezelCard className="public-privacy-form-card"><form className="form-stack" onSubmit={submit}><label>Nome<input value={form.requesterName} onChange={(event) => setForm({ ...form, requesterName: event.target.value })} maxLength="120" required /></label><label>E-mail<input type="email" value={form.requesterEmail} onChange={(event) => setForm({ ...form, requesterEmail: event.target.value })} maxLength="254" required /></label><label>Tipo de solicitação<select value={form.type} onChange={(event) => setForm({ ...form, type: event.target.value })}>{privacyRequestTypes.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label>Descrição<textarea rows="6" maxLength="2000" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Descreva o pedido sem enviar dados desnecessários." /></label><InlineError error={error} /><PrimaryButton type="submit" disabled={saving} icon={saving ? <span className="spinner" /> : <ArrowUpRight />}>{saving ? 'Enviando…' : 'Registrar solicitação'}</PrimaryButton></form><p className="public-privacy-disclaimer">Não envie senhas, documentos completos ou dados sensíveis desnecessários. O canal está em fase de MVP e a validação de identidade será feita pelo responsável administrativo.</p></BezelCard>}<Link className="public-privacy-back" to="/login"><ArrowLeft /> Voltar ao acesso</Link></section></main>;
+}
+
+function PublicPolicyPage({ kind }) {
+  const filePath = kind === 'cookies' ? '.lgpd/policies/cookie-policy-v1-draft.md' : '.lgpd/policies/privacy-policy-v1-draft.md';
+  const [file, setFile] = useState(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    api.get('/public/lgpd').then((result) => {
+      const match = result.data.files.find((item) => item.path === filePath);
+      if (!match) throw new Error('Documento de transparência não encontrado.');
+      setFile(match);
+      setError('');
+    }).catch((err) => setError(err.message));
+  }, [filePath]);
+  const title = kind === 'cookies' ? 'Política de Cookies' : 'Política de Privacidade';
+  const eyebrow = kind === 'cookies' ? 'TRANSPARÊNCIA · COOKIES' : 'TRANSPARÊNCIA · PRIVACIDADE';
+  return <main className="public-policy-page"><div className="ambient-mesh" aria-hidden="true" /><header className="public-policy-hero"><Link className="lgpd-guide-brand" to="/login"><Brand /></Link><Eyebrow>{eyebrow}</Eyebrow><h1>{title}</h1><p>Leia o documento técnico atual do MemoryDoc. Ele é atualizado a partir dos arquivos versionados da pasta <code>.lgpd/</code>.</p><nav className="public-policy-nav" aria-label="Documentos de transparência"><Link to="/privacidade" className={kind === 'privacy' ? 'active' : ''}>Privacidade</Link><Link to="/cookies" className={kind === 'cookies' ? 'active' : ''}>Cookies</Link><Link to="/lgpd">Guia LGPD</Link></nav></header><section className="public-policy-content">{error && <InlineError error={error} />}{!file ? <LoadingState text="Lendo política…" /> : <BezelCard className="public-policy-card"><div className="public-policy-meta"><Eyebrow>{file.path}</Eyebrow><span>Atualizado em {new Date(file.updatedAt).toLocaleString('pt-BR')}</span></div><div className="lgpd-markdown">{renderLgpdMarkdown(file.content)}</div></BezelCard>}<Link className="public-privacy-back" to="/login"><ArrowLeft /> Voltar ao acesso</Link></section></main>;
+}
+
+const COOKIE_PREFERENCES_KEY = 'memorydoc-cookie-preferences-v1';
+
+function CookiePreferences() {
+  const [preferences, setPreferences] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(COOKIE_PREFERENCES_KEY) || 'null');
+      if (saved) { setPreferences(saved); setAnalytics(Boolean(saved.analytics)); setMarketing(Boolean(saved.marketing)); }
+    } catch { setPreferences(null); }
+  }, []);
+  const save = (next) => {
+    const value = { necessary: true, analytics: Boolean(next.analytics), marketing: Boolean(next.marketing), decidedAt: new Date().toISOString() };
+    window.localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(value));
+    setPreferences(value);
+    setOpen(false);
+  };
+  const showBanner = preferences === null && !open;
+  return <>
+    {showBanner && <aside className="cookie-banner" aria-label="Preferências de cookies"><div><strong>Cookies necessários</strong><p>Usamos apenas o cookie técnico de sessão para autenticar usuários. Não ativamos analytics ou marketing neste MVP.</p></div><div className="cookie-banner-actions"><button type="button" className="ghost-button" onClick={() => setOpen(true)}>Configurar</button><button type="button" className="primary-button" onClick={() => save({ analytics: false, marketing: false })}>Continuar</button></div></aside>}
+    {preferences && !open && <button type="button" className="cookie-preferences-trigger" onClick={() => setOpen(true)}>Preferências de cookies</button>}
+    {open && <><button type="button" className="cookie-preferences-overlay" aria-label="Fechar preferências" onClick={() => setOpen(false)} /><aside className="cookie-preferences" role="dialog" aria-modal="true" aria-labelledby="cookie-preferences-title"><div className="cookie-preferences-head"><div><Eyebrow>PREFERÊNCIAS</Eyebrow><h2 id="cookie-preferences-title">Gerenciar cookies</h2></div><button type="button" className="icon-button" aria-label="Fechar preferências" onClick={() => setOpen(false)}><X /></button></div><p>Escolha as categorias opcionais. O cookie de sessão é necessário para o acesso e não pode ser desativado neste gerenciador.</p><div className="cookie-category"><label><input type="checkbox" checked readOnly disabled /><span><strong>Necessários</strong><small>Autenticação e segurança da sessão. Sempre ativos.</small></span></label><em>Ativo</em></div><div className="cookie-category is-unavailable"><label><input type="checkbox" checked={analytics} onChange={(event) => setAnalytics(event.target.checked)} disabled /><span><strong>Analytics</strong><small>Não disponível no MVP; nenhum cookie analítico é instalado.</small></span></label><em>Indisponível</em></div><div className="cookie-category is-unavailable"><label><input type="checkbox" checked={marketing} onChange={(event) => setMarketing(event.target.checked)} disabled /><span><strong>Marketing</strong><small>Não disponível no MVP; nenhum cookie de publicidade é instalado.</small></span></label><em>Indisponível</em></div><div className="cookie-preferences-actions"><Link to="/cookies" className="ghost-button" onClick={() => setOpen(false)}>Ler política</Link><button type="button" className="primary-button" onClick={() => save({ analytics, marketing })}>Salvar preferências</button></div></aside></>}
+  </>;
+}
+
+const lgpdCardImages = {
+  '.lgpd/consent/spec.md': { src: '/lgpd-spec-card.png', alt: 'Documento aberto com bússola e marcações de conformidade' },
+  '.lgpd/data-map.md': { src: '/lgpd-data-map-card.png', alt: 'Mapa com pontos conectados e lupa' },
+  '.lgpd/dsar/workflow.md': { src: '/lgpd-workflow-card.png', alt: 'Caminho de atendimento com etapas e relógio' },
+  '.lgpd/gaps.md': { src: '/lgpd-gaps-card.png', alt: 'Documento analisado com lupa e peças de quebra-cabeça' },
+  '.lgpd/incidents/runbook.md': { src: '/lgpd-runbook-card.png', alt: 'Pasta de resposta a incidentes com alerta e checklist' },
+  '.lgpd/legal-basis.md': { src: '/lgpd-legal-basis-card.png', alt: 'Balança e documento representando bases legais' },
+  '.lgpd/policies/cookie-policy-v1-draft.md': { src: '/lgpd-cookie-policy-card.png', alt: 'Janela de preferências com cookies e controles' },
+  '.lgpd/policies/privacy-policy-v1-draft.md': { src: '/lgpd-privacy-policy-card.png', alt: 'Documento protegido por escudo de privacidade' },
+  '.lgpd/retention.md': { src: '/lgpd-retention-card.png', alt: 'Ampulheta e caixas de arquivo representando retenção' },
+  '.lgpd/security-baseline.md': { src: '/lgpd-security-baseline-card.png', alt: 'Cadeado, chave e escudo representando segurança' },
+  '.lgpd/STATUS.md': { src: '/lgpd-status-card.png', alt: 'Quadro de progresso com etapas e bandeira' },
+  '.lgpd/vendors/README.md': { src: '/lgpd-readme-card.png', alt: 'Manual aberto com lâmpada e caminhos de documentação' },
+};
+
+function PublicLgpdGuide() {
+  const [guide, setGuide] = useState(null);
+  const [error, setError] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  useEffect(() => {
+    const load = () => api.get('/public/lgpd').then((result) => { setGuide(result.data); setError(''); }).catch((err) => setError(err.message));
+    load();
+    const timer = window.setInterval(load, 10000);
+    return () => window.clearInterval(timer);
+  }, []);
+  return <main className="lgpd-guide-page"><div className="ambient-mesh" aria-hidden="true" /><header className="lgpd-guide-hero wrap"><Link className="lgpd-guide-brand" to="/login"><Brand /></Link><Eyebrow>TRANSPARÊNCIA DO MVP</Eyebrow><h1>Guia LGPD do MemoryDoc</h1><p>Esta página é alimentada diretamente pelos arquivos versionados da pasta <code>.lgpd/</code>. Toda alteração nesses documentos aparece aqui na próxima atualização da página.</p><div className="lgpd-guide-actions"><Link className="primary-button" to="/login"><span>Ir para o acesso</span><span className="button-icon"><ArrowUpRight /></span></Link><Link className="lgpd-action-link lgpd-action-request" to="/privacidade/solicitar"><span className="lgpd-action-icon"><ClipboardList /></span><span>Solicitar atendimento</span></Link><Link className="lgpd-action-link lgpd-action-privacy" to="/privacidade"><span className="lgpd-action-icon"><ShieldCheck /></span><span>Política de Privacidade</span></Link><Link className="lgpd-action-link lgpd-action-cookies" to="/cookies"><span className="lgpd-action-icon"><CircleHelp /></span><span>Política de Cookies</span></Link><span className="lgpd-guide-version">{guide ? `Atualizado em ${new Date(guide.generatedAt).toLocaleString('pt-BR')}` : 'Carregando documentação…'}</span></div></header><section className="lgpd-guide-content wrap">{error && <InlineError error={error} />}{!guide ? <LoadingState text="Lendo documentação LGPD…" /> : guide.files.map((file) => { const image = lgpdCardImages[file.path]; return <BezelCard className={`lgpd-guide-card lgpd-document-card ${image ? 'has-visual' : ''}`} key={file.path}><button type="button" className="lgpd-document-trigger" onClick={() => setSelectedFile(file)}>{image && <span className="lgpd-document-visual"><img src={image.src} alt="" /></span>}<span className="lgpd-document-copy"><Eyebrow>{file.path}</Eyebrow><strong>{file.title}</strong><small>Atualizado em {new Date(file.updatedAt).toLocaleDateString('pt-BR')}</small></span><span className="lgpd-document-open"><ArrowUpRight /></span></button></BezelCard>; })}<BezelCard className="lgpd-guide-warning"><CircleHelp /><div><strong>Importante</strong><p>Este guia não é uma política de privacidade nem uma declaração de conformidade. Ele reproduz a documentação técnica atual do MVP; decisões institucionais e revisão jurídica continuam pendentes.</p></div></BezelCard></section>{selectedFile && <><button type="button" className="lgpd-drawer-overlay" aria-label="Fechar documento" onClick={() => setSelectedFile(null)} /><aside className="lgpd-drawer" aria-label={`Documento ${selectedFile.title}`}><div className="lgpd-drawer-head"><div><Eyebrow>{selectedFile.path}</Eyebrow><h2>{selectedFile.title}</h2><small>Atualizado em {new Date(selectedFile.updatedAt).toLocaleString('pt-BR')}</small></div><IconButton label="Fechar documento" onClick={() => setSelectedFile(null)}><X /></IconButton></div><div className="lgpd-markdown lgpd-drawer-content">{renderLgpdMarkdown(selectedFile.content)}</div></aside></>}</main>;
 }
 
 const navigationItems = [
@@ -344,6 +507,7 @@ const navigationItems = [
   { path: "/tipos", label: "Tipos", icon: FolderClock, admin: true },
   { path: "/usuarios", label: "Usuários", icon: Users, admin: true },
   { path: "/relatorios", label: "Relatórios", icon: BarChart3, admin: true },
+  { path: "/privacidade/solicitacoes", label: "Privacidade", icon: ClipboardList, admin: true },
 ];
 
 function Navigation({ session, onLogout }) {
@@ -2499,6 +2663,68 @@ function ActivityPage() {
   );
 }
 
+const privacyRequestTypes = [
+  ['ACCESS', 'Acesso aos dados'], ['CORRECTION', 'Correção'], ['ANONYMIZATION', 'Anonimização'],
+  ['DELETION', 'Eliminação'], ['PORTABILITY', 'Portabilidade'], ['OPPOSITION', 'Oposição'],
+  ['CONSENT_REVOCATION', 'Revogação de consentimento'],
+];
+const privacyRequestStatuses = [['OPEN', 'Aberta'], ['IN_REVIEW', 'Em análise'], ['COMPLETED', 'Concluída'], ['REJECTED', 'Rejeitada']];
+const privacyTypeLabel = (value) => privacyRequestTypes.find(([key]) => key === value)?.[1] || value;
+const privacyStatusLabel = (value) => privacyRequestStatuses.find(([key]) => key === value)?.[1] || value;
+
+function PrivacyRequestsPage({ session, notify }) {
+  const [requests, setRequests] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [form, setForm] = useState({ type: 'ACCESS', description: '' });
+  const [responseNote, setResponseNote] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const load = () => api.get('/privacy-requests').then((result) => setRequests(result.data)).catch((err) => setError(err.message));
+  useEffect(() => { load(); }, []);
+  const selected = requests?.find((item) => item.id === selectedId) || null;
+  const filtered = requests?.filter((item) => (statusFilter === 'all' || item.status === statusFilter) && (typeFilter === 'all' || item.type === typeFilter)) || [];
+  const submit = async (event) => {
+    event.preventDefault(); setSaving(true); setError('');
+    try {
+      const result = await api.post('/privacy-requests', form);
+      setRequests((current) => [result.data, ...(current || [])]); setForm({ type: 'ACCESS', description: '' }); setSelectedId(result.data.id); notify('Solicitação registrada.');
+    } catch (err) { setError(err.message); } finally { setSaving(false); }
+  };
+  const updateSelected = async (status) => {
+    if (!selected) return;
+    setSaving(true); setError('');
+    try {
+      const result = await api.patch(`/privacy-requests/${selected.id}`, { status, responseNote });
+      setRequests((current) => current.map((item) => item.id === result.data.id ? result.data : item)); setResponseNote(''); notify('Solicitação atualizada.');
+    } catch (err) { setError(err.message); } finally { setSaving(false); }
+  };
+  return <>
+    <PageHeader eyebrow="GOVERNANÇA" title="Solicitações de privacidade" description="Registre e acompanhe pedidos de titulares com acesso restrito ao ambiente administrativo." />
+    <main className="page-content wrap privacy-requests-page">
+      <InlineError error={error} />
+      <div className="privacy-requests-grid">
+        <BezelCard className="privacy-request-form-card">
+          <div className="form-section-head"><span className="step-number">01</span><div><h2>Nova solicitação</h2><p>O pedido ficará vinculado ao usuário autenticado.</p></div></div>
+          <form className="document-form" onSubmit={submit}>
+            <label>Tipo de solicitação<select value={form.type} onChange={(event) => setForm({ ...form, type: event.target.value })}>{privacyRequestTypes.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+            <label>Descrição <span className="field-help">(opcional)</span><textarea rows="5" maxLength="2000" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Descreva o pedido sem incluir dados desnecessários." /></label>
+            <div className="form-actions"><PrimaryButton type="submit" disabled={saving} icon={<ClipboardList />}>Registrar pedido</PrimaryButton></div>
+          </form>
+        </BezelCard>
+        <BezelCard className="privacy-request-list-card">
+          <div className="privacy-list-head"><div><Eyebrow>ACOMPANHAMENTO</Eyebrow><h2>Pedidos registrados</h2></div><span className="privacy-count">{filtered.length}</span></div>
+          <div className="privacy-filters"><select aria-label="Filtrar por status" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="all">Todos os status</option>{privacyRequestStatuses.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><select aria-label="Filtrar por tipo" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}><option value="all">Todos os tipos</option>{privacyRequestTypes.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
+          {!requests ? <LoadingState /> : filtered.length === 0 ? <div className="empty-state privacy-empty"><span><ClipboardList /></span><h3>Nenhuma solicitação</h3><p>Os pedidos registrados aparecerão aqui.</p></div> : <div className="privacy-request-list">{filtered.map((item) => <button type="button" className={`privacy-request-row ${selectedId === item.id ? 'selected' : ''}`} key={item.id} onClick={() => { setSelectedId(item.id); setResponseNote(item.responseNote || ''); }}><span><strong>{privacyTypeLabel(item.type)}</strong><small>{item.subjectUser?.name || item.requesterName || 'Titular autenticado'}{item.source === 'PUBLIC' ? ' · Canal público' : ''} · {new Date(item.createdAt).toLocaleDateString('pt-BR')}</small></span><span className={`dsar-status dsar-${item.status.toLowerCase()}`}>{privacyStatusLabel(item.status)}</span></button>)}</div>}
+        </BezelCard>
+      </div>
+      {selected && <BezelCard className="privacy-request-detail"><div className="privacy-detail-head"><div><Eyebrow>DETALHE DO PEDIDO</Eyebrow><h2>{privacyTypeLabel(selected.type)}</h2><p>{selected.subjectUser?.name || selected.requesterName || 'Titular autenticado'} · {selected.requesterEmail || selected.subjectUser?.email || ''} · criado em {new Date(selected.createdAt).toLocaleString('pt-BR')}</p></div><span className={`dsar-status dsar-${selected.status.toLowerCase()}`}>{privacyStatusLabel(selected.status)}</span></div><div className="privacy-detail-copy"><strong>Descrição</strong><p>{selected.description || 'Nenhuma descrição informada.'}</p><small>Prazo operacional registrado: {selected.dueAt ? new Date(selected.dueAt).toLocaleDateString('pt-BR') : 'não informado'}</small>{selected.events?.length > 0 && <div className="privacy-event-list"><strong>Trilha de atendimento</strong>{selected.events.map((event) => <span key={event.id}>{event.action} · {new Date(event.createdAt).toLocaleString('pt-BR')}{event.actor?.name ? ` · ${event.actor.name}` : ''}</span>)}</div>}</div>{session.role === 'admin' && <div className="privacy-admin-actions"><label>Nota de tratamento<textarea rows="3" maxLength="4000" value={responseNote} onChange={(event) => setResponseNote(event.target.value)} placeholder="Registre a decisão sem incluir dados pessoais desnecessários." /></label><div className="form-actions"><button className="ghost-button" type="button" disabled={saving} onClick={() => updateSelected('IN_REVIEW')}>Marcar em análise</button><button className="ghost-button" type="button" disabled={saving} onClick={() => updateSelected('REJECTED')}>Rejeitar</button><PrimaryButton type="button" disabled={saving} onClick={() => updateSelected('COMPLETED')} icon={<Check />}>Concluir</PrimaryButton></div></div>}</BezelCard>}
+    </main>
+  </>;
+}
+
 function Toast({ message, error, onClose }) {
   if (!message) return null;
   return (
@@ -2563,6 +2789,10 @@ function PageTitle() {
     const pathname = location.pathname;
     let title = "MemoryDoc · Gestão documental";
     if (pathname === "/login") title = "Acesso · MemoryDoc";
+    else if (pathname === "/lgpd") title = "Guia LGPD · MemoryDoc";
+    else if (pathname === "/privacidade") title = "Política de Privacidade · MemoryDoc";
+    else if (pathname === "/cookies") title = "Política de Cookies · MemoryDoc";
+    else if (pathname === "/privacidade/solicitar") title = "Solicitação de privacidade · MemoryDoc";
     else if (pathname === "/inicio" || pathname === "/") title = "Início · MemoryDoc";
     else if (pathname === "/documentos") title = "Documentos · MemoryDoc";
     else if (pathname === "/documentos/novo") title = "Novo registro · MemoryDoc";
@@ -2573,6 +2803,7 @@ function PageTitle() {
     else if (pathname === "/usuarios") title = "Usuários · MemoryDoc";
     else if (pathname.startsWith("/usuarios/") && pathname.endsWith("/perfil")) title = "Perfil do usuário · MemoryDoc";
     else if (pathname === "/relatorios") title = "Relatórios · MemoryDoc";
+    else if (pathname === "/privacidade/solicitacoes") title = "Privacidade · MemoryDoc";
     else if (pathname === "/atividades") title = "Atividades · MemoryDoc";
     else title = "Página não encontrada · MemoryDoc";
     document.title = title;
@@ -2807,7 +3038,12 @@ export default function App() {
     return (
       <>
         <PageTitle />
+        <CookiePreferences />
         <Routes>
+          <Route path="/lgpd" element={<PublicLgpdGuide />} />
+          <Route path="/privacidade/solicitar" element={<PublicPrivacyRequestPage />} />
+          <Route path="/privacidade" element={<PublicPolicyPage kind="privacy" />} />
+          <Route path="/cookies" element={<PublicPolicyPage kind="cookies" />} />
           <Route
             path="/login"
             element={
@@ -2868,6 +3104,7 @@ export default function App() {
   return (
     <>
       <PageTitle />
+      <CookiePreferences />
       {location.pathname === "/login" ? (
         <Navigate to={loginReturnPath} replace />
       ) : (
@@ -2983,6 +3220,10 @@ export default function App() {
                     <Reports types={types} notify={notify} />
                   </RequireRole>
                 }
+              />
+              <Route
+                path="/privacidade/solicitacoes"
+                element={<RequireRole session={session} roles={["admin"]}><PrivacyRequestsPage session={session} notify={(message) => setToast({ message, error: false })} /></RequireRole>}
               />
               <Route path="/atividades" element={<ActivityPage />} />
               <Route

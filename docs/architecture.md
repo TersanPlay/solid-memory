@@ -72,6 +72,7 @@ sequenceDiagram
 - A sessão expira oito horas após o login; não há renovação automática da expiração.
 - O cookie usa `HttpOnly`, `SameSite=Lax`, `Path=/` e `Secure` em produção.
 - Logout remove a sessão do banco e expira o cookie.
+- O frontend exibe banner e gerenciador de preferências; somente o cookie necessário de sessão está ativo no MVP. A escolha é armazenada localmente no navegador.
 - Alterar uma senha ou desativar um usuário remove suas sessões.
 - Senhas usam `crypto.scrypt`, salt aleatório e comparação em tempo constante.
 
@@ -138,6 +139,10 @@ O navegador é a fonte de verdade da página atual. A aplicação usa `BrowserRo
 | `/departamentos`, `/tipos`, `/usuarios`, `/relatorios` | Administração | `admin` |
 | `/usuarios/:userId/perfil` | Perfil e histórico do usuário | Próprio usuário ou `admin` |
 | `/atividades` | Histórico global | Qualquer sessão |
+| `/lgpd` | Guia público da documentação `.lgpd/` | Pública |
+| `/privacidade` | Política de Privacidade v1 | Pública; rascunho |
+| `/cookies` | Política de Cookies v1 | Pública; rascunho |
+| `/privacidade/solicitar` | Canal público DSAR | Pública; MVP |
 
 Ao receber `401`, uma URL protegida redireciona para `/login` e é preservada como destino de retorno. Depois do login, o usuário volta ao endereço solicitado. Rotas sem permissão exibem uma página interna de acesso negado sem substituir a autorização do backend.
 

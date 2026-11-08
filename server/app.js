@@ -49,6 +49,7 @@ import {
   updateUser,
 } from "./users.js";
 import { createExcelReport, createPdfReport } from "./reports.js";
+import { createPrivacyRequest, createPublicPrivacyRequest, listPrivacyRequests, updatePrivacyRequest } from './privacy-requests.js';
 
 const statuses = Object.keys(STATUS_LABELS);
 const initialStatuses = statuses.filter(
@@ -166,6 +167,31 @@ function getLinkProvider(value) {
   return "Externo";
 }
 
+function readPublicLgpdDocumentation(rootDir) {
+  const directory = path.join(rootDir, '.lgpd');
+  const files = [];
+  const visit = (current) => {
+    if (!fs.existsSync(current)) return;
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const fullPath = path.join(current, entry.name);
+      if (entry.isDirectory()) visit(fullPath);
+      else if (entry.isFile() && entry.name.toLowerCase().endsWith('.md')) {
+        const relative = path.relative(directory, fullPath).replaceAll('\\', '/');
+        const stat = fs.statSync(fullPath);
+        files.push({
+          path: `.lgpd/${relative}`,
+          title: relative.replace(/\.md$/i, '').split('/').pop().replaceAll('-', ' '),
+          content: fs.readFileSync(fullPath, 'utf8'),
+          updatedAt: stat.mtime.toISOString(),
+        });
+      }
+    }
+  };
+  visit(directory);
+  files.sort((a, b) => a.path.localeCompare(b.path));
+  return { generatedAt: new Date().toISOString(), files };
+}
+
 function normalizeType(input) {
   return {
     ...input,
@@ -279,6 +305,23 @@ export function createApp({ prisma, config }) {
     }),
   );
 
+  app.get('/api/public/lgpd', (_request, response) => {
+    response.set('Cache-Control', 'no-store');
+    response.json({ data: readPublicLgpdDocumentation(config.rootDir) });
+  });
+
+  const publicPrivacyRequestLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 5,
+    keyGenerator: (request) => rateLimitClientIp(request, config),
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { error: { code: 'RATE_LIMITED', message: 'Muitas solicitações. Aguarde alguns minutos.' } },
+  });
+  app.post('/api/public/privacy-requests', publicPrivacyRequestLimiter, asyncRoute(async (request, response) => {
+    response.status(201).json({ data: await createPublicPrivacyRequest(prisma, request.body) });
+  }));
+
   const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 5,
@@ -340,6 +383,16 @@ export function createApp({ prisma, config }) {
   app.get("/api/auth/me", (request, response) =>
     response.json({ data: publicUser(request.user) }),
   );
+
+  app.post('/api/privacy-requests', asyncRoute(async (request, response) => {
+    response.status(201).json({ data: await createPrivacyRequest(prisma, request.body, request.user) });
+  }));
+  app.get('/api/privacy-requests', asyncRoute(async (request, response) => {
+    response.json({ data: await listPrivacyRequests(prisma, request.user) });
+  }));
+  app.patch('/api/privacy-requests/:id', requireRoles('admin'), asyncRoute(async (request, response) => {
+    response.json({ data: await updatePrivacyRequest(prisma, request.params.id, request.body, request.user) });
+  }));
 
   app.get(
     "/api/users",

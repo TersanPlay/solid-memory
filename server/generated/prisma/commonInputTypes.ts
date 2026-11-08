@@ -256,6 +256,40 @@ export type BytesNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedBytesNullableFilter<$PrismaModel>
 }
 
+export type EnumDataSubjectRequestTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DataSubjectRequestType | Prisma.EnumDataSubjectRequestTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DataSubjectRequestType[]
+  notIn?: $Enums.DataSubjectRequestType[]
+  not?: Prisma.NestedEnumDataSubjectRequestTypeFilter<$PrismaModel> | $Enums.DataSubjectRequestType
+}
+
+export type EnumDataSubjectRequestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DataSubjectRequestStatus | Prisma.EnumDataSubjectRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DataSubjectRequestStatus[]
+  notIn?: $Enums.DataSubjectRequestStatus[]
+  not?: Prisma.NestedEnumDataSubjectRequestStatusFilter<$PrismaModel> | $Enums.DataSubjectRequestStatus
+}
+
+export type EnumDataSubjectRequestTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DataSubjectRequestType | Prisma.EnumDataSubjectRequestTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DataSubjectRequestType[]
+  notIn?: $Enums.DataSubjectRequestType[]
+  not?: Prisma.NestedEnumDataSubjectRequestTypeWithAggregatesFilter<$PrismaModel> | $Enums.DataSubjectRequestType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDataSubjectRequestTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDataSubjectRequestTypeFilter<$PrismaModel>
+}
+
+export type EnumDataSubjectRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DataSubjectRequestStatus | Prisma.EnumDataSubjectRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DataSubjectRequestStatus[]
+  notIn?: $Enums.DataSubjectRequestStatus[]
+  not?: Prisma.NestedEnumDataSubjectRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.DataSubjectRequestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDataSubjectRequestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDataSubjectRequestStatusFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[]
@@ -513,6 +547,40 @@ export type NestedBytesNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedBytesNullableFilter<$PrismaModel>
   _max?: Prisma.NestedBytesNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumDataSubjectRequestTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DataSubjectRequestType | Prisma.EnumDataSubjectRequestTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DataSubjectRequestType[]
+  notIn?: $Enums.DataSubjectRequestType[]
+  not?: Prisma.NestedEnumDataSubjectRequestTypeFilter<$PrismaModel> | $Enums.DataSubjectRequestType
+}
+
+export type NestedEnumDataSubjectRequestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DataSubjectRequestStatus | Prisma.EnumDataSubjectRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DataSubjectRequestStatus[]
+  notIn?: $Enums.DataSubjectRequestStatus[]
+  not?: Prisma.NestedEnumDataSubjectRequestStatusFilter<$PrismaModel> | $Enums.DataSubjectRequestStatus
+}
+
+export type NestedEnumDataSubjectRequestTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DataSubjectRequestType | Prisma.EnumDataSubjectRequestTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DataSubjectRequestType[]
+  notIn?: $Enums.DataSubjectRequestType[]
+  not?: Prisma.NestedEnumDataSubjectRequestTypeWithAggregatesFilter<$PrismaModel> | $Enums.DataSubjectRequestType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDataSubjectRequestTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDataSubjectRequestTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumDataSubjectRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DataSubjectRequestStatus | Prisma.EnumDataSubjectRequestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DataSubjectRequestStatus[]
+  notIn?: $Enums.DataSubjectRequestStatus[]
+  not?: Prisma.NestedEnumDataSubjectRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.DataSubjectRequestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDataSubjectRequestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDataSubjectRequestStatusFilter<$PrismaModel>
 }
 
 

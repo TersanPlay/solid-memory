@@ -39,3 +39,26 @@ export const HistoryAction = {
 } as const
 
 export type HistoryAction = (typeof HistoryAction)[keyof typeof HistoryAction]
+
+
+export const DataSubjectRequestType = {
+  ACCESS: 'ACCESS',
+  CORRECTION: 'CORRECTION',
+  ANONYMIZATION: 'ANONYMIZATION',
+  DELETION: 'DELETION',
+  PORTABILITY: 'PORTABILITY',
+  OPPOSITION: 'OPPOSITION',
+  CONSENT_REVOCATION: 'CONSENT_REVOCATION'
+} as const
+
+export type DataSubjectRequestType = (typeof DataSubjectRequestType)[keyof typeof DataSubjectRequestType]
+
+
+export const DataSubjectRequestStatus = {
+  OPEN: 'OPEN',
+  IN_REVIEW: 'IN_REVIEW',
+  COMPLETED: 'COMPLETED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type DataSubjectRequestStatus = (typeof DataSubjectRequestStatus)[keyof typeof DataSubjectRequestStatus]

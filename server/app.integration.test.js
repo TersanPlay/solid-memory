@@ -131,6 +131,86 @@ describe("API integrada com SQLite", () => {
     await request(app).get("/api/documents").expect(401);
   });
 
+  it("expõe a documentação LGPD atual sem autenticação", async () => {
+    const response = await request(app).get('/api/public/lgpd').expect(200);
+    expect(response.body.data.files).toEqual(expect.arrayContaining([
+      expect.objectContaining({ path: '.lgpd/STATUS.md' }),
+      expect.objectContaining({ path: '.lgpd/policies/privacy-policy-v1-draft.md' }),
+    ]));
+  });
+
+  it("registra solicitações de titular e impede tratamento por usuário comum", async () => {
+    const created = await viewerAgent.post('/api/privacy-requests').send({
+      type: 'ACCESS',
+      description: 'Solicito acesso aos meus dados cadastrais.',
+    }).expect(201);
+    expect(created.body.data).toMatchObject({ type: 'ACCESS', status: 'OPEN', subjectUserId: viewer.id });
+
+    const own = await viewerAgent.get('/api/privacy-requests').expect(200);
+    expect(own.body.data).toHaveLength(1);
+    expect(own.body.data[0].subjectUserId).toBe(viewer.id);
+
+    const adminList = await adminAgent.get('/api/privacy-requests').expect(200);
+    expect(adminList.body.data).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: created.body.data.id, subjectUserId: viewer.id }),
+    ]));
+    await adminAgent.patch(`/api/privacy-requests/${created.body.data.id}`).send({
+      status: 'COMPLETED', responseNote: 'Solicitação processada.',
+    }).expect(200);
+    await viewerAgent.patch(`/api/privacy-requests/${created.body.data.id}`).send({ status: 'REJECTED' }).expect(403);
+  });
+
+  it("recebe solicitação pelo canal público e mantém trilha administrativa", async () => {
+    await request(app).get('/api/privacy-requests').expect(401);
+    const created = await request(app).post('/api/public/privacy-requests').send({
+      requesterName: 'Titular Público',
+      requesterEmail: 'titular.publico@example.invalid',
+      type: 'CORRECTION',
+      description: 'Solicito a correção de um dado cadastral.',
+    }).expect(201);
+
+    expect(created.body.data).toMatchObject({
+      reference: expect.stringMatching(/^DSAR-[A-Z0-9]{8}$/),
+      type: 'CORRECTION',
+      status: 'OPEN',
+    });
+
+    const publicRecord = await prisma.publicPrivacyRequest.findUnique({
+      where: { publicReference: created.body.data.reference },
+    });
+    expect(publicRecord).toBeTruthy();
+
+    const adminList = await adminAgent.get('/api/privacy-requests').expect(200);
+    expect(adminList.body.data).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        id: publicRecord.id,
+        source: 'PUBLIC',
+        publicReference: created.body.data.reference,
+        requesterName: 'Titular Público',
+        requesterEmail: 'titular.publico@example.invalid',
+        events: expect.arrayContaining([expect.objectContaining({ action: 'CREATED', source: 'PUBLIC' })]),
+      }),
+    ]));
+
+    await adminAgent.patch(`/api/privacy-requests/${publicRecord.id}`).send({
+      status: 'COMPLETED',
+      responseNote: 'Solicitação analisada pelo administrador.',
+    }).expect(200);
+
+    const afterUpdate = await adminAgent.get('/api/privacy-requests').expect(200);
+    const handled = afterUpdate.body.data.find((item) => item.id === publicRecord.id);
+    expect(handled).toMatchObject({ status: 'COMPLETED', responseNote: 'Solicitação analisada pelo administrador.' });
+    expect(handled.events).toEqual(expect.arrayContaining([
+      expect.objectContaining({ action: 'CREATED' }),
+      expect.objectContaining({ action: 'STATUS_COMPLETED', actor: expect.objectContaining({ id: admin.id }) }),
+    ]));
+  });
+
+  it("não permite que um usuário crie solicitação para outro titular", async () => {
+    const response = await viewerAgent.post('/api/privacy-requests').send({ type: 'DELETION', subjectUserId: admin.id }).expect(201);
+    expect(response.body.data.subjectUserId).toBe(viewer.id);
+  });
+
   it("gera sequência transacional, prévia não reservada e não reutiliza cancelamento", async () => {
     const preview = await adminAgent
       .get(`/api/protocols/next?typeId=${type.id}&date=2026-07-22`)

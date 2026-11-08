@@ -59,7 +59,10 @@ export const ModelName = {
   Document: 'Document',
   DocumentHistory: 'DocumentHistory',
   Attachment: 'Attachment',
-  DocumentLink: 'DocumentLink'
+  DocumentLink: 'DocumentLink',
+  DataSubjectRequest: 'DataSubjectRequest',
+  PublicPrivacyRequest: 'PublicPrivacyRequest',
+  PrivacyRequestEvent: 'PrivacyRequestEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -204,6 +207,55 @@ export const DocumentLinkScalarFieldEnum = {
 } as const
 
 export type DocumentLinkScalarFieldEnum = (typeof DocumentLinkScalarFieldEnum)[keyof typeof DocumentLinkScalarFieldEnum]
+
+
+export const DataSubjectRequestScalarFieldEnum = {
+  id: 'id',
+  subjectUserId: 'subjectUserId',
+  createdById: 'createdById',
+  handledById: 'handledById',
+  type: 'type',
+  status: 'status',
+  description: 'description',
+  responseNote: 'responseNote',
+  dueAt: 'dueAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type DataSubjectRequestScalarFieldEnum = (typeof DataSubjectRequestScalarFieldEnum)[keyof typeof DataSubjectRequestScalarFieldEnum]
+
+
+export const PublicPrivacyRequestScalarFieldEnum = {
+  id: 'id',
+  publicReference: 'publicReference',
+  requesterName: 'requesterName',
+  requesterEmail: 'requesterEmail',
+  type: 'type',
+  status: 'status',
+  description: 'description',
+  responseNote: 'responseNote',
+  dueAt: 'dueAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type PublicPrivacyRequestScalarFieldEnum = (typeof PublicPrivacyRequestScalarFieldEnum)[keyof typeof PublicPrivacyRequestScalarFieldEnum]
+
+
+export const PrivacyRequestEventScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  source: 'source',
+  action: 'action',
+  note: 'note',
+  actorId: 'actorId',
+  createdAt: 'createdAt'
+} as const
+
+export type PrivacyRequestEventScalarFieldEnum = (typeof PrivacyRequestEventScalarFieldEnum)[keyof typeof PrivacyRequestEventScalarFieldEnum]
 
 
 export const SortOrder = {

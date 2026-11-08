@@ -33,6 +33,23 @@ enum HistoryAction {
   ATTACHMENT_REMOVE
 }
 
+enum DataSubjectRequestType {
+  ACCESS
+  CORRECTION
+  ANONYMIZATION
+  DELETION
+  PORTABILITY
+  OPPOSITION
+  CONSENT_REVOCATION
+}
+
+enum DataSubjectRequestStatus {
+  OPEN
+  IN_REVIEW
+  COMPLETED
+  REJECTED
+}
+
 model User {
   id               String            @id @default(cuid())
   name             String
@@ -50,6 +67,10 @@ model User {
   historyEntries   DocumentHistory[]
   attachments      Attachment[]
   documentLinks    DocumentLink[]
+  privacyRequests  DataSubjectRequest[] @relation("SubjectUser")
+  createdPrivacyRequests DataSubjectRequest[] @relation("CreatedByUser")
+  handledPrivacyRequests DataSubjectRequest[] @relation("HandledByUser")
+  privacyRequestEvents PrivacyRequestEvent[]
 
   @@index([role, active])
 }
@@ -192,4 +213,57 @@ model DocumentLink {
 
   @@index([documentId, createdAt])
   @@index([createdById])
+}
+
+model DataSubjectRequest {
+  id            String                    @id @default(cuid())
+  subjectUserId String
+  createdById   String
+  handledById   String?
+  type          DataSubjectRequestType
+  status        DataSubjectRequestStatus  @default(OPEN)
+  description   String                    @default("")
+  responseNote  String                    @default("")
+  dueAt         DateTime?
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+  completedAt   DateTime?
+  subjectUser   User                      @relation("SubjectUser", fields: [subjectUserId], references: [id], onDelete: Restrict)
+  createdBy     User                      @relation("CreatedByUser", fields: [createdById], references: [id], onDelete: Restrict)
+  handledBy     User?                     @relation("HandledByUser", fields: [handledById], references: [id], onDelete: SetNull)
+
+  @@index([subjectUserId, createdAt])
+  @@index([status, dueAt])
+  @@index([createdById, createdAt])
+}
+
+model PublicPrivacyRequest {
+  id              String                    @id
+  publicReference String                    @unique
+  requesterName   String
+  requesterEmail  String
+  type            DataSubjectRequestType
+  status          DataSubjectRequestStatus  @default(OPEN)
+  description     String                    @default("")
+  responseNote    String                    @default("")
+  dueAt           DateTime?
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  completedAt     DateTime?
+
+  @@index([status, dueAt])
+  @@index([requesterEmail, createdAt])
+}
+
+model PrivacyRequestEvent {
+  id        String   @id @default(cuid())
+  requestId String
+  source    String
+  action    String
+  note      String   @default("")
+  actorId   String?
+  createdAt DateTime @default(now())
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([requestId, source, createdAt])
 }

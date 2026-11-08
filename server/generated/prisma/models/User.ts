@@ -221,6 +221,10 @@ export type UserWhereInput = {
   historyEntries?: Prisma.DocumentHistoryListRelationFilter
   attachments?: Prisma.AttachmentListRelationFilter
   documentLinks?: Prisma.DocumentLinkListRelationFilter
+  privacyRequests?: Prisma.DataSubjectRequestListRelationFilter
+  createdPrivacyRequests?: Prisma.DataSubjectRequestListRelationFilter
+  handledPrivacyRequests?: Prisma.DataSubjectRequestListRelationFilter
+  privacyRequestEvents?: Prisma.PrivacyRequestEventListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -240,6 +244,10 @@ export type UserOrderByWithRelationInput = {
   historyEntries?: Prisma.DocumentHistoryOrderByRelationAggregateInput
   attachments?: Prisma.AttachmentOrderByRelationAggregateInput
   documentLinks?: Prisma.DocumentLinkOrderByRelationAggregateInput
+  privacyRequests?: Prisma.DataSubjectRequestOrderByRelationAggregateInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestOrderByRelationAggregateInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestOrderByRelationAggregateInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -262,6 +270,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   historyEntries?: Prisma.DocumentHistoryListRelationFilter
   attachments?: Prisma.AttachmentListRelationFilter
   documentLinks?: Prisma.DocumentLinkListRelationFilter
+  privacyRequests?: Prisma.DataSubjectRequestListRelationFilter
+  createdPrivacyRequests?: Prisma.DataSubjectRequestListRelationFilter
+  handledPrivacyRequests?: Prisma.DataSubjectRequestListRelationFilter
+  privacyRequestEvents?: Prisma.PrivacyRequestEventListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -311,6 +323,10 @@ export type UserCreateInput = {
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -330,6 +346,10 @@ export type UserUncheckedCreateInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserUpdateInput = {
@@ -349,6 +369,10 @@ export type UserUpdateInput = {
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -368,6 +392,10 @@ export type UserUncheckedUpdateInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -445,6 +473,11 @@ export type UserMinOrderByAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -561,6 +594,66 @@ export type UserUpdateOneRequiredWithoutDocumentLinksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDocumentLinksInput, Prisma.UserUpdateWithoutDocumentLinksInput>, Prisma.UserUncheckedUpdateWithoutDocumentLinksInput>
 }
 
+export type UserCreateNestedOneWithoutPrivacyRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutPrivacyRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPrivacyRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutCreatedPrivacyRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedPrivacyRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedPrivacyRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutHandledPrivacyRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHandledPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutHandledPrivacyRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHandledPrivacyRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPrivacyRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutPrivacyRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPrivacyRequestsInput
+  upsert?: Prisma.UserUpsertWithoutPrivacyRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPrivacyRequestsInput, Prisma.UserUpdateWithoutPrivacyRequestsInput>, Prisma.UserUncheckedUpdateWithoutPrivacyRequestsInput>
+}
+
+export type UserUpdateOneRequiredWithoutCreatedPrivacyRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedPrivacyRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedPrivacyRequestsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedPrivacyRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedPrivacyRequestsInput, Prisma.UserUpdateWithoutCreatedPrivacyRequestsInput>, Prisma.UserUncheckedUpdateWithoutCreatedPrivacyRequestsInput>
+}
+
+export type UserUpdateOneWithoutHandledPrivacyRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHandledPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutHandledPrivacyRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHandledPrivacyRequestsInput
+  upsert?: Prisma.UserUpsertWithoutHandledPrivacyRequestsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHandledPrivacyRequestsInput, Prisma.UserUpdateWithoutHandledPrivacyRequestsInput>, Prisma.UserUncheckedUpdateWithoutHandledPrivacyRequestsInput>
+}
+
+export type UserCreateNestedOneWithoutPrivacyRequestEventsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPrivacyRequestEventsInput, Prisma.UserUncheckedCreateWithoutPrivacyRequestEventsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPrivacyRequestEventsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutPrivacyRequestEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPrivacyRequestEventsInput, Prisma.UserUncheckedCreateWithoutPrivacyRequestEventsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPrivacyRequestEventsInput
+  upsert?: Prisma.UserUpsertWithoutPrivacyRequestEventsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPrivacyRequestEventsInput, Prisma.UserUpdateWithoutPrivacyRequestEventsInput>, Prisma.UserUncheckedUpdateWithoutPrivacyRequestEventsInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id?: string
   name: string
@@ -577,6 +670,10 @@ export type UserCreateWithoutSessionsInput = {
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -595,6 +692,10 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -629,6 +730,10 @@ export type UserUpdateWithoutSessionsInput = {
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -647,6 +752,10 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutResponsibleForInput = {
@@ -665,6 +774,10 @@ export type UserCreateWithoutResponsibleForInput = {
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutResponsibleForInput = {
@@ -683,6 +796,10 @@ export type UserUncheckedCreateWithoutResponsibleForInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutResponsibleForInput = {
@@ -706,6 +823,10 @@ export type UserCreateWithoutCreatedDocumentsInput = {
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutCreatedDocumentsInput = {
@@ -724,6 +845,10 @@ export type UserUncheckedCreateWithoutCreatedDocumentsInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutCreatedDocumentsInput = {
@@ -747,6 +872,10 @@ export type UserCreateWithoutUpdatedDocumentsInput = {
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutUpdatedDocumentsInput = {
@@ -765,6 +894,10 @@ export type UserUncheckedCreateWithoutUpdatedDocumentsInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutUpdatedDocumentsInput = {
@@ -799,6 +932,10 @@ export type UserUpdateWithoutResponsibleForInput = {
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResponsibleForInput = {
@@ -817,6 +954,10 @@ export type UserUncheckedUpdateWithoutResponsibleForInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserUpsertWithoutCreatedDocumentsInput = {
@@ -846,6 +987,10 @@ export type UserUpdateWithoutCreatedDocumentsInput = {
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedDocumentsInput = {
@@ -864,6 +1009,10 @@ export type UserUncheckedUpdateWithoutCreatedDocumentsInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserUpsertWithoutUpdatedDocumentsInput = {
@@ -893,6 +1042,10 @@ export type UserUpdateWithoutUpdatedDocumentsInput = {
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUpdatedDocumentsInput = {
@@ -911,6 +1064,10 @@ export type UserUncheckedUpdateWithoutUpdatedDocumentsInput = {
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutHistoryEntriesInput = {
@@ -929,6 +1086,10 @@ export type UserCreateWithoutHistoryEntriesInput = {
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutHistoryEntriesInput = {
@@ -947,6 +1108,10 @@ export type UserUncheckedCreateWithoutHistoryEntriesInput = {
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutHistoryEntriesInput = {
@@ -981,6 +1146,10 @@ export type UserUpdateWithoutHistoryEntriesInput = {
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHistoryEntriesInput = {
@@ -999,6 +1168,10 @@ export type UserUncheckedUpdateWithoutHistoryEntriesInput = {
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutAttachmentsInput = {
@@ -1017,6 +1190,10 @@ export type UserCreateWithoutAttachmentsInput = {
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutAttachmentsInput = {
@@ -1035,6 +1212,10 @@ export type UserUncheckedCreateWithoutAttachmentsInput = {
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutAttachmentsInput = {
@@ -1069,6 +1250,10 @@ export type UserUpdateWithoutAttachmentsInput = {
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAttachmentsInput = {
@@ -1087,6 +1272,10 @@ export type UserUncheckedUpdateWithoutAttachmentsInput = {
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutDocumentLinksInput = {
@@ -1105,6 +1294,10 @@ export type UserCreateWithoutDocumentLinksInput = {
   updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutDocumentLinksInput = {
@@ -1123,6 +1316,10 @@ export type UserUncheckedCreateWithoutDocumentLinksInput = {
   updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
   historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutDocumentLinksInput = {
@@ -1157,6 +1354,10 @@ export type UserUpdateWithoutDocumentLinksInput = {
   updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDocumentLinksInput = {
@@ -1175,6 +1376,426 @@ export type UserUncheckedUpdateWithoutDocumentLinksInput = {
   updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
   historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type UserCreateWithoutPrivacyRequestsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
+}
+
+export type UserUncheckedCreateWithoutPrivacyRequestsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentUncheckedCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type UserCreateOrConnectWithoutPrivacyRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutPrivacyRequestsInput>
+}
+
+export type UserCreateWithoutCreatedPrivacyRequestsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
+}
+
+export type UserUncheckedCreateWithoutCreatedPrivacyRequestsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentUncheckedCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type UserCreateOrConnectWithoutCreatedPrivacyRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedPrivacyRequestsInput>
+}
+
+export type UserCreateWithoutHandledPrivacyRequestsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventCreateNestedManyWithoutActorInput
+}
+
+export type UserUncheckedCreateWithoutHandledPrivacyRequestsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentUncheckedCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type UserCreateOrConnectWithoutHandledPrivacyRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutHandledPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutHandledPrivacyRequestsInput>
+}
+
+export type UserUpsertWithoutPrivacyRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPrivacyRequestsInput, Prisma.UserUncheckedUpdateWithoutPrivacyRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutPrivacyRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPrivacyRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPrivacyRequestsInput, Prisma.UserUncheckedUpdateWithoutPrivacyRequestsInput>
+}
+
+export type UserUpdateWithoutPrivacyRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPrivacyRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUncheckedUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type UserUpsertWithoutCreatedPrivacyRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedPrivacyRequestsInput, Prisma.UserUncheckedUpdateWithoutCreatedPrivacyRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedPrivacyRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedPrivacyRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedPrivacyRequestsInput, Prisma.UserUncheckedUpdateWithoutCreatedPrivacyRequestsInput>
+}
+
+export type UserUpdateWithoutCreatedPrivacyRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedPrivacyRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUncheckedUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type UserUpsertWithoutHandledPrivacyRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutHandledPrivacyRequestsInput, Prisma.UserUncheckedUpdateWithoutHandledPrivacyRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutHandledPrivacyRequestsInput, Prisma.UserUncheckedCreateWithoutHandledPrivacyRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutHandledPrivacyRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutHandledPrivacyRequestsInput, Prisma.UserUncheckedUpdateWithoutHandledPrivacyRequestsInput>
+}
+
+export type UserUpdateWithoutHandledPrivacyRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUpdateManyWithoutActorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutHandledPrivacyRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUncheckedUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequestEvents?: Prisma.PrivacyRequestEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type UserCreateWithoutPrivacyRequestEventsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestCreateNestedManyWithoutHandledByInput
+}
+
+export type UserUncheckedCreateWithoutPrivacyRequestEventsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  passwordSalt: string
+  role?: $Enums.UserRole
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  responsibleFor?: Prisma.DocumentUncheckedCreateNestedManyWithoutResponsibleUserInput
+  createdDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUpdatedByInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedCreateNestedManyWithoutUserInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  documentLinks?: Prisma.DocumentLinkUncheckedCreateNestedManyWithoutCreatedByInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutSubjectUserInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedCreateNestedManyWithoutHandledByInput
+}
+
+export type UserCreateOrConnectWithoutPrivacyRequestEventsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPrivacyRequestEventsInput, Prisma.UserUncheckedCreateWithoutPrivacyRequestEventsInput>
+}
+
+export type UserUpsertWithoutPrivacyRequestEventsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPrivacyRequestEventsInput, Prisma.UserUncheckedUpdateWithoutPrivacyRequestEventsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPrivacyRequestEventsInput, Prisma.UserUncheckedCreateWithoutPrivacyRequestEventsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPrivacyRequestEventsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPrivacyRequestEventsInput, Prisma.UserUncheckedUpdateWithoutPrivacyRequestEventsInput>
+}
+
+export type UserUpdateWithoutPrivacyRequestEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUpdateManyWithoutHandledByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPrivacyRequestEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordSalt?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  responsibleFor?: Prisma.DocumentUncheckedUpdateManyWithoutResponsibleUserNestedInput
+  createdDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUpdatedByNestedInput
+  historyEntries?: Prisma.DocumentHistoryUncheckedUpdateManyWithoutUserNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  documentLinks?: Prisma.DocumentLinkUncheckedUpdateManyWithoutCreatedByNestedInput
+  privacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutSubjectUserNestedInput
+  createdPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  handledPrivacyRequests?: Prisma.DataSubjectRequestUncheckedUpdateManyWithoutHandledByNestedInput
 }
 
 
@@ -1190,6 +1811,10 @@ export type UserCountOutputType = {
   historyEntries: number
   attachments: number
   documentLinks: number
+  privacyRequests: number
+  createdPrivacyRequests: number
+  handledPrivacyRequests: number
+  privacyRequestEvents: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1200,6 +1825,10 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   historyEntries?: boolean | UserCountOutputTypeCountHistoryEntriesArgs
   attachments?: boolean | UserCountOutputTypeCountAttachmentsArgs
   documentLinks?: boolean | UserCountOutputTypeCountDocumentLinksArgs
+  privacyRequests?: boolean | UserCountOutputTypeCountPrivacyRequestsArgs
+  createdPrivacyRequests?: boolean | UserCountOutputTypeCountCreatedPrivacyRequestsArgs
+  handledPrivacyRequests?: boolean | UserCountOutputTypeCountHandledPrivacyRequestsArgs
+  privacyRequestEvents?: boolean | UserCountOutputTypeCountPrivacyRequestEventsArgs
 }
 
 /**
@@ -1261,6 +1890,34 @@ export type UserCountOutputTypeCountDocumentLinksArgs<ExtArgs extends runtime.Ty
   where?: Prisma.DocumentLinkWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPrivacyRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DataSubjectRequestWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedPrivacyRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DataSubjectRequestWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountHandledPrivacyRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DataSubjectRequestWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPrivacyRequestEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PrivacyRequestEventWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1279,6 +1936,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   historyEntries?: boolean | Prisma.User$historyEntriesArgs<ExtArgs>
   attachments?: boolean | Prisma.User$attachmentsArgs<ExtArgs>
   documentLinks?: boolean | Prisma.User$documentLinksArgs<ExtArgs>
+  privacyRequests?: boolean | Prisma.User$privacyRequestsArgs<ExtArgs>
+  createdPrivacyRequests?: boolean | Prisma.User$createdPrivacyRequestsArgs<ExtArgs>
+  handledPrivacyRequests?: boolean | Prisma.User$handledPrivacyRequestsArgs<ExtArgs>
+  privacyRequestEvents?: boolean | Prisma.User$privacyRequestEventsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1327,6 +1988,10 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   historyEntries?: boolean | Prisma.User$historyEntriesArgs<ExtArgs>
   attachments?: boolean | Prisma.User$attachmentsArgs<ExtArgs>
   documentLinks?: boolean | Prisma.User$documentLinksArgs<ExtArgs>
+  privacyRequests?: boolean | Prisma.User$privacyRequestsArgs<ExtArgs>
+  createdPrivacyRequests?: boolean | Prisma.User$createdPrivacyRequestsArgs<ExtArgs>
+  handledPrivacyRequests?: boolean | Prisma.User$handledPrivacyRequestsArgs<ExtArgs>
+  privacyRequestEvents?: boolean | Prisma.User$privacyRequestEventsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1342,6 +2007,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     historyEntries: Prisma.$DocumentHistoryPayload<ExtArgs>[]
     attachments: Prisma.$AttachmentPayload<ExtArgs>[]
     documentLinks: Prisma.$DocumentLinkPayload<ExtArgs>[]
+    privacyRequests: Prisma.$DataSubjectRequestPayload<ExtArgs>[]
+    createdPrivacyRequests: Prisma.$DataSubjectRequestPayload<ExtArgs>[]
+    handledPrivacyRequests: Prisma.$DataSubjectRequestPayload<ExtArgs>[]
+    privacyRequestEvents: Prisma.$PrivacyRequestEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1754,6 +2423,10 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   historyEntries<T extends Prisma.User$historyEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$historyEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attachments<T extends Prisma.User$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   documentLinks<T extends Prisma.User$documentLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$documentLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  privacyRequests<T extends Prisma.User$privacyRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$privacyRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DataSubjectRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdPrivacyRequests<T extends Prisma.User$createdPrivacyRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdPrivacyRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DataSubjectRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  handledPrivacyRequests<T extends Prisma.User$handledPrivacyRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$handledPrivacyRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DataSubjectRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  privacyRequestEvents<T extends Prisma.User$privacyRequestEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$privacyRequestEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrivacyRequestEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2348,6 +3021,102 @@ export type User$documentLinksArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.DocumentLinkScalarFieldEnum | Prisma.DocumentLinkScalarFieldEnum[]
+}
+
+/**
+ * User.privacyRequests
+ */
+export type User$privacyRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DataSubjectRequest
+   */
+  select?: Prisma.DataSubjectRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DataSubjectRequest
+   */
+  omit?: Prisma.DataSubjectRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DataSubjectRequestInclude<ExtArgs> | null
+  where?: Prisma.DataSubjectRequestWhereInput
+  orderBy?: Prisma.DataSubjectRequestOrderByWithRelationInput | Prisma.DataSubjectRequestOrderByWithRelationInput[]
+  cursor?: Prisma.DataSubjectRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DataSubjectRequestScalarFieldEnum | Prisma.DataSubjectRequestScalarFieldEnum[]
+}
+
+/**
+ * User.createdPrivacyRequests
+ */
+export type User$createdPrivacyRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DataSubjectRequest
+   */
+  select?: Prisma.DataSubjectRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DataSubjectRequest
+   */
+  omit?: Prisma.DataSubjectRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DataSubjectRequestInclude<ExtArgs> | null
+  where?: Prisma.DataSubjectRequestWhereInput
+  orderBy?: Prisma.DataSubjectRequestOrderByWithRelationInput | Prisma.DataSubjectRequestOrderByWithRelationInput[]
+  cursor?: Prisma.DataSubjectRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DataSubjectRequestScalarFieldEnum | Prisma.DataSubjectRequestScalarFieldEnum[]
+}
+
+/**
+ * User.handledPrivacyRequests
+ */
+export type User$handledPrivacyRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DataSubjectRequest
+   */
+  select?: Prisma.DataSubjectRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DataSubjectRequest
+   */
+  omit?: Prisma.DataSubjectRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DataSubjectRequestInclude<ExtArgs> | null
+  where?: Prisma.DataSubjectRequestWhereInput
+  orderBy?: Prisma.DataSubjectRequestOrderByWithRelationInput | Prisma.DataSubjectRequestOrderByWithRelationInput[]
+  cursor?: Prisma.DataSubjectRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DataSubjectRequestScalarFieldEnum | Prisma.DataSubjectRequestScalarFieldEnum[]
+}
+
+/**
+ * User.privacyRequestEvents
+ */
+export type User$privacyRequestEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PrivacyRequestEvent
+   */
+  select?: Prisma.PrivacyRequestEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PrivacyRequestEvent
+   */
+  omit?: Prisma.PrivacyRequestEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PrivacyRequestEventInclude<ExtArgs> | null
+  where?: Prisma.PrivacyRequestEventWhereInput
+  orderBy?: Prisma.PrivacyRequestEventOrderByWithRelationInput | Prisma.PrivacyRequestEventOrderByWithRelationInput[]
+  cursor?: Prisma.PrivacyRequestEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PrivacyRequestEventScalarFieldEnum | Prisma.PrivacyRequestEventScalarFieldEnum[]
 }
 
 /**

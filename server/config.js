@@ -21,6 +21,11 @@ export function loadConfig(overrides = {}) {
     throw new Error('PORT deve ser um número entre 1 e 65535.');
   }
 
+  const sessionHours = Number(overrides.sessionHours ?? process.env.SESSION_HOURS ?? 8);
+  if (!Number.isFinite(sessionHours) || sessionHours <= 0 || sessionHours > 720) {
+    throw new Error('SESSION_HOURS deve estar entre 0 e 720.');
+  }
+
   return {
     databaseUrl,
     port,
@@ -29,7 +34,7 @@ export function loadConfig(overrides = {}) {
     isRailway: Boolean(railwayEnvironmentId),
     rootDir: path.resolve(process.cwd()),
     attachmentsDir,
-    sessionHours: 8,
+    sessionHours,
     maxAttachmentBytes: 10 * 1024 * 1024,
   };
 }

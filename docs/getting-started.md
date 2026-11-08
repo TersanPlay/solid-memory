@@ -26,6 +26,15 @@ O projeto usa um módulo nativo para SQLite. Em instalações comuns do Node 22 
 | 9 | Raiz | `npm run db:seed` | Cadastrar tipos, departamentos e o administrador inicial. | Mensagem `Seed concluído`. |
 | 10 | Raiz | `npm run dev` | Iniciar Vite e Express juntos. | Frontend em `127.0.0.1:5173` e API em `0.0.0.0:3000`. |
 | 11 | Navegador | acessar `http://127.0.0.1:5173/login` | Abrir a aplicação. | Tela de login do MemoryDoc; após autenticar, a URL muda para `/inicio` ou para a rota originalmente solicitada. |
+
+As páginas públicas de transparência não exigem login:
+
+- [Guia LGPD](http://127.0.0.1:5173/lgpd)
+- [Política de Privacidade](http://127.0.0.1:5173/privacidade)
+- [Política de Cookies](http://127.0.0.1:5173/cookies)
+- [Solicitação de privacidade](http://127.0.0.1:5173/privacidade/solicitar)
+
+As políticas são rascunhos e exibem as pendências institucionais do MVP. O primeiro acesso também apresenta o gerenciador de preferências; no estado atual, somente o cookie necessário de sessão está ativo.
 | 12 | Raiz, em outro terminal | `npm test` | Executar testes unitários, de frontend e de integração. | Todas as suítes aprovadas. |
 | 13 | Raiz | `npm run verify` | Executar testes e build de produção. | Testes verdes e pasta `dist/` gerada. |
 

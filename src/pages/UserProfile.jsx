@@ -34,15 +34,15 @@ export default function UserProfile({ session }) {
   return (
     <>
       <header className="profile-page-header wrap reveal-now">
-        <Link className="profile-back-link" to={isOwnProfile ? "/inicio" : "/usuarios"}>
-          <ArrowLeft /> Voltar
-        </Link>
         <div className="profile-identity">
           <Avatar name={user.name} />
           <div>
             <Eyebrow>{isOwnProfile ? "MEU PERFIL" : "PERFIL DO USUÁRIO"}</Eyebrow>
             <h1>{user.name}</h1>
             <p>{user.email}</p>
+            <Link className="profile-back-link" to={isOwnProfile ? "/inicio" : "/usuarios"}>
+              <ArrowLeft /> Voltar
+            </Link>
           </div>
         </div>
         <span className={`profile-status ${user.active ? "is-active" : "is-inactive"}`}>

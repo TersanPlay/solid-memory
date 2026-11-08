@@ -750,7 +750,9 @@ td small { display: block; max-width: 250px; margin-top: 5px; overflow: hidden; 
 .login-card > .bezel-core > p { margin: 14px 0 25px; font-size: 12.5px; line-height: 1.6; }
 .form-stack { display: grid; gap: 16px; }
 .input-affix input { padding-right: 42px; }
-.input-affix svg { position: absolute; right: 14px; width: 15px; color: var(--muted); }
+.password-toggle { position: absolute; right: 8px; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: var(--radius-control); color: var(--muted); background: transparent; cursor: pointer; }
+.password-toggle:hover, .password-toggle:focus-visible { color: var(--sage-dark); background: rgba(63, 98, 83, 0.08); }
+.password-toggle svg { width: 15px; height: 15px; }
 .form-inline { display: flex; align-items: center; justify-content: space-between; }
 .checkbox-label { display: flex; grid-template-columns: 14px 1fr; align-items: center; gap: 7px; font-size: 9px; }
 .checkbox-label input { width: 14px; min-height: 14px; accent-color: var(--sage); }

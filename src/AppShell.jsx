@@ -233,6 +233,7 @@ function EmptyState({ icon, title, text, action }) {
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -300,13 +301,21 @@ function Login({ onLogin }) {
               Senha
               <div className="input-affix">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   required
                 />
-                <Eye />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  aria-pressed={showPassword}
+                  onClick={() => setShowPassword((visible) => !visible)}
+                >
+                  <Eye />
+                </button>
               </div>
             </label>
             <InlineError error={error} />

@@ -62,7 +62,7 @@ export function createPdfReport(data, metadata) {
     doc.moveTo(42, 226).lineTo(553, 226).strokeColor('#ded8cf').stroke();
   };
   const drawTableHeader = (y) => {
-    doc.rect(42, y, pageWidth, 24).fill(palette.ink);
+    doc.roundedRect(42, y, pageWidth, 24, 4).fill(palette.ink);
     let x = 42;
     headers.forEach((header, index) => { doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(6.5).text(header, x + 4, y + 8, { width: columns[index] - 8, lineBreak: false }); x += columns[index]; });
     return y + 24;
@@ -73,7 +73,10 @@ export function createPdfReport(data, metadata) {
     if (y > 735) { doc.addPage(); y = 42; y = drawTableHeader(y); }
     const values = [item.protocol, item.type, item.date, item.origin, item.destination, item.subject, item.responsible, item.status];
     const rowHeight = 30;
-    if (index % 2 === 0) doc.rect(42, y, pageWidth, rowHeight).fill(palette.soft);
+    if (index % 2 === 0) {
+      if (index === data.length - 1) doc.roundedRect(42, y, pageWidth, rowHeight, 4).fill(palette.soft);
+      else doc.rect(42, y, pageWidth, rowHeight).fill(palette.soft);
+    }
     let x = 42;
     values.forEach((value, valueIndex) => { doc.fillColor(palette.ink).font(valueIndex === 0 ? 'Helvetica-Bold' : 'Helvetica').fontSize(7).text(pdfText(value), x + 4, y + 10, { width: columns[valueIndex] - 8, height: 12, ellipsis: true, lineBreak: false }); x += columns[valueIndex]; });
     y += rowHeight;

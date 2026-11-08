@@ -13,6 +13,8 @@ export function createExcelReport(data, metadata) {
     ['Período', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
     ['Tipo', metadata.typeLabel],
     ['Status', metadata.statusLabel],
+    ['Assunto', metadata.subjectLabel],
+    ['Responsável', metadata.responsibleLabel],
     ['Total de documentos', data.length],
     [],
     ['Protocolo', 'Tipo', 'Data de emissão', 'Origem', 'Destino', 'Assunto', 'Responsável', 'Status'],
@@ -32,19 +34,34 @@ export function createPdfReport(data, metadata) {
   doc.on('data', (chunk) => chunks.push(chunk));
   const done = new Promise((resolve, reject) => { doc.on('end', () => resolve(Buffer.concat(chunks))); doc.on('error', reject); });
   const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
-  const columns = [72, 45, 55, 85, 85, 95, 75, 55];
+  const columns = [70, 42, 55, 68, 68, 82, 72, 54];
   const headers = ['PROTOCOLO', 'TIPO', 'EMISSÃO', 'ORIGEM', 'DESTINO', 'ASSUNTO', 'RESPONSÁVEL', 'STATUS'];
+  const drawHeart = (x, y) => {
+    doc.save().translate(x, y).scale(0.72).path('M 24 42 C 19 37 4 28 4 15 C 4 5 16 1 24 10 C 32 1 44 5 44 15 C 44 28 29 37 24 42 Z').fill('#ffffff').restore();
+  };
   const drawHeader = () => {
-    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(19).text('MEMORYDOC', 42, 42);
-    doc.fillColor(palette.terracotta).fontSize(9).text('GESTÃO DOCUMENTAL', 42, 66);
-    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 104);
-    doc.fillColor(palette.muted).font('Helvetica').fontSize(9).text('Recorte para conferência e prestação de contas', 42, 137);
-    doc.moveTo(42, 158).lineTo(553, 158).strokeColor(palette.line).stroke();
-    doc.fillColor(palette.muted).fontSize(8).text(`PERÍODO  ${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`, 42, 178);
-    doc.text(`TIPO  ${pdfText(metadata.typeLabel)}`, 210, 178);
-    doc.text(`STATUS  ${pdfText(metadata.statusLabel)}`, 400, 178);
-    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(17).text(String(data.length), 42, 214);
-    doc.fillColor(palette.muted).font('Helvetica').fontSize(8).text('DOCUMENTOS ENCONTRADOS', 42, 236);
+    doc.roundedRect(42, 42, 52, 62, 4).fill(palette.terracotta);
+    drawHeart(48, 55);
+    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(16).text('MEMORYDOC', 108, 57);
+    doc.fillColor(palette.terracotta).font('Helvetica-Bold').fontSize(8).text('GESTÃO DOCUMENTAL', 108, 80);
+    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(27).text('Relatório documental', 42, 145);
+    doc.fillColor(palette.muted).font('Helvetica').fontSize(9).text('Recorte para conferência e prestação de contas', 42, 180);
+    doc.roundedRect(326, 42, 227, 120, 4).lineWidth(1).strokeColor('#1555d6').stroke();
+    const info = [
+      ['PERÍODO', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
+      ['TIPO', metadata.typeLabel],
+      ['STATUS', metadata.statusLabel],
+      ['ASSUNTO', metadata.subjectLabel],
+      ['RESPONSÁVEL', metadata.responsibleLabel],
+    ];
+    info.forEach(([label, value], index) => {
+      const rowY = 55 + index * 20;
+      doc.fillColor(palette.muted).font('Helvetica-Bold').fontSize(6.2).text(label, 340, rowY, { width: 76, lineBreak: false });
+      doc.fillColor(palette.ink).font('Helvetica').fontSize(7.2).text(pdfText(value), 420, rowY, { width: 120, ellipsis: true, lineBreak: false });
+    });
+    doc.moveTo(42, 218).lineTo(553, 218).strokeColor(palette.line).stroke();
+    doc.fillColor(palette.ink).font('Helvetica-Bold').fontSize(17).text(String(data.length), 42, 246);
+    doc.fillColor(palette.muted).font('Helvetica').fontSize(8).text('DOCUMENTOS ENCONTRADOS', 42, 268);
   };
   const drawTableHeader = (y) => {
     doc.rect(42, y, pageWidth, 24).fill(palette.ink);
@@ -53,7 +70,7 @@ export function createPdfReport(data, metadata) {
     return y + 24;
   };
   drawHeader();
-  let y = drawTableHeader(264);
+  let y = drawTableHeader(296);
   data.forEach((item, index) => {
     if (y > 735) { doc.addPage(); y = 42; y = drawTableHeader(y); }
     const values = [item.protocol, item.type, item.date, item.origin, item.destination, item.subject, item.responsible, item.status];

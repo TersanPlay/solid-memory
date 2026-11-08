@@ -725,7 +725,9 @@ export function createApp({ prisma, config }) {
         dateFrom: query.dateFrom,
         dateTo: query.dateTo,
         typeLabel: query.typeId === "all" ? "Todos" : documents[0]?.type?.name || "Selecionado",
-        statusLabel: query.status === "all" ? "Todos" : documents[0]?.statusLabel || query.status,
+        statusLabel: query.status === "all" ? "Todos" : STATUS_LABELS[query.status] || query.status,
+        subjectLabel: data.length === 1 ? data[0].subject : data.length ? "Vários documentos" : "—",
+        responsibleLabel: data.length === 1 ? data[0].responsible : data.length ? "Vários usuários" : "—",
       };
       if (format === "xlsx") {
         response.set("Content-Disposition", `attachment; filename="relatorio-documentos-${stamp}.xlsx"`);

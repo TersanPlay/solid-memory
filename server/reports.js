@@ -1,5 +1,5 @@
 import PDFDocument from 'pdfkit';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 const palette = { ink: '#2b231f', muted: '#746c63', sage: '#3f6253', terracotta: '#b96548', line: '#ded8cf', soft: '#f5f1e9' };
 
@@ -7,24 +7,71 @@ function pdfText(value) {
   return String(value ?? '—').replace(/[\u0000-\u001f]/g, ' ');
 }
 
-export function createExcelReport(data, metadata) {
-  const rows = [
-    ['MEMORYDOC · RELATÓRIO DOCUMENTAL'],
+export async function createExcelReport(data, metadata) {
+  const workbook = new ExcelJS.Workbook();
+  workbook.creator = 'MemoryDoc';
+  workbook.created = new Date();
+  const worksheet = workbook.addWorksheet('Relatório documental', { properties: { defaultRowHeight: 20 } });
+  worksheet.columns = [
+    { header: 'Protocolo', key: 'protocol', width: 18 },
+    { header: 'Tipo', key: 'type', width: 22 },
+    { header: 'Data de emissão', key: 'date', width: 17 },
+    { header: 'Origem', key: 'origin', width: 28 },
+    { header: 'Destino', key: 'destination', width: 28 },
+    { header: 'Assunto', key: 'subject', width: 46 },
+    { header: 'Responsável', key: 'responsible', width: 30 },
+    { header: 'Status', key: 'status', width: 17 },
+  ];
+  worksheet.mergeCells('A1:H1');
+  worksheet.getCell('A1').value = 'MEMORYDOC';
+  worksheet.getCell('A1').font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FF2B231F' } };
+  worksheet.getCell('A1').alignment = { vertical: 'middle' };
+  worksheet.getRow(1).height = 30;
+  worksheet.mergeCells('A2:H2');
+  worksheet.getCell('A2').value = 'RELATÓRIO DOCUMENTAL';
+  worksheet.getCell('A2').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF3F6253' } };
+  worksheet.getRow(2).height = 22;
+  worksheet.mergeCells('A4:H4');
+  worksheet.getCell('A4').value = 'CONTEXTO DA GERAÇÃO';
+  worksheet.getCell('A4').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF746C63' } };
+  worksheet.getCell('A4').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F1E9' } };
+  const context = [
     ['Data do relatório', metadata.generatedAt],
     ['Gerado por', metadata.generatedBy],
     ['Período', `${metadata.dateFrom || 'Todos'} a ${metadata.dateTo || 'Todos'}`],
     ['Tipo', metadata.typeLabel],
     ['Número de protocolos', data.length],
-    [],
-    ['Protocolo', 'Tipo', 'Data de emissão', 'Origem', 'Destino', 'Assunto', 'Responsável', 'Status'],
-    ...data.map((item) => [item.protocol, item.type, item.date, item.origin, item.destination, item.subject, item.responsible, item.status]),
   ];
-  const worksheet = XLSX.utils.aoa_to_sheet(rows);
-  worksheet['!cols'] = [18, 24, 16, 28, 28, 44, 28, 16].map((wch) => ({ wch }));
-  worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }];
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Relatório documental');
-  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  context.forEach(([label, value], index) => {
+    const row = worksheet.getRow(5 + index);
+    row.getCell(1).value = label;
+    row.getCell(1).font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF746C63' } };
+    row.getCell(2).value = value;
+    row.getCell(2).font = { name: 'Arial', size: index === 4 ? 13 : 10, bold: true, color: { argb: 'FF2B231F' } };
+    row.getCell(1).border = { bottom: { style: 'thin', color: { argb: 'FFDED8CF' } } };
+    row.getCell(2).border = { bottom: { style: 'thin', color: { argb: 'FFDED8CF' } } };
+  });
+  const headerRow = worksheet.getRow(12);
+  ['Protocolo', 'Tipo', 'Data de emissão', 'Origem', 'Destino', 'Assunto', 'Responsável', 'Status'].forEach((value, index) => { headerRow.getCell(index + 1).value = value; });
+  headerRow.height = 24;
+  headerRow.eachCell((cell) => {
+    cell.font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2B231F' } };
+    cell.alignment = { vertical: 'middle' };
+  });
+  data.forEach((item, index) => {
+    const row = worksheet.addRow(item);
+    row.height = 22;
+    row.eachCell((cell) => {
+      cell.font = { name: 'Arial', size: 9, color: { argb: 'FF2B231F' } };
+      cell.alignment = { vertical: 'middle', wrapText: false };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: index % 2 === 0 ? 'FFF5F1E9' : 'FFFFFFFF' } };
+      cell.border = { bottom: { style: 'thin', color: { argb: 'FFE7E1D8' } } };
+    });
+  });
+  worksheet.autoFilter = { from: 'A12', to: `H${12 + data.length}` };
+  worksheet.views = [{ state: 'frozen', ySplit: 12 }];
+  return Buffer.from(await workbook.xlsx.writeBuffer());
 }
 
 export function createPdfReport(data, metadata) {

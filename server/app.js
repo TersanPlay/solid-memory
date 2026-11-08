@@ -730,7 +730,7 @@ export function createApp({ prisma, config }) {
       };
       if (format === "xlsx") {
         response.set("Content-Disposition", `attachment; filename="relatorio-documentos-${stamp}.xlsx"`);
-        return response.type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").send(createExcelReport(data, metadata));
+        return createExcelReport(data, metadata).then((buffer) => response.type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").send(buffer));
       }
       if (format === "pdf") {
         response.set("Content-Disposition", `attachment; filename="relatorio-documentos-${stamp}.pdf"`);

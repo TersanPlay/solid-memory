@@ -2434,17 +2434,6 @@ function Reports({ types, notify }) {
             </button>
           </div>
         </BezelCard>
-        <aside className="report-side reveal">
-          <div className="help-card">
-            <ShieldCheck />
-            <div>
-              <strong>Dados preservados</strong>
-              <p>
-                As exportações incluem documentos cancelados e sua numeração.
-              </p>
-            </div>
-          </div>
-        </aside>
       </main>
     </>
   );

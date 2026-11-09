@@ -72,6 +72,9 @@ model User {
   createdPrivacyRequests DataSubjectRequest[] @relation("CreatedByUser")
   handledPrivacyRequests DataSubjectRequest[] @relation("HandledByUser")
   privacyRequestEvents PrivacyRequestEvent[]
+  privacyRequestDeliveries PrivacyRequestDelivery[]
+  privacyRequestMessagesSent PrivacyRequestMessage[] @relation("PrivacyMessageSender")
+  privacyRequestMessagesReceived PrivacyRequestMessage[] @relation("PrivacyMessageRecipient")
 
   @@index([role, active])
 }
@@ -255,6 +258,9 @@ model PublicPrivacyRequest {
   createdAt       DateTime                  @default(now())
   updatedAt       DateTime                  @updatedAt
   completedAt     DateTime?
+  subjectUserId   String?
+  identityVerifiedAt DateTime?
+  identityVerifiedById String?
 
   @@index([status, dueAt])
   @@index([requesterEmail, createdAt])
@@ -271,4 +277,38 @@ model PrivacyRequestEvent {
   actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([requestId, source, createdAt])
+}
+
+model PrivacyRequestDelivery {
+  id             String   @id @default(cuid())
+  requestId      String
+  source         String
+  format         String   @default("json")
+  tokenHash      String   @unique
+  recipientEmail String
+  bundleHash     String
+  expiresAt      DateTime
+  downloadedAt   DateTime?
+  createdAt      DateTime @default(now())
+  createdById    String
+  createdBy      User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([requestId, source, createdAt])
+  @@index([expiresAt, downloadedAt])
+}
+
+model PrivacyRequestMessage {
+  id              String   @id @default(cuid())
+  requestId       String
+  source          String
+  senderId        String
+  recipientUserId String?
+  recipientScope  String
+  body            String
+  createdAt       DateTime @default(now())
+  sender          User     @relation("PrivacyMessageSender", fields: [senderId], references: [id], onDelete: Restrict)
+  recipient       User?    @relation("PrivacyMessageRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
+
+  @@index([requestId, createdAt])
+  @@index([recipientUserId, createdAt])
 }

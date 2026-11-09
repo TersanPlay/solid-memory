@@ -206,6 +206,35 @@ describe("API integrada com SQLite", () => {
     ]));
   });
 
+  it("gera entrega de portabilidade estruturada, de uso único, com trilha", async () => {
+    const created = await viewerAgent.post('/api/privacy-requests').send({
+      type: 'PORTABILITY',
+      description: 'Solicito meus dados em formato estruturado.',
+    }).expect(201);
+
+    await operatorAgent.post(`/api/privacy-requests/${created.body.data.id}/delivery`).send({ channel: 'LINK' }).expect(403);
+    const delivery = await adminAgent.post(`/api/privacy-requests/${created.body.data.id}/delivery`).send({ channel: 'EMAIL' }).expect(201);
+    expect(delivery.body.data).toMatchObject({ channel: 'EMAIL', emailConfigured: false, recipientEmail: viewer.email });
+
+    const download = await request(app).get(delivery.body.data.downloadPath).expect(200);
+    expect(download.headers['content-disposition']).toContain('memorydoc-portabilidade-');
+    expect(download.body).toMatchObject({ schemaVersion: 'memorydoc-portable-v1', subject: { id: viewer.id, email: viewer.email } });
+    await request(app).get(delivery.body.data.downloadPath).expect(410);
+
+    const handled = await adminAgent.get('/api/privacy-requests').expect(200);
+    const requestWithTrail = handled.body.data.find((item) => item.id === created.body.data.id);
+    expect(requestWithTrail.events).toEqual(expect.arrayContaining([
+      expect.objectContaining({ action: 'DELIVERY_EMAIL_PREPARED' }),
+      expect.objectContaining({ action: 'DELIVERY_DOWNLOADED' }),
+    ]));
+
+    const sent = await adminAgent.post(`/api/privacy-requests/${created.body.data.id}/messages`).send({ body: 'O pacote está disponível pelo link seguro enviado nesta conversa.' }).expect(201);
+    expect(sent.body.data).toMatchObject({ body: expect.stringContaining('pacote'), recipientScope: 'SUBJECT' });
+    const viewerMessages = await viewerAgent.get(`/api/privacy-requests/${created.body.data.id}/messages`).expect(200);
+    expect(viewerMessages.body.data).toEqual(expect.arrayContaining([expect.objectContaining({ body: sent.body.data.body, isMine: false })]));
+    await operatorAgent.get(`/api/privacy-requests/${created.body.data.id}/messages`).expect(403);
+  });
+
   it("não permite que um usuário crie solicitação para outro titular", async () => {
     const response = await viewerAgent.post('/api/privacy-requests').send({ type: 'DELETION', subjectUserId: admin.id }).expect(201);
     expect(response.body.data.subjectUserId).toBe(viewer.id);

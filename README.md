@@ -123,7 +123,7 @@ O seed é idempotente: cria os catálogos quando as tabelas estão vazias e cria
 
 O frontend exibe um banner e um gerenciador de preferências de cookies. Atualmente somente o cookie técnico de sessão `folio_session` está ativo; analytics e marketing não são instalados. A escolha é armazenada localmente no navegador e pode ser reaberta em “Preferências de cookies”.
 
-O canal público em `/privacidade/solicitar` registra pedidos de acesso, correção, eliminação, anonimização, portabilidade e oposição. Administradores tratam as solicitações em `/privacidade/solicitacoes`, com histórico de eventos. O campo de link documental continua limitado a URLs HTTPS; o MemoryDoc não acessa o conteúdo dos serviços externos.
+O canal público em `/privacidade/solicitar` registra pedidos de acesso, correção, eliminação, anonimização, portabilidade e oposição. Usuários autenticados acompanham apenas os próprios pedidos em `/privacidade/solicitacoes`; administradores tratam a fila completa e as entregas de portabilidade. O campo de link documental continua limitado a URLs HTTPS; o MemoryDoc não acessa o conteúdo dos serviços externos.
 
 ### Executar frontend e API separadamente
 

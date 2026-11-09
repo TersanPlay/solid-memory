@@ -77,3 +77,13 @@ export type PublicPrivacyRequest = Prisma.PublicPrivacyRequestModel
  *
  */
 export type PrivacyRequestEvent = Prisma.PrivacyRequestEventModel
+/**
+ * Model PrivacyRequestDelivery
+ *
+ */
+export type PrivacyRequestDelivery = Prisma.PrivacyRequestDeliveryModel
+/**
+ * Model PrivacyRequestMessage
+ *
+ */
+export type PrivacyRequestMessage = Prisma.PrivacyRequestMessageModel

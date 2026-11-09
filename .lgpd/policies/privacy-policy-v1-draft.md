@@ -72,7 +72,15 @@ O MVP atualmente roda apenas em máquina local, sem hospedagem em nuvem ou trans
 
 Nos termos do art. 18 da LGPD, o titular pode solicitar confirmação, acesso, correção, anonimização, bloqueio, eliminação, portabilidade, informações sobre compartilhamentos e revogação de consentimento quando essa for a base legal.
 
-Solicitações devem ser enviadas para **[canal]**. O prazo de resposta completa é de até 15 dias, observado o art. 19, II, e eventual regime jurídico aplicável ao controlador.
+O MVP oferece o canal público `/privacidade/solicitar` e a área autenticada `/privacidade/solicitacoes`. O canal público gera uma referência e permite o tratamento administrativo, mas não substitui a validação de identidade nem o canal institucional oficial.
+
+O formulário aceita pedidos de acesso, correção, eliminação, anonimização, portabilidade, oposição e revogação de consentimento. Todos esses tipos são registrados, acompanhados por status, mensagens e trilha técnica. A disponibilização estruturada de dados está implementada para portabilidade; os demais direitos dependem da análise, decisão e execução aplicável ao caso concreto.
+
+Para portabilidade, quando cabível e após a validação da identidade, o sistema pode gerar um JSON estruturado minimizado, com hash do pacote, link de validade de 48 horas e uso único. Senhas, tokens, credenciais e conteúdo de links documentais externos não são incluídos. O administrador pode copiar o link, inseri-lo na mensagem interna do pedido ou abrir o cliente de e-mail local; o MVP não possui SMTP nem envio automático.
+
+Solicitações também podem ser acompanhadas por mensagens internas e trilha técnica de eventos, com acesso limitado ao titular autorizado e administradores. A operação de correção, eliminação, anonimização e oposição ainda depende de decisão e procedimento institucional aprovados.
+
+Até que controlador, Encarregado e canal oficial sejam definidos, os campos abaixo permanecem pendentes: **[canal]**. O prazo de resposta completa é de até 15 dias, observado o art. 19, II, e eventual regime jurídico aplicável ao controlador.
 
 ## 8. Cookies
 
@@ -102,3 +110,4 @@ Não há contato institucional oficial definido neste MVP. Os campos acima preci
 ## Histórico
 
 - v1.0-draft — 2026-11-08: primeira versão para revisão jurídica e validação operacional.
+- v1.0-draft — 2026-11-09: atualização técnica sobre canal DSAR, mensagens, trilha e portabilidade; permanece rascunho e não publicado.

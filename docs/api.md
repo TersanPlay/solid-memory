@@ -70,6 +70,9 @@ As solicitações exigem sessão autenticada. Usuários comuns só podem abrir e
 | `POST /privacy-requests` | Sessão | `{ type, description?, subjectUserId? }`; usuário comum sempre fica vinculado a si próprio; retorna 201. |
 | `GET /privacy-requests` | Sessão | Próprias solicitações ou todas para `admin`; retorna 200. |
 | `PATCH /privacy-requests/:id` | `admin` | `{ status?, responseNote? }`; conclusão registra responsável e data. |
+| `POST /privacy-requests/:id/delivery` | `admin` | Solicitação `PORTABILITY`; gera JSON estruturado, hash, link temporário de 48h e uso único. `{ channel: "LINK"|"EMAIL" }`; o canal `EMAIL` prepara o envio, mas depende de SMTP/provedor externo. |
+| `GET /privacy-requests/:id/messages` | Titular do pedido ou `admin` | Lista a conversa interna sem expor mensagens de outros pedidos. |
+| `POST /privacy-requests/:id/messages` | Titular do pedido ou `admin` | `{ body }`; permite comunicação contextual e registra evento na trilha. |
 
 O canal público MVP não exige sessão, mas aplica rate limit e validação de entrada:
 
@@ -77,7 +80,9 @@ O canal público MVP não exige sessão, mas aplica rate limit e validação de 
 |---|---|---|
 | `POST /public/privacy-requests` | Pública, rate limitada | `{ requesterName, requesterEmail, type, description? }`; retorna uma referência `DSAR-XXXXXXXX` e prazo operacional inicial. |
 
-Solicitações públicas são consultáveis e tratáveis apenas por administradores em `GET /privacy-requests` e `PATCH /privacy-requests/:id`. Cada criação, alteração de status ou nota gera evento de trilha técnica. O canal não valida identidade de forma conclusiva, não envia e-mails e não acessa o conteúdo de URLs documentais.
+Solicitações públicas são consultáveis e tratáveis apenas por administradores em `GET /privacy-requests` e `PATCH /privacy-requests/:id`. Um pedido público precisa ser associado a um usuário e ter a identidade validada antes da geração de portabilidade. Cada criação, alteração de status, nota, geração e download gera evento de trilha técnica. O canal não acessa o conteúdo de URLs documentais.
+
+O download de uma portabilidade usa `GET /privacy-deliveries/:id/download?token=...`, sem sessão, com token aleatório armazenado somente por hash, validade de 48 horas e consumo único. O pacote é JSON estruturado e exclui senhas, tokens, credenciais e conteúdo de links externos. O MemoryDoc local não possui SMTP configurado: a interface oferece cópia do link e abertura do cliente de e-mail para envio manual.
 
 ## Transparência pública
 

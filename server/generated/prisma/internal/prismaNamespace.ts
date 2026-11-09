@@ -408,7 +408,9 @@ export const ModelName = {
   DocumentLink: 'DocumentLink',
   DataSubjectRequest: 'DataSubjectRequest',
   PublicPrivacyRequest: 'PublicPrivacyRequest',
-  PrivacyRequestEvent: 'PrivacyRequestEvent'
+  PrivacyRequestEvent: 'PrivacyRequestEvent',
+  PrivacyRequestDelivery: 'PrivacyRequestDelivery',
+  PrivacyRequestMessage: 'PrivacyRequestMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -424,7 +426,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "documentType" | "department" | "protocolSequence" | "document" | "documentHistory" | "attachment" | "documentLink" | "dataSubjectRequest" | "publicPrivacyRequest" | "privacyRequestEvent"
+    modelProps: "user" | "session" | "documentType" | "department" | "protocolSequence" | "document" | "documentHistory" | "attachment" | "documentLink" | "dataSubjectRequest" | "publicPrivacyRequest" | "privacyRequestEvent" | "privacyRequestDelivery" | "privacyRequestMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1316,6 +1318,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PrivacyRequestDelivery: {
+      payload: Prisma.$PrivacyRequestDeliveryPayload<ExtArgs>
+      fields: Prisma.PrivacyRequestDeliveryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrivacyRequestDeliveryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrivacyRequestDeliveryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>
+        }
+        findFirst: {
+          args: Prisma.PrivacyRequestDeliveryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrivacyRequestDeliveryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>
+        }
+        findMany: {
+          args: Prisma.PrivacyRequestDeliveryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>[]
+        }
+        create: {
+          args: Prisma.PrivacyRequestDeliveryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>
+        }
+        createMany: {
+          args: Prisma.PrivacyRequestDeliveryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrivacyRequestDeliveryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>[]
+        }
+        delete: {
+          args: Prisma.PrivacyRequestDeliveryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>
+        }
+        update: {
+          args: Prisma.PrivacyRequestDeliveryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrivacyRequestDeliveryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrivacyRequestDeliveryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrivacyRequestDeliveryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrivacyRequestDeliveryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestDeliveryPayload>
+        }
+        aggregate: {
+          args: Prisma.PrivacyRequestDeliveryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrivacyRequestDelivery>
+        }
+        groupBy: {
+          args: Prisma.PrivacyRequestDeliveryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacyRequestDeliveryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrivacyRequestDeliveryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacyRequestDeliveryCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrivacyRequestMessage: {
+      payload: Prisma.$PrivacyRequestMessagePayload<ExtArgs>
+      fields: Prisma.PrivacyRequestMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrivacyRequestMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrivacyRequestMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.PrivacyRequestMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrivacyRequestMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>
+        }
+        findMany: {
+          args: Prisma.PrivacyRequestMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>[]
+        }
+        create: {
+          args: Prisma.PrivacyRequestMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>
+        }
+        createMany: {
+          args: Prisma.PrivacyRequestMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrivacyRequestMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.PrivacyRequestMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>
+        }
+        update: {
+          args: Prisma.PrivacyRequestMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.PrivacyRequestMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrivacyRequestMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrivacyRequestMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.PrivacyRequestMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.PrivacyRequestMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrivacyRequestMessage>
+        }
+        groupBy: {
+          args: Prisma.PrivacyRequestMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacyRequestMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrivacyRequestMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacyRequestMessageCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1513,7 +1663,10 @@ export const PublicPrivacyRequestScalarFieldEnum = {
   dueAt: 'dueAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  completedAt: 'completedAt'
+  completedAt: 'completedAt',
+  subjectUserId: 'subjectUserId',
+  identityVerifiedAt: 'identityVerifiedAt',
+  identityVerifiedById: 'identityVerifiedById'
 } as const
 
 export type PublicPrivacyRequestScalarFieldEnum = (typeof PublicPrivacyRequestScalarFieldEnum)[keyof typeof PublicPrivacyRequestScalarFieldEnum]
@@ -1530,6 +1683,37 @@ export const PrivacyRequestEventScalarFieldEnum = {
 } as const
 
 export type PrivacyRequestEventScalarFieldEnum = (typeof PrivacyRequestEventScalarFieldEnum)[keyof typeof PrivacyRequestEventScalarFieldEnum]
+
+
+export const PrivacyRequestDeliveryScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  source: 'source',
+  format: 'format',
+  tokenHash: 'tokenHash',
+  recipientEmail: 'recipientEmail',
+  bundleHash: 'bundleHash',
+  expiresAt: 'expiresAt',
+  downloadedAt: 'downloadedAt',
+  createdAt: 'createdAt',
+  createdById: 'createdById'
+} as const
+
+export type PrivacyRequestDeliveryScalarFieldEnum = (typeof PrivacyRequestDeliveryScalarFieldEnum)[keyof typeof PrivacyRequestDeliveryScalarFieldEnum]
+
+
+export const PrivacyRequestMessageScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  source: 'source',
+  senderId: 'senderId',
+  recipientUserId: 'recipientUserId',
+  recipientScope: 'recipientScope',
+  body: 'body',
+  createdAt: 'createdAt'
+} as const
+
+export type PrivacyRequestMessageScalarFieldEnum = (typeof PrivacyRequestMessageScalarFieldEnum)[keyof typeof PrivacyRequestMessageScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1793,6 +1977,8 @@ export type GlobalOmitConfig = {
   dataSubjectRequest?: Prisma.DataSubjectRequestOmit
   publicPrivacyRequest?: Prisma.PublicPrivacyRequestOmit
   privacyRequestEvent?: Prisma.PrivacyRequestEventOmit
+  privacyRequestDelivery?: Prisma.PrivacyRequestDeliveryOmit
+  privacyRequestMessage?: Prisma.PrivacyRequestMessageOmit
 }
 
 /* Types for Logging */

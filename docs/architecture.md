@@ -141,6 +141,7 @@ O navegador é a fonte de verdade da página atual. A aplicação usa `BrowserRo
 | `/atividades` | Histórico global | Qualquer sessão |
 | `/lgpd` | Guia público da documentação `.lgpd/` | Pública |
 | `/privacidade` | Política de Privacidade v1 | Pública; rascunho |
+| `/privacidade/solicitacoes` | Autoatendimento autenticado para pedidos próprios; fila e tratamento administrativo para `admin` | Sessão; escopo por titular |
 | `/cookies` | Política de Cookies v1 | Pública; rascunho |
 | `/privacidade/solicitar` | Canal público DSAR | Pública; MVP |
 

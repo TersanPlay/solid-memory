@@ -39,3 +39,12 @@ O campo de link documental é opcional. O MemoryDoc armazena a URL e o provedor 
 - **Base legal**: Art. 7º, II ou V; Art. 7º, IX somente com teste de legítimo interesse e salvaguardas do Art. 10.
 - **Justificativa**: rastreabilidade é necessária para segurança e governança, limitada ao mínimo necessário.
 - **Retenção**: definir prazos separados para logs técnicos, histórico e relatórios exportados.
+
+## A005 — Solicitações de titulares, atendimento e portabilidade
+- **Finalidade**: receber, verificar, tramitar e responder solicitações previstas no art. 18, incluindo a disponibilização de dados em formato estruturado quando a portabilidade for cabível.
+- **Dados**: identificação informada pelo requerente, tipo e descrição do pedido, referência, status, prazo, mensagens, eventos de atendimento e pacote mínimo de dados da portabilidade.
+- **Base legal**: cumprimento dos direitos do titular previstos nos arts. 18 e 19, combinado com a base legal da atividade de tratamento originária. Não usar consentimento genérico como fundamento automático.
+- **Justificativa**: o tratamento é necessário para atender pedidos, registrar decisões e preservar evidências de responsabilização, sempre com minimização e validação de identidade.
+- **Portabilidade implementada**: JSON estruturado minimizado, hash do pacote, link com validade de 48 horas, uso único e registro de geração/download. Senhas, tokens, credenciais e conteúdo de links documentais externos são excluídos.
+- **Limitações**: pedidos públicos precisam ser associados a um usuário após validação administrativa; envio automático por e-mail não existe no MVP; o link pode ser copiado ou aberto no cliente de e-mail local.
+- **Retenção**: definir prazo institucional para a solicitação, mensagens, trilha técnica e registros de entrega; a validade de 48 horas do link não substitui a política de retenção.

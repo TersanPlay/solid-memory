@@ -129,15 +129,8 @@ export default function Dashboard({
       <section className="dashboard-bottom-grid">
         <BezelCard className="dashboard-card dashboard-protocol-card">
           <div className="dashboard-card-topline"><span className="dashboard-sequence-year">{currentYear}</span></div>
-          <div className="dashboard-sequence-main"><Eyebrow>PRÓXIMO REGISTRO</Eyebrow><strong className="dashboard-protocol-number">{protocol}</strong><span className="dashboard-sequence-type">{memo?.name || "Tipo de protocolo"}</span></div>
-          <div className="dashboard-sequence-rail" aria-label="Progresso da sequência">
-            <span className="is-complete" data-step="Sequência inicializada" aria-label="Sequência inicializada" title="Sequência inicializada" />
-            <span className="is-active" data-step="Próximo protocolo disponível" aria-label="Próximo protocolo disponível" title="Próximo protocolo disponível" />
-            <span data-step="Próximo número após confirmação" aria-label="Próximo número após confirmação" title="Próximo número após confirmação" />
-            <span data-step="Continuidade anual preservada" aria-label="Continuidade anual preservada" title="Continuidade anual preservada" />
-            <span data-step="Sequência pronta para novos registros" aria-label="Sequência pronta para novos registros" title="Sequência pronta para novos registros" />
-          </div>
-          <div className="dashboard-sequence-meta"><span><strong>01</strong><small>disponível agora</small></span><span><strong>02</strong><small>próximo após registro</small></span><span><strong>∞</strong><small>sequência contínua</small></span></div>
+          <div className="dashboard-sequence-main"><strong className="dashboard-protocol-number">{protocol}</strong><span className="dashboard-sequence-type">{memo?.name || "Tipo de protocolo"}</span></div>
+          <div className="dashboard-sequence-rail" role="img" tabIndex="0" aria-label="Linha contínua da sequência" />
           <p>O número só é reservado ao confirmar o cadastro do protocolo.</p>
           {canCreate && <button className="secondary-action" onClick={onNew}>Registrar protocolo <ArrowUpRight /></button>}
           <div className="dashboard-security-note"><ShieldCheck /> Números cancelados não são reutilizados.</div>

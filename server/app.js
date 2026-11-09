@@ -49,7 +49,7 @@ import {
   updateUser,
 } from "./users.js";
 import { createExcelReport, createPdfReport } from "./reports.js";
-import { createPrivacyRequest, createPublicPrivacyRequest, listPrivacyRequests, updatePrivacyRequest } from './privacy-requests.js';
+import { createPrivacyRequest, createPublicPrivacyRequest, createPrivacyDelivery, createPrivacyRequestMessage, downloadPrivacyDelivery, listPrivacyRequestMessages, listPrivacyRequests, updatePrivacyRequest } from './privacy-requests.js';
 
 const statuses = Object.keys(STATUS_LABELS);
 const initialStatuses = statuses.filter(
@@ -322,6 +322,21 @@ export function createApp({ prisma, config }) {
     response.status(201).json({ data: await createPublicPrivacyRequest(prisma, request.body) });
   }));
 
+  const privacyDeliveryLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 20,
+    keyGenerator: (request) => rateLimitClientIp(request, config),
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+  });
+  app.get('/api/privacy-deliveries/:id/download', privacyDeliveryLimiter, asyncRoute(async (request, response) => {
+    const delivery = await downloadPrivacyDelivery(prisma, request.params.id, request.query.token);
+    response.set('Cache-Control', 'no-store');
+    response.set('Content-Type', 'application/json; charset=utf-8');
+    response.set('Content-Disposition', `attachment; filename="${delivery.filename}"`);
+    response.send(delivery.payload);
+  }));
+
   const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 5,
@@ -392,6 +407,15 @@ export function createApp({ prisma, config }) {
   }));
   app.patch('/api/privacy-requests/:id', requireRoles('admin'), asyncRoute(async (request, response) => {
     response.json({ data: await updatePrivacyRequest(prisma, request.params.id, request.body, request.user) });
+  }));
+  app.get('/api/privacy-requests/:id/messages', asyncRoute(async (request, response) => {
+    response.json({ data: await listPrivacyRequestMessages(prisma, request.params.id, request.user) });
+  }));
+  app.post('/api/privacy-requests/:id/messages', asyncRoute(async (request, response) => {
+    response.status(201).json({ data: await createPrivacyRequestMessage(prisma, request.params.id, request.body, request.user) });
+  }));
+  app.post('/api/privacy-requests/:id/delivery', requireRoles('admin'), asyncRoute(async (request, response) => {
+    response.status(201).json({ data: await createPrivacyDelivery(prisma, request.params.id, request.body, request.user) });
   }));
 
   app.get(

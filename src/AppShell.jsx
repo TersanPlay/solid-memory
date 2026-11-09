@@ -41,6 +41,8 @@ import {
   Home,
   LockKeyhole,
   LogOut,
+  Mail,
+  MessageSquareText,
   Menu,
   Paperclip,
   Pencil,
@@ -48,6 +50,7 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  Timer,
   Trash2,
   Upload,
   UserRound,
@@ -527,7 +530,7 @@ const navigationItems = [
   { path: "/tipos", label: "Tipos", icon: FolderClock, admin: true },
   { path: "/usuarios", label: "Usuários", icon: Users, admin: true },
   { path: "/relatorios", label: "Relatórios", icon: BarChart3, admin: true },
-  { path: "/privacidade/solicitacoes", label: "Privacidade", icon: ClipboardList, admin: true },
+  { path: "/privacidade/solicitacoes", label: "Privacidade", icon: ClipboardList },
 ];
 
 function Navigation({ session, onLogout }) {
@@ -2679,6 +2682,26 @@ const privacyRequestTypes = [
 const privacyRequestStatuses = [['OPEN', 'Aberta'], ['IN_REVIEW', 'Em análise'], ['COMPLETED', 'Concluída'], ['REJECTED', 'Rejeitada']];
 const privacyTypeLabel = (value) => privacyRequestTypes.find(([key]) => key === value)?.[1] || value;
 const privacyStatusLabel = (value) => privacyRequestStatuses.find(([key]) => key === value)?.[1] || value;
+const privacyLongDate = (value) => value ? new Date(value).toLocaleDateString('pt-BR', { dateStyle: 'long' }) : 'Não informado';
+const privacyDeadline = (value) => {
+  if (!value) return { label: 'Prazo não informado', tone: 'neutral' };
+  const due = new Date(value); due.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const days = Math.ceil((due.getTime() - today.getTime()) / 86400000);
+  if (days > 0) return { label: `${days} ${days === 1 ? 'dia restante' : 'dias restantes'}`, tone: 'active' };
+  if (days === 0) return { label: 'Vence hoje', tone: 'today' };
+  const overdue = Math.abs(days);
+  return { label: `${overdue} ${overdue === 1 ? 'dia em atraso' : 'dias em atraso'}`, tone: 'overdue' };
+};
+
+function PrivacyMessagesPanel({ messages, body, onBodyChange, onSend, onInsertLink, busy, canSend }) {
+  return <div className="privacy-messages-panel"><div className="privacy-message-panel-head"><div><strong>Mensagens internas</strong><p>Use esta conversa para responder ao titular e registrar orientações do atendimento.</p></div><MessageSquareText /></div><div className="privacy-message-thread">{messages.length === 0 ? <span className="privacy-message-empty">Nenhuma mensagem enviada nesta solicitação.</span> : messages.map((message) => <div className={`privacy-message-bubble ${message.isMine ? 'is-mine' : ''}`} key={message.id}><div><strong>{message.sender?.name || 'Usuário'}</strong><small>{new Date(message.createdAt).toLocaleString('pt-BR')}</small></div><p>{message.body}</p></div>)}</div>{canSend && <div className="privacy-message-compose"><textarea rows="3" maxLength="4000" value={body} onChange={(event) => onBodyChange(event.target.value)} placeholder="Escreva uma resposta para o titular…" /><div className="privacy-message-actions">{onInsertLink && <button className="ghost-button" type="button" disabled={busy} onClick={onInsertLink}>Inserir link seguro</button>}<PrimaryButton type="button" disabled={busy || !body.trim()} onClick={onSend} icon={<ArrowUpRight />}>{busy ? 'Enviando…' : 'Enviar mensagem'}</PrimaryButton></div></div>}</div>;
+}
+
+function PrivacyRequestTabs({ events, messages, messageBody, onMessageBodyChange, onSendMessage, onInsertLink, messageBusy, canSend }) {
+  const [activeTab, setActiveTab] = useState('messages');
+  return <div className="privacy-request-tabs"><div className="privacy-tabs-list" role="tablist" aria-label="Informações do atendimento"><button type="button" role="tab" aria-selected={activeTab === 'messages'} className={activeTab === 'messages' ? 'is-active' : ''} onClick={() => setActiveTab('messages')}><MessageSquareText /> Mensagens internas</button><button type="button" role="tab" aria-selected={activeTab === 'timeline'} className={activeTab === 'timeline' ? 'is-active' : ''} onClick={() => setActiveTab('timeline')}><Activity /> Trilha de atendimento<span>{events.length}</span></button></div>{activeTab === 'messages' ? <PrivacyMessagesPanel messages={messages} body={messageBody} onBodyChange={onMessageBodyChange} onSend={onSendMessage} onInsertLink={onInsertLink} busy={messageBusy} canSend={canSend} /> : <div className="privacy-timeline-panel"><div className="privacy-timeline-heading"><div><strong>Trilha de atendimento</strong><small>Eventos técnicos e responsáveis pela solicitação.</small></div><Activity /></div>{events.length === 0 ? <div className="privacy-message-empty">Nenhum evento registrado.</div> : <div className="privacy-timeline-list" tabIndex="0" aria-label="Eventos da trilha de atendimento">{events.map((event) => <div className="privacy-timeline-item" key={event.id}><span className="privacy-timeline-dot" /><div><strong>{event.action}</strong><small>{new Date(event.createdAt).toLocaleString('pt-BR')} {event.actor?.name ? `· ${event.actor.name}` : ''}</small>{event.note && <p>{event.note}</p>}</div></div>)}</div>}</div>}</div>;
+}
 
 function PrivacyRequestsPage({ session, notify }) {
   const [requests, setRequests] = useState(null);
@@ -2687,13 +2710,28 @@ function PrivacyRequestsPage({ session, notify }) {
   const [typeFilter, setTypeFilter] = useState('all');
   const [form, setForm] = useState({ type: 'ACCESS', description: '' });
   const [responseNote, setResponseNote] = useState('');
+  const [delivery, setDelivery] = useState(null);
+  const [deliveryBusy, setDeliveryBusy] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [messageBody, setMessageBody] = useState('');
+  const [messageBusy, setMessageBusy] = useState(false);
+  const [subjectUserId, setSubjectUserId] = useState('');
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
   const load = () => api.get('/privacy-requests').then((result) => setRequests(result.data)).catch((err) => setError(err.message));
   useEffect(() => { load(); }, []);
+  useEffect(() => { if (session.role === 'admin') api.get('/users').then((result) => setUsers(result.data)).catch(() => undefined); }, [session.role]);
   const selected = requests?.find((item) => item.id === selectedId) || null;
   const filtered = requests?.filter((item) => (statusFilter === 'all' || item.status === statusFilter) && (typeFilter === 'all' || item.type === typeFilter)) || [];
+  useEffect(() => {
+    if (!selectedId) { setMessages([]); return undefined; }
+    setMessageBody('');
+    let active = true;
+    api.get(`/privacy-requests/${selectedId}/messages`).then((result) => { if (active) setMessages(result.data); }).catch((err) => { if (active) setError(err.message); });
+    return () => { active = false; };
+  }, [selectedId]);
   const submit = async (event) => {
     event.preventDefault(); setSaving(true); setError('');
     try {
@@ -2709,26 +2747,57 @@ function PrivacyRequestsPage({ session, notify }) {
       setRequests((current) => current.map((item) => item.id === result.data.id ? result.data : item)); setResponseNote(''); notify('Solicitação atualizada.');
     } catch (err) { setError(err.message); } finally { setSaving(false); }
   };
+  const generateDelivery = async (channel = 'LINK') => {
+    if (!selected) return;
+    setDeliveryBusy(true); setError(''); setDelivery(null);
+    try {
+      const result = await api.post(`/privacy-requests/${selected.id}/delivery`, { channel });
+      setDelivery(result.data);
+      notify(channel === 'EMAIL' ? 'Link preparado para envio por e-mail.' : 'Link seguro gerado.');
+    } catch (err) { setError(err.message); } finally { setDeliveryBusy(false); }
+  };
+  const updatePublicIdentity = async () => {
+    if (!selected || selected.source !== 'PUBLIC' || !subjectUserId) return;
+    setSaving(true); setError('');
+    try {
+      const result = await api.patch(`/privacy-requests/${selected.id}`, { subjectUserId, identityVerified: true });
+      setRequests((current) => current.map((item) => item.id === result.data.id ? result.data : item));
+      notify('Titular associado e identidade registrada.');
+    } catch (err) { setError(err.message); } finally { setSaving(false); }
+  };
+  const sendMessage = async () => {
+    if (!selected || !messageBody.trim()) return;
+    setMessageBusy(true); setError('');
+    try {
+      const result = await api.post(`/privacy-requests/${selected.id}/messages`, { body: messageBody });
+      setMessages((current) => [...current, result.data]); setMessageBody(''); notify('Mensagem enviada.');
+    } catch (err) { setError(err.message); } finally { setMessageBusy(false); }
+  };
+  const insertDeliveryLink = () => {
+    if (!delivery) return;
+    const link = `${window.location.origin}${delivery.downloadPath}`;
+    setMessageBody((current) => `${current}${current ? '\n\n' : ''}Link seguro para download dos dados: ${link}`);
+  };
   return <>
-    <PageHeader eyebrow="GOVERNANÇA" title="Solicitações de privacidade" description="Registre e acompanhe pedidos de titulares com acesso restrito ao ambiente administrativo." />
+    <PageHeader eyebrow={session.role === 'admin' ? "GOVERNANÇA" : "MEUS DIREITOS"} title={session.role === 'admin' ? "Solicitações de privacidade" : "Meus pedidos de privacidade"} description={session.role === 'admin' ? "Registre, acompanhe e trate pedidos de titulares com acesso administrativo." : "Registre e acompanhe somente os seus pedidos relacionados aos direitos previstos na LGPD."} />
     <main className="page-content wrap privacy-requests-page">
       <InlineError error={error} />
       <div className="privacy-requests-grid">
         <BezelCard className="privacy-request-form-card">
           <div className="form-section-head"><span className="step-number">01</span><div><h2>Nova solicitação</h2><p>O pedido ficará vinculado ao usuário autenticado.</p></div></div>
           <form className="document-form" onSubmit={submit}>
-            <label>Tipo de solicitação<select value={form.type} onChange={(event) => setForm({ ...form, type: event.target.value })}>{privacyRequestTypes.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+            <label>Tipo de solicitação<SoftSelect value={form.type} onChange={(value) => setForm({ ...form, type: value })} options={privacyRequestTypes.map(([value, label]) => ({ value, label }))} ariaLabel="Tipo de solicitação" required /></label>
             <label>Descrição <span className="field-help">(opcional)</span><textarea rows="5" maxLength="2000" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Descreva o pedido sem incluir dados desnecessários." /></label>
             <div className="form-actions"><PrimaryButton type="submit" disabled={saving} icon={<ClipboardList />}>Registrar pedido</PrimaryButton></div>
           </form>
         </BezelCard>
         <BezelCard className="privacy-request-list-card">
           <div className="privacy-list-head"><div><Eyebrow>ACOMPANHAMENTO</Eyebrow><h2>Pedidos registrados</h2></div><span className="privacy-count">{filtered.length}</span></div>
-          <div className="privacy-filters"><select aria-label="Filtrar por status" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="all">Todos os status</option>{privacyRequestStatuses.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><select aria-label="Filtrar por tipo" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}><option value="all">Todos os tipos</option>{privacyRequestTypes.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
+          <div className="privacy-filters"><SoftSelect ariaLabel="Filtrar por status" value={statusFilter} onChange={setStatusFilter} options={[{ value: 'all', label: 'Todos os status' }, ...privacyRequestStatuses.map(([value, label]) => ({ value, label }))]} /><SoftSelect ariaLabel="Filtrar por tipo" value={typeFilter} onChange={setTypeFilter} options={[{ value: 'all', label: 'Todos os tipos' }, ...privacyRequestTypes.map(([value, label]) => ({ value, label }))]} /></div>
           {!requests ? <LoadingState /> : filtered.length === 0 ? <div className="empty-state privacy-empty"><span><ClipboardList /></span><h3>Nenhuma solicitação</h3><p>Os pedidos registrados aparecerão aqui.</p></div> : <div className="privacy-request-list">{filtered.map((item) => <button type="button" className={`privacy-request-row ${selectedId === item.id ? 'selected' : ''}`} key={item.id} onClick={() => { setSelectedId(item.id); setResponseNote(item.responseNote || ''); }}><span><strong>{privacyTypeLabel(item.type)}</strong><small>{item.subjectUser?.name || item.requesterName || 'Titular autenticado'}{item.source === 'PUBLIC' ? ' · Canal público' : ''} · {new Date(item.createdAt).toLocaleDateString('pt-BR')}</small></span><span className={`dsar-status dsar-${item.status.toLowerCase()}`}>{privacyStatusLabel(item.status)}</span></button>)}</div>}
         </BezelCard>
       </div>
-      {selected && <BezelCard className="privacy-request-detail"><div className="privacy-detail-head"><div><Eyebrow>DETALHE DO PEDIDO</Eyebrow><h2>{privacyTypeLabel(selected.type)}</h2><p>{selected.subjectUser?.name || selected.requesterName || 'Titular autenticado'} · {selected.requesterEmail || selected.subjectUser?.email || ''} · criado em {new Date(selected.createdAt).toLocaleString('pt-BR')}</p></div><span className={`dsar-status dsar-${selected.status.toLowerCase()}`}>{privacyStatusLabel(selected.status)}</span></div><div className="privacy-detail-copy"><strong>Descrição</strong><p>{selected.description || 'Nenhuma descrição informada.'}</p><small>Prazo operacional registrado: {selected.dueAt ? new Date(selected.dueAt).toLocaleDateString('pt-BR') : 'não informado'}</small>{selected.events?.length > 0 && <div className="privacy-event-list"><strong>Trilha de atendimento</strong>{selected.events.map((event) => <span key={event.id}>{event.action} · {new Date(event.createdAt).toLocaleString('pt-BR')}{event.actor?.name ? ` · ${event.actor.name}` : ''}</span>)}</div>}</div>{session.role === 'admin' && <div className="privacy-admin-actions"><label>Nota de tratamento<textarea rows="3" maxLength="4000" value={responseNote} onChange={(event) => setResponseNote(event.target.value)} placeholder="Registre a decisão sem incluir dados pessoais desnecessários." /></label><div className="form-actions"><button className="ghost-button" type="button" disabled={saving} onClick={() => updateSelected('IN_REVIEW')}>Marcar em análise</button><button className="ghost-button" type="button" disabled={saving} onClick={() => updateSelected('REJECTED')}>Rejeitar</button><PrimaryButton type="button" disabled={saving} onClick={() => updateSelected('COMPLETED')} icon={<Check />}>Concluir</PrimaryButton></div></div>}</BezelCard>}
+      {selected && <SimpleModal className="privacy-request-modal" title={privacyTypeLabel(selected.type)} description="Detalhes do pedido de privacidade" onClose={() => { setSelectedId(null); setDelivery(null); }}><div className="privacy-detail-head"><div><Eyebrow>{selected.source === 'PUBLIC' ? 'PEDIDO PELO CANAL PÚBLICO' : 'PEDIDO AUTENTICADO'}</Eyebrow><p>Confira os dados enviados no momento do registro.</p></div><span className={`dsar-status dsar-${selected.status.toLowerCase()}`}>{privacyStatusLabel(selected.status)}</span></div><div className="privacy-personal-grid"><div className="privacy-personal-field"><span className="privacy-field-icon"><UserRound /></span><span><small>Nome</small><strong>{selected.subjectUser?.name || selected.requesterName || 'Titular autenticado'}</strong></span></div><div className="privacy-personal-field"><span className="privacy-field-icon"><Mail /></span><span><small>E-mail</small><strong>{selected.requesterEmail || selected.subjectUser?.email || 'Não informado'}</strong></span></div><div className="privacy-personal-field"><span className="privacy-field-icon"><CalendarDays /></span><span><small>Data do pedido</small><strong>{privacyLongDate(selected.createdAt)}</strong><em><Clock3 /> {new Date(selected.createdAt).toLocaleTimeString('pt-BR')}</em></span></div>{(() => { const deadline = privacyDeadline(selected.dueAt); return <div className={`privacy-personal-field privacy-deadline-${deadline.tone}`}><span className="privacy-field-icon"><Timer /></span><span><small>Prazo registrado</small><strong>{privacyLongDate(selected.dueAt)}</strong><em>{deadline.label}</em></span></div>; })()}</div><div className="privacy-detail-copy"><div className="privacy-message-heading"><span className="privacy-field-icon"><MessageSquareText /></span><strong>Mensagem enviada</strong></div><p>{selected.description || 'Nenhuma mensagem foi informada.'}</p></div><PrivacyRequestTabs events={selected.events || []} messages={messages} messageBody={messageBody} onMessageBodyChange={setMessageBody} onSendMessage={sendMessage} onInsertLink={delivery ? insertDeliveryLink : undefined} messageBusy={messageBusy} canSend={Boolean(selected.subjectUserId || selected.subjectUser?.id || selected.source === 'AUTHENTICATED')} />{session.role === 'admin' && <div className="privacy-admin-actions"><label>Nota de tratamento<textarea rows="3" maxLength="4000" value={responseNote} onChange={(event) => setResponseNote(event.target.value)} placeholder="Registre a decisão sem incluir dados pessoais desnecessários." /></label>{selected.source === 'PUBLIC' && <div className="privacy-identity-panel"><strong>Validação para entrega</strong><p>Associe o pedido a um usuário somente após confirmar a identidade por canal adequado.</p><SearchableSelect ariaLabel="Usuário titular" value={subjectUserId || selected.subjectUserId || ''} onChange={setSubjectUserId} options={users.map((user) => ({ value: user.id, label: `${user.name} · ${user.email}`, keywords: [user.email] }))} placeholder="Selecionar titular" searchPlaceholder="Buscar usuário…" /><button className="ghost-button" type="button" disabled={saving || !subjectUserId} onClick={updatePublicIdentity}>Registrar validação</button></div>}{selected.type === 'PORTABILITY' && <div className="privacy-delivery-panel"><div><strong>Entrega de portabilidade</strong><p>Gera um JSON estruturado com validade de 48 horas e uso único. Senhas, tokens e conteúdo de links externos ficam excluídos.</p></div><div className="form-actions"><button className="ghost-button" type="button" disabled={deliveryBusy} onClick={() => generateDelivery('LINK')}>{deliveryBusy ? 'Gerando…' : 'Gerar link seguro'}</button><button className="ghost-button" type="button" disabled={deliveryBusy} onClick={() => generateDelivery('EMAIL')}>Preparar e-mail</button></div>{delivery && <div className="privacy-delivery-result"><input readOnly value={`${window.location.origin}${delivery.downloadPath}`} aria-label="Link de entrega" /><button className="ghost-button" type="button" onClick={() => navigator.clipboard?.writeText(`${window.location.origin}${delivery.downloadPath}`)}>Copiar link</button><a className="ghost-button" href={`mailto:${delivery.recipientEmail}?subject=Entrega de dados pessoais&body=Seu link seguro de download é: ${encodeURIComponent(`${window.location.origin}${delivery.downloadPath}`)}`}>Abrir e-mail</a><small>O MemoryDoc local não possui SMTP configurado; “Preparar e-mail” abre o cliente de e-mail para envio manual.</small></div>}</div>}<div className="form-actions"><button className="ghost-button" type="button" disabled={saving} onClick={() => updateSelected('IN_REVIEW')}>Marcar em análise</button><button className="ghost-button" type="button" disabled={saving} onClick={() => updateSelected('REJECTED')}>Rejeitar</button><PrimaryButton type="button" disabled={saving} onClick={() => updateSelected('COMPLETED')} icon={<Check />}>Concluir</PrimaryButton></div></div>}</SimpleModal>}
     </main>
   </>;
 }
@@ -3231,7 +3300,7 @@ export default function App() {
               />
               <Route
                 path="/privacidade/solicitacoes"
-                element={<RequireRole session={session} roles={["admin"]}><PrivacyRequestsPage session={session} notify={(message) => setToast({ message, error: false })} /></RequireRole>}
+                element={<RequireRole session={session} roles={["admin", "OPERATOR", "VIEWER"]}><PrivacyRequestsPage session={session} notify={(message) => setToast({ message, error: false })} /></RequireRole>}
               />
               <Route path="/atividades" element={<ActivityPage />} />
               <Route

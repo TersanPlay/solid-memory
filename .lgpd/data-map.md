@@ -72,6 +72,22 @@
 | Alto risco | Pode ser alto se exportações forem em larga escala |
 | Owner | Segurança/Operações |
 
+### A005 — Solicitações de titulares, atendimento e portabilidade
+| Campo | Valor |
+|---|---|
+| Finalidade | Receber, autenticar, acompanhar e responder solicitações de titulares previstas no art. 18, incluindo entrega de portabilidade |
+| Base legal | Art. 18; base da atividade originária; obrigação legal/regulatória quando aplicável |
+| Titulares | Usuários autenticados e requerentes do canal público, após validação de identidade |
+| Dados | Nome, e-mail, tipo de solicitação, descrição, referência, status, prazo, notas de tratamento, mensagens, eventos de atendimento e dados mínimos do pacote de portabilidade |
+| Fonte | Usuário autenticado ou formulário público MVP; associação administrativa para pedidos públicos |
+| Sistemas | `DataSubjectRequest`, `PrivacyRequestMessage`, `PrivacyRequestDelivery`, trilha técnica e SQLite |
+| Compartilhamentos | Usuários autorizados no próprio pedido e administradores; entrega ocorre por link temporário ou cliente de e-mail local |
+| Transferência internacional | Não identificada no MVP local; não há SMTP nem provedor externo configurado |
+| Retenção | Definir prazos para pedidos, mensagens, eventos e entregas; links de portabilidade expiram em 48 horas e são de uso único |
+| Segurança | RBAC e escopo por titular, validação administrativa, JSON minimizado, hash do pacote, token armazenado por hash, expiração, uso único e registro de download |
+| Alto risco | Depende do conteúdo do acervo e da escala; confirmar com controlador |
+| Owner | Controlador/Encarregado, quando designados; operação administrativa no MVP |
+
 ## Observações
 - O código não mostra analytics, cookies de rastreamento ou SDKs de terceiros além da infraestrutura e links documentais.
 - A presença de dados sensíveis e a escala real precisam ser confirmadas pelo negócio; o schema não permite concluir que esses dados não existirão nos documentos.

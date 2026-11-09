@@ -50,6 +50,8 @@ import {
 } from "./users.js";
 import { createExcelReport, createPdfReport } from "./reports.js";
 import { createPrivacyRequest, createPublicPrivacyRequest, createPrivacyDelivery, createPrivacyRequestMessage, downloadPrivacyDelivery, listPrivacyRequestMessages, listPrivacyRequests, updatePrivacyRequest } from './privacy-requests.js';
+import { assertSafeDocumentUrl, redactRequestUrl, urlFingerprint } from './privacy-controls.js';
+import { createRetentionRule, getPrivacyGovernance, runPrivacyGovernanceDiagnostics, updatePrivacyRequestRetentionLimit, updatePrivacySettings, updateRetentionRule } from './privacy-governance.js';
 
 const statuses = Object.keys(STATUS_LABELS);
 const initialStatuses = statuses.filter(
@@ -131,7 +133,9 @@ const documentUpdateSchema = z.object({
   responsibleUserId: z.string().min(1).optional(),
 });
 const documentLinkSchema = z.object({
-  url: z.string().trim().url().max(2000).refine((value) => new URL(value).protocol === "https:", "Use uma URL HTTPS."),
+  url: z.string().trim().url().max(2000).refine((value) => {
+    try { assertSafeDocumentUrl(value); return true; } catch { return false; }
+  }, "Use uma URL HTTPS sem credenciais, tokens ou segredos."),
 }).strict();
 const documentLinkUpdateSchema = documentLinkSchema.partial().refine((value) => Object.keys(value).length > 0, "Informe ao menos uma alteração.");
 const statusSchema = z.object({ status: z.enum(transitionStatuses) });
@@ -275,7 +279,7 @@ export function createApp({ prisma, config }) {
         req: (request) => ({
           id: request.id,
           method: request.method,
-          url: request.url,
+          url: redactRequestUrl(request.url),
         }),
         res: (response) => ({ statusCode: response.statusCode }),
       },
@@ -416,6 +420,25 @@ export function createApp({ prisma, config }) {
   }));
   app.post('/api/privacy-requests/:id/delivery', requireRoles('admin'), asyncRoute(async (request, response) => {
     response.status(201).json({ data: await createPrivacyDelivery(prisma, request.params.id, request.body, request.user) });
+  }));
+
+  app.get('/api/privacy-governance', requireRoles('admin'), asyncRoute(async (_request, response) => {
+    response.json({ data: await getPrivacyGovernance(prisma) });
+  }));
+  app.post('/api/privacy-governance/retention-rules', requireRoles('admin'), asyncRoute(async (request, response) => {
+    response.status(201).json({ data: await createRetentionRule(prisma, request.body, request.user) });
+  }));
+  app.patch('/api/privacy-governance/retention-rules/:id', requireRoles('admin'), asyncRoute(async (request, response) => {
+    response.json({ data: await updateRetentionRule(prisma, request.params.id, request.body, request.user) });
+  }));
+  app.put('/api/privacy-governance/settings', requireRoles('admin'), asyncRoute(async (request, response) => {
+    response.json({ data: await updatePrivacySettings(prisma, request.body, request.user) });
+  }));
+  app.put('/api/privacy-governance/request-limits/:type', requireRoles('admin'), asyncRoute(async (request, response) => {
+    response.json({ data: await updatePrivacyRequestRetentionLimit(prisma, request.params.type, request.body, request.user) });
+  }));
+  app.post('/api/privacy-governance/diagnostics/run', requireRoles('admin'), asyncRoute(async (_request, response) => {
+    response.json({ data: await runPrivacyGovernanceDiagnostics(prisma) });
   }));
 
   app.get(
@@ -675,7 +698,7 @@ export function createApp({ prisma, config }) {
         include: { createdBy: { select: { id: true, name: true } } },
       });
       await prisma.documentHistory.create({
-        data: { documentId: document.id, action: "UPDATE", description: `Link documental adicionado: ${link.provider}`, detailsJson: JSON.stringify({ linkId: link.id, url: link.url, provider: link.provider }), userId: request.user.id },
+        data: { documentId: document.id, action: "UPDATE", description: `Link documental adicionado: ${link.provider}`, detailsJson: JSON.stringify({ linkId: link.id, provider: link.provider, urlFingerprint: urlFingerprint(link.url) }), userId: request.user.id },
       });
       response.status(201).json({ data: link });
     }),
@@ -705,7 +728,7 @@ export function createApp({ prisma, config }) {
       if (!current) throw new ApiError(404, "NOT_FOUND", "Link documental não encontrado.");
       assertCanMutateDocument(request.user, current.document);
       await prisma.documentLink.delete({ where: { id: current.id } });
-      await prisma.documentHistory.create({ data: { documentId: current.documentId, action: "UPDATE", description: `Link documental removido: ${current.provider}`, detailsJson: JSON.stringify({ linkId: current.id, url: current.url }), userId: request.user.id } });
+      await prisma.documentHistory.create({ data: { documentId: current.documentId, action: "UPDATE", description: `Link documental removido: ${current.provider}`, detailsJson: JSON.stringify({ linkId: current.id, provider: current.provider, urlFingerprint: urlFingerprint(current.url) }), userId: request.user.id } });
       response.status(204).end();
     }),
   );

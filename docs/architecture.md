@@ -142,6 +142,8 @@ O navegador é a fonte de verdade da página atual. A aplicação usa `BrowserRo
 | `/lgpd` | Guia público da documentação `.lgpd/` | Pública |
 | `/privacidade` | Política de Privacidade v1 | Pública; rascunho |
 | `/privacidade/solicitacoes` | Autoatendimento autenticado para pedidos próprios; fila e tratamento administrativo para `admin` | Sessão; escopo por titular |
+| `/privacidade/configuracoes` | Governança administrativa de retenção, prazos DSAR e validade de portabilidade | Sessão; somente `admin` |
+| `/privacidade/testes` | Diagnóstico somente leitura da configuração de governança | Sessão; somente `admin` |
 | `/cookies` | Política de Cookies v1 | Pública; rascunho |
 | `/privacidade/solicitar` | Canal público DSAR | Pública; MVP |
 

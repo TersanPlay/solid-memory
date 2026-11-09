@@ -50,6 +50,13 @@ enum DataSubjectRequestStatus {
   REJECTED
 }
 
+enum RetentionPostAction {
+  HARD_DELETE
+  ANONYMIZE
+  CRYPTO_SHRED
+  BLOCK_AND_RETAIN
+}
+
 model User {
   id               String            @id @default(cuid())
   name             String
@@ -77,6 +84,45 @@ model User {
   privacyRequestMessagesReceived PrivacyRequestMessage[] @relation("PrivacyMessageRecipient")
 
   @@index([role, active])
+}
+
+model RetentionRule {
+  id              String             @id @default(cuid())
+  entityKey       String
+  label           String
+  purpose         String
+  retentionMonths Int
+  legalBasis      String
+  postAction      RetentionPostAction @default(BLOCK_AND_RETAIN)
+  triggeredBy     String
+  notes           String             @default("")
+  active          Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  createdById     String
+  updatedById     String
+
+  @@index([entityKey, active])
+  @@index([updatedAt])
+}
+
+model PrivacySetting {
+  key         String   @id
+  value       String
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+}
+
+model PrivacyRequestRetentionLimit {
+  id              String   @id @default(cuid())
+  requestType     String   @unique
+  maxRetentionDays Int
+  notes           String   @default("")
+  active          Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+  updatedById     String
+
+  @@index([active])
 }
 
 model Session {

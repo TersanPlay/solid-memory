@@ -10,7 +10,7 @@
 
 ## Estado no MVP local
 
-**Implementado:** hash de senhas, sessões com cookie HttpOnly/SameSite, rate limiting, Helmet, RBAC, validação de entrada, HTTPS obrigatório para links documentais, redação de cookies/autorização nos logs, escopo por titular, tokens de entrega armazenados por hash, validade e uso único de links de portabilidade.
+**Implementado:** hash de senhas, sessões com cookie HttpOnly/SameSite, rate limiting, Helmet, RBAC, validação de entrada, HTTPS obrigatório para links documentais, rejeição de URLs com credenciais/tokens, redação de cookies/autorização/URLs sensíveis nos logs, escopo por titular, tokens de entrega armazenados por hash, validade e uso único de links de portabilidade, fingerprint de URLs no histórico funcional.
 
 **Parcial ou pendente:** `Secure` depende de execução em HTTPS; criptografia gerenciada de anexos, backups e segredos, rotação de chaves, antivírus/malware scan, monitoramento operacional, restauração de backup e log imutável ainda não estão concluídos no MVP local.
 

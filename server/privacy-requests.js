@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import crypto from 'node:crypto';
 import { ApiError } from './api.js';
+import { redactForAudit } from './privacy-controls.js';
+import { getPrivacySettingNumber } from './privacy-governance.js';
 
 export const PRIVACY_REQUEST_TYPES = [
   'ACCESS', 'CORRECTION', 'ANONYMIZATION', 'DELETION', 'PORTABILITY', 'OPPOSITION', 'CONSENT_REVOCATION',
@@ -76,7 +78,8 @@ export async function createPrivacyRequest(prisma, rawInput, currentUser) {
   }
   const subject = await prisma.user.findUnique({ where: { id: subjectUserId }, select: { id: true } });
   if (!subject) throw new ApiError(404, 'NOT_FOUND', 'Usuário titular não encontrado.');
-  const dueAt = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000);
+  const responseDays = await getPrivacySettingNumber(prisma, 'DSAR_RESPONSE_DAYS', 15);
+  const dueAt = new Date(Date.now() + responseDays * 24 * 60 * 60 * 1000);
   const request = await prisma.dataSubjectRequest.create({
     data: { subjectUserId, createdById: currentUser.id, type: input.type, description: input.description, dueAt },
     include: requestInclude,
@@ -89,7 +92,8 @@ export async function createPublicPrivacyRequest(prisma, rawInput) {
   const input = publicPrivacyRequestCreateSchema.parse(rawInput);
   const id = `PUB-${crypto.randomUUID()}`;
   const publicReference = `DSAR-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
-  const dueAt = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000);
+  const responseDays = await getPrivacySettingNumber(prisma, 'DSAR_RESPONSE_DAYS', 15);
+  const dueAt = new Date(Date.now() + responseDays * 24 * 60 * 60 * 1000);
   const request = await prisma.publicPrivacyRequest.create({ data: { id, publicReference, ...input, dueAt } });
   await prisma.privacyRequestEvent.create({ data: { requestId: request.id, source: 'PUBLIC', action: 'CREATED', note: 'Solicitação recebida pelo canal público.' } });
   return { reference: publicReference, type: request.type, status: request.status, createdAt: request.createdAt, dueAt: request.dueAt };
@@ -124,7 +128,7 @@ export async function updatePrivacyRequest(prisma, id, rawInput, currentUser) {
       ...(identityVerified ? { identityVerifiedAt: new Date(), identityVerifiedById: currentUser.id } : {}),
       ...(completed ? { completedAt: current.completedAt ?? new Date() } : {}),
     } });
-    await prisma.privacyRequestEvent.create({ data: { requestId: id, source: 'PUBLIC', action: input.status ? `STATUS_${input.status}` : 'NOTE_UPDATED', note: input.responseNote || '', actorId: currentUser.id } });
+    await prisma.privacyRequestEvent.create({ data: { requestId: id, source: 'PUBLIC', action: input.status ? `STATUS_${input.status}` : 'NOTE_UPDATED', note: redactForAudit(input.responseNote || ''), actorId: currentUser.id } });
     return serializeRequest({ ...request, source: 'PUBLIC', events: [] });
   }
   const current = await prisma.dataSubjectRequest.findUnique({ where: { id } });
@@ -140,7 +144,7 @@ export async function updatePrivacyRequest(prisma, id, rawInput, currentUser) {
     },
     include: requestInclude,
   });
-  await prisma.privacyRequestEvent.create({ data: { requestId: id, source: 'AUTHENTICATED', action: statusInput.status ? `STATUS_${statusInput.status}` : 'NOTE_UPDATED', note: statusInput.responseNote || '', actorId: currentUser.id } });
+  await prisma.privacyRequestEvent.create({ data: { requestId: id, source: 'AUTHENTICATED', action: statusInput.status ? `STATUS_${statusInput.status}` : 'NOTE_UPDATED', note: redactForAudit(statusInput.responseNote || ''), actorId: currentUser.id } });
   return serializeRequest(request);
 }
 
@@ -191,7 +195,8 @@ export async function createPrivacyDelivery(prisma, id, rawInput, currentUser) {
   const bundle = await buildPortableBundle(prisma, subjectUserId, request);
   const payload = JSON.stringify(bundle);
   const rawToken = crypto.randomBytes(32).toString('base64url');
-  const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
+  const linkHours = await getPrivacySettingNumber(prisma, 'PORTABILITY_LINK_HOURS', 48);
+  const expiresAt = new Date(Date.now() + linkHours * 60 * 60 * 1000);
   const delivery = await prisma.privacyRequestDelivery.create({ data: { requestId: id, source, format: 'json', tokenHash: sha256(rawToken), recipientEmail, bundleHash: sha256(payload), expiresAt, createdById: currentUser.id } });
   await prisma.privacyRequestEvent.create({ data: { requestId: id, source, action: input.channel === 'EMAIL' ? 'DELIVERY_EMAIL_PREPARED' : 'DELIVERY_LINK_GENERATED', note: 'Entrega estruturada criada; envio automático depende de provedor de e-mail configurado.', actorId: currentUser.id } });
   return { id: delivery.id, channel: input.channel, recipientEmail, expiresAt, bundleHash: delivery.bundleHash, downloadPath: `/api/privacy-deliveries/${delivery.id}/download?token=${encodeURIComponent(rawToken)}`, emailConfigured: false };

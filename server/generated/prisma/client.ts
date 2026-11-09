@@ -47,6 +47,21 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model RetentionRule
+ *
+ */
+export type RetentionRule = Prisma.RetentionRuleModel
+/**
+ * Model PrivacySetting
+ *
+ */
+export type PrivacySetting = Prisma.PrivacySettingModel
+/**
+ * Model PrivacyRequestRetentionLimit
+ *
+ */
+export type PrivacyRequestRetentionLimit = Prisma.PrivacyRequestRetentionLimitModel
+/**
  * Model Session
  *
  */

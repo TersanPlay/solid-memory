@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, queryString } from "../api.js";
+import { Link } from "react-router";
 import { formatProtocol, statusOptions } from "../data.js";
 import { today, currentYear, currentMonth } from "../utils/constants";
 import { formatDate } from "../utils/format";
@@ -142,6 +143,7 @@ export default function Dashboard({
             <button onClick={onViewDocuments}><Files /><span><strong>Protocolos</strong><small>Consultar e acompanhar registros</small></span><ChevronRight /></button>
             <button onClick={onNew} disabled={!canCreate}><FilePlus2 /><span><strong>Novo protocolo</strong><small>Registrar um protocolo</small></span><ChevronRight /></button>
             <button onClick={() => window.location.assign("/atividades")}><Users /><span><strong>Atividades</strong><small>Histórico de movimentações</small></span><ChevronRight /></button>
+            <Link to="/lgpd"><ShieldCheck /><span><strong>Guia LGPD</strong><small>Progresso e controles de privacidade</small></span><ChevronRight /></Link>
           </div>
         </BezelCard>
       </section>

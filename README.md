@@ -46,6 +46,8 @@ A autorização é aplicada no backend e também refletida visualmente no fronte
 | `/privacidade` | Política de Privacidade v1 | Público; rascunho |
 | `/cookies` | Política de Cookies v1 e preferências | Público; rascunho |
 | `/privacidade/solicitar` | Canal público para solicitações de titulares | Público; MVP |
+| `/privacidade/configuracoes` | Configuração administrativa de retenção e prazos operacionais | Autenticado; somente administradores |
+| `/privacidade/testes` | Diagnóstico somente leitura da governança LGPD | Autenticado; somente administradores |
 
 As políticas públicas não são uma declaração de conformidade. O MVP ainda depende da definição do controlador, CNPJ, endereço, Encarregado, canal institucional e revisão jurídica. O canal público registra a solicitação e a trilha técnica, mas não valida identidade de forma conclusiva nem envia notificações por e-mail.
 
@@ -124,6 +126,8 @@ O seed é idempotente: cria os catálogos quando as tabelas estão vazias e cria
 O frontend exibe um banner e um gerenciador de preferências de cookies. Atualmente somente o cookie técnico de sessão `folio_session` está ativo; analytics e marketing não são instalados. A escolha é armazenada localmente no navegador e pode ser reaberta em “Preferências de cookies”.
 
 O canal público em `/privacidade/solicitar` registra pedidos de acesso, correção, eliminação, anonimização, portabilidade e oposição. Usuários autenticados acompanham apenas os próprios pedidos em `/privacidade/solicitacoes`; administradores tratam a fila completa e as entregas de portabilidade. O campo de link documental continua limitado a URLs HTTPS; o MemoryDoc não acessa o conteúdo dos serviços externos.
+
+Administradores também podem usar `/privacidade/configuracoes` para registrar regras de retenção por categoria, finalidade, prazo, base legal, gatilho e ação prevista após o prazo, configurar o prazo de resposta DSAR, a validade dos links de portabilidade e um limite máximo de retenção para cada tipo de solicitação. A tela não executa exclusões automáticas: essa etapa depende de matriz institucional aprovada.
 
 ### Executar frontend e API separadamente
 

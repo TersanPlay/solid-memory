@@ -60,6 +60,8 @@ import {
 import { api, ApiClientError, queryString } from "./api.js";
 const DashboardPage = lazy(() => import("./pages/Dashboard.jsx"));
 const UserProfile = lazy(() => import("./pages/UserProfile.jsx"));
+const PrivacyGovernancePage = lazy(() => import("./pages/PrivacyGovernance.jsx"));
+const PrivacyDiagnosticsPage = lazy(() => import("./pages/PrivacyDiagnostics.jsx"));
 import {
   DatePicker,
   SearchableSelect,
@@ -510,6 +512,15 @@ const lgpdCardImages = {
   '.lgpd/vendors/README.md': { src: '/lgpd-readme-card.png', alt: 'Manual aberto com lâmpada e caminhos de documentação' },
 };
 
+const lgpdProgressFromStatus = (content = '') => {
+  const entries = String(content).split(/\r?\n/).map((line) => line.match(/^\s*-\s*\[([x~ ])\]/i)).filter(Boolean);
+  const implemented = entries.filter((entry) => entry[1].toLowerCase() === 'x').length;
+  const partial = entries.filter((entry) => entry[1] === '~').length;
+  const pending = entries.length - implemented - partial;
+  const percentage = entries.length ? Math.round(((implemented + (partial * 0.5)) / entries.length) * 100) : 0;
+  return { percentage, implemented, partial, pending, total: entries.length };
+};
+
 function PublicLgpdGuide() {
   const [guide, setGuide] = useState(null);
   const [error, setError] = useState('');
@@ -520,7 +531,9 @@ function PublicLgpdGuide() {
     const timer = window.setInterval(load, 10000);
     return () => window.clearInterval(timer);
   }, []);
-  return <main className="lgpd-guide-page"><div className="ambient-mesh" aria-hidden="true" /><header className="lgpd-guide-hero wrap"><Link className="lgpd-guide-brand" to="/login"><Brand /></Link><Eyebrow>TRANSPARÊNCIA DO MVP</Eyebrow><h1>Guia LGPD do MemoryDoc</h1><p>Esta página é alimentada diretamente pelos arquivos versionados da pasta <code>.lgpd/</code>. Toda alteração nesses documentos aparece aqui na próxima atualização da página.</p><div className="lgpd-guide-actions"><Link className="primary-button" to="/login"><span>Ir para o acesso</span><span className="button-icon"><ArrowUpRight /></span></Link><Link className="lgpd-action-link lgpd-action-request" to="/privacidade/solicitar"><span className="lgpd-action-icon"><ClipboardList /></span><span>Solicitar atendimento</span></Link><Link className="lgpd-action-link lgpd-action-privacy" to="/privacidade"><span className="lgpd-action-icon"><ShieldCheck /></span><span>Política de Privacidade</span></Link><Link className="lgpd-action-link lgpd-action-cookies" to="/cookies"><span className="lgpd-action-icon"><CircleHelp /></span><span>Política de Cookies</span></Link><span className="lgpd-guide-version">{guide ? `Atualizado em ${new Date(guide.generatedAt).toLocaleString('pt-BR')}` : 'Carregando documentação…'}</span></div></header><section className="lgpd-guide-content wrap">{error && <InlineError error={error} />}{!guide ? <LoadingState text="Lendo documentação LGPD…" /> : guide.files.map((file) => { const image = lgpdCardImages[file.path]; return <BezelCard className={`lgpd-guide-card lgpd-document-card ${image ? 'has-visual' : ''}`} key={file.path}><button type="button" className="lgpd-document-trigger" onClick={() => setSelectedFile(file)}>{image && <span className="lgpd-document-visual"><img src={image.src} alt="" /></span>}<span className="lgpd-document-copy"><Eyebrow>{file.path}</Eyebrow><strong>{file.title}</strong><small>Atualizado em {new Date(file.updatedAt).toLocaleDateString('pt-BR')}</small></span><span className="lgpd-document-open"><ArrowUpRight /></span></button></BezelCard>; })}<BezelCard className="lgpd-guide-warning"><CircleHelp /><div><strong>Importante</strong><p>Este guia não é uma política de privacidade nem uma declaração de conformidade. Ele reproduz a documentação técnica atual do MVP; decisões institucionais e revisão jurídica continuam pendentes.</p></div></BezelCard></section>{selectedFile && <><button type="button" className="lgpd-drawer-overlay" aria-label="Fechar documento" onClick={() => setSelectedFile(null)} /><aside className="lgpd-drawer" aria-label={`Documento ${selectedFile.title}`}><div className="lgpd-drawer-head"><div><Eyebrow>{selectedFile.path}</Eyebrow><h2>{selectedFile.title}</h2><small>Atualizado em {new Date(selectedFile.updatedAt).toLocaleString('pt-BR')}</small></div><IconButton label="Fechar documento" onClick={() => setSelectedFile(null)}><X /></IconButton></div><div className="lgpd-markdown lgpd-drawer-content">{renderLgpdMarkdown(selectedFile.content)}</div></aside></>}</main>;
+  const statusFile = guide?.files.find((file) => file.path === '.lgpd/STATUS.md');
+  const progress = lgpdProgressFromStatus(statusFile?.content);
+  return <main className="lgpd-guide-page"><div className="ambient-mesh" aria-hidden="true" /><header className="lgpd-guide-hero wrap"><Link className="lgpd-guide-brand" to="/login"><Brand /></Link><Eyebrow>TRANSPARÊNCIA DO MVP</Eyebrow><h1>Guia LGPD do MemoryDoc</h1><p>Esta página é alimentada diretamente pelos arquivos versionados da pasta <code>.lgpd/</code>. Toda alteração nesses documentos aparece aqui na próxima atualização da página.</p><div className="lgpd-guide-actions"><Link className="primary-button" to="/login"><span>Ir para o acesso</span><span className="button-icon"><ArrowUpRight /></span></Link><Link className="lgpd-action-link lgpd-action-request" to="/privacidade/solicitar"><span className="lgpd-action-icon"><ClipboardList /></span><span>Solicitar atendimento</span></Link><Link className="lgpd-action-link lgpd-action-privacy" to="/privacidade"><span className="lgpd-action-icon"><ShieldCheck /></span><span>Política de Privacidade</span></Link><Link className="lgpd-action-link lgpd-action-cookies" to="/cookies"><span className="lgpd-action-icon"><CircleHelp /></span><span>Política de Cookies</span></Link><span className="lgpd-guide-version">{guide ? `Atualizado em ${new Date(guide.generatedAt).toLocaleString('pt-BR')}` : 'Carregando documentação…'}</span></div></header><section className="lgpd-guide-content wrap">{error && <InlineError error={error} />}{guide && <BezelCard className="lgpd-progress-card"><div className="lgpd-progress-copy"><Eyebrow>STATUS DO MVP</Eyebrow><h2>Progresso técnico documentado</h2><p>Acompanhamento do plano LGPD com base no <code>STATUS.md</code>. Itens parciais contam como metade do progresso.</p><div className="lgpd-progress-stats"><span><strong>{progress.implemented}</strong><small>implementados</small></span><span><strong>{progress.partial}</strong><small>parciais</small></span><span><strong>{progress.pending}</strong><small>pendentes</small></span></div></div><div className="lgpd-progress-visual"><div className="lgpd-progress-ring" style={{ '--lgpd-progress': `${progress.percentage}%` }} role="progressbar" aria-label="Progresso técnico documentado da LGPD" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progress.percentage}><strong>{progress.percentage}%</strong><small>progresso técnico</small></div><span className="lgpd-progress-note"><ShieldCheck /> Não representa conformidade jurídica</span></div></BezelCard>}{!guide ? <LoadingState text="Lendo documentação LGPD…" /> : guide.files.map((file) => { const image = lgpdCardImages[file.path]; return <BezelCard className={`lgpd-guide-card lgpd-document-card ${image ? 'has-visual' : ''}`} key={file.path}><button type="button" className="lgpd-document-trigger" onClick={() => setSelectedFile(file)}>{image && <span className="lgpd-document-visual"><img src={image.src} alt="" /></span>}<span className="lgpd-document-copy"><Eyebrow>{file.path}</Eyebrow><strong>{file.title}</strong><small>Atualizado em {new Date(file.updatedAt).toLocaleDateString('pt-BR')}</small></span><span className="lgpd-document-open"><ArrowUpRight /></span></button></BezelCard>; })}<BezelCard className="lgpd-guide-warning"><CircleHelp /><div><strong>Importante</strong><p>Este guia não é uma política de privacidade nem uma declaração de conformidade. Ele reproduz a documentação técnica atual do MVP; decisões institucionais e revisão jurídica continuam pendentes.</p></div></BezelCard></section>{selectedFile && <><button type="button" className="lgpd-drawer-overlay" aria-label="Fechar documento" onClick={() => setSelectedFile(null)} /><aside className="lgpd-drawer" aria-label={`Documento ${selectedFile.title}`}><div className="lgpd-drawer-head"><div><Eyebrow>{selectedFile.path}</Eyebrow><h2>{selectedFile.title}</h2><small>Atualizado em {new Date(selectedFile.updatedAt).toLocaleString('pt-BR')}</small></div><IconButton label="Fechar documento" onClick={() => setSelectedFile(null)}><X /></IconButton></div><div className="lgpd-markdown lgpd-drawer-content">{renderLgpdMarkdown(selectedFile.content)}</div></aside></>}</main>;
 }
 
 const navigationItems = [
@@ -531,6 +544,8 @@ const navigationItems = [
   { path: "/usuarios", label: "Usuários", icon: Users, admin: true },
   { path: "/relatorios", label: "Relatórios", icon: BarChart3, admin: true },
   { path: "/privacidade/solicitacoes", label: "Privacidade", icon: ClipboardList },
+  { path: "/privacidade/configuracoes", label: "Governança LGPD", icon: ShieldCheck, admin: true },
+  { path: "/privacidade/testes", label: "Testes LGPD", icon: ShieldCheck, admin: true },
 ];
 
 function Navigation({ session, onLogout }) {
@@ -555,19 +570,6 @@ function Navigation({ session, onLogout }) {
           >
             <Brand />
           </Link>
-          <div className="nav-links">
-            {items.map(({ path, label }) => (
-              <NavLink
-                key={path}
-                to={path}
-                end={path !== "/documentos"}
-                className={({ isActive }) => (isActive ? "active" : undefined)}
-                onClick={closeMenus}
-              >
-                {label}
-              </NavLink>
-            ))}
-          </div>
           <div className="nav-actions">
             <NavLink
               to="/atividades"
@@ -617,6 +619,21 @@ function Navigation({ session, onLogout }) {
               </button>
             </div>
           )}
+        </nav>
+        <nav className="nav-pages" aria-label="Páginas do sistema">
+          <div className="nav-pages-inner">
+            {items.map(({ path, label }) => (
+              <NavLink
+                key={path}
+                to={path}
+                end={path !== "/documentos"}
+                className={({ isActive }) => (isActive ? "active" : undefined)}
+                onClick={closeMenus}
+              >
+                {label}
+              </NavLink>
+            ))}
+          </div>
         </nav>
       </div>
       {menuOpen && (
@@ -2870,6 +2887,8 @@ function PageTitle() {
     else if (pathname === "/privacidade") title = "Política de Privacidade · MemoryDoc";
     else if (pathname === "/cookies") title = "Política de Cookies · MemoryDoc";
     else if (pathname === "/privacidade/solicitar") title = "Solicitação de privacidade · MemoryDoc";
+    else if (pathname === "/privacidade/configuracoes") title = "Governança LGPD · MemoryDoc";
+    else if (pathname === "/privacidade/testes") title = "Testes LGPD · MemoryDoc";
     else if (pathname === "/inicio" || pathname === "/") title = "Início · MemoryDoc";
     else if (pathname === "/documentos") title = "Protocolos · MemoryDoc";
     else if (pathname === "/documentos/novo") title = "Novo registro · MemoryDoc";
@@ -3298,10 +3317,16 @@ export default function App() {
                   </RequireRole>
                 }
               />
+              <Route path="/lgpd" element={<PublicLgpdGuide />} />
+              <Route path="/privacidade" element={<PublicPolicyPage kind="privacy" />} />
+              <Route path="/cookies" element={<PublicPolicyPage kind="cookies" />} />
+              <Route path="/privacidade/solicitar" element={<PublicPrivacyRequestPage />} />
               <Route
                 path="/privacidade/solicitacoes"
                 element={<RequireRole session={session} roles={["admin", "OPERATOR", "VIEWER"]}><PrivacyRequestsPage session={session} notify={(message) => setToast({ message, error: false })} /></RequireRole>}
               />
+              <Route path="/privacidade/configuracoes" element={<RequireRole session={session} roles={["admin"]}><Suspense fallback={<LoadingState text="Carregando governança LGPD…" />}><PrivacyGovernancePage /></Suspense></RequireRole>} />
+              <Route path="/privacidade/testes" element={<RequireRole session={session} roles={["admin"]}><Suspense fallback={<LoadingState text="Carregando testes LGPD…" />}><PrivacyDiagnosticsPage /></Suspense></RequireRole>} />
               <Route path="/atividades" element={<ActivityPage />} />
               <Route
                 path="*"

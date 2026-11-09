@@ -24,7 +24,9 @@
 - [~] F5 — DSAR com endpoint, canal público MVP, interface administrativa, mensagens, trilha e portabilidade técnica; operação institucional ainda parcial
 - [~] F6 — Logs protegidos e solicitações rastreáveis; log imutável e registro formal de incidentes pendentes
 - [ ] F7 — Criptografia gerenciada de chaves, armazenamento e backups
-- [~] F8 — Sessões expiradas são limpas; matriz de retenção e eliminação de documentos ainda pendentes
+- [~] F8 — Sessões expiradas são limpas; regras e prazos de retenção são configuráveis por administradores, mas execução de eliminação continua pendente
+- [x] F8.1 — Interface administrativa para regras por objeto, prazos, finalidades, bases legais e ações pós-prazo
+- [x] F8.2 — Diagnóstico administrativo somente leitura para verificar a configuração da governança
 - [~] F9 — Runbook inicial e redação de logs implementados; registro operacional e tabletop pendentes
 - [ ] F10 — ROPA consolidado (checkpoint)
 - [ ] F11 — Designação e publicação do Encarregado
@@ -42,6 +44,7 @@
 - `.lgpd/policies/privacy-policy-v1-draft.md` — rascunho; não publicado
 - `.lgpd/policies/cookie-policy-v1-draft.md` — rascunho; não publicado
 - `.lgpd/security-baseline.md` — baseline técnico; itens de produção ainda pendentes
+- `.lgpd/policies/data-minimization-and-history-v1.md` — controle técnico de descrições, URLs e histórico; aprovação pendente
 - `.lgpd/incidents/runbook.md` — runbook inicial; registro operacional pendente
 
 ## Implementações técnicas confirmadas
@@ -60,11 +63,14 @@
 - `/privacidade` e `/cookies` públicas são alimentadas pelos rascunhos em `.lgpd/policies/`.
 - Banner informativo e gerenciador de preferências implementados; apenas cookie técnico de sessão é usado no MVP.
 - Limpeza de sessões expiradas na inicialização e `SESSION_HOURS` configurável.
+- Governança administrativa em `/privacidade/configuracoes` para regras de retenção, prazo de resposta DSAR e validade das entregas; nenhuma exclusão automática é executada.
+- Diagnóstico administrativo somente leitura em `/privacidade/testes`, com verificações de acesso ao banco, cobertura dos objetos de dados, validade de regras e parâmetros, limites por tipo de solicitação e confirmação de exclusão automática desativada.
 - Links documentais externos são tratados como URL HTTPS e provedor identificado; o MemoryDoc não acessa, baixa, sincroniza, hospeda ou analisa o conteúdo.
+- G006 recebeu controles técnicos: limites de campos, redação de URLs sensíveis nos logs, redação de notas de eventos, rejeição de URLs com segredos e fingerprint no histórico de links.
 
 ## Lacunas ainda abertas
 
-Ver `.lgpd/gaps.md`. Em especial: controlador/CNPJ/endereço, Encarregado, canal institucional, revisão jurídica, matriz de retenção, classificação e proteção de anexos, registro formal de incidentes, ROPA e futura infraestrutura.
+Ver `.lgpd/gaps.md`. Em especial: controlador/CNPJ/endereço, Encarregado, canal institucional, revisão jurídica, aprovação da matriz de retenção, revisão periódica de históricos, classificação e proteção de anexos, registro formal de incidentes, ROPA e futura infraestrutura. O diagnóstico de `/privacidade/testes` valida a configuração técnica, mas não substitui aprovação ou execução institucional.
 
 ## Próximas decisões do responsável
 

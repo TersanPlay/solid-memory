@@ -52,6 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  RetentionRule: 'RetentionRule',
+  PrivacySetting: 'PrivacySetting',
+  PrivacyRequestRetentionLimit: 'PrivacyRequestRetentionLimit',
   Session: 'Session',
   DocumentType: 'DocumentType',
   Department: 'Department',
@@ -93,6 +96,49 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const RetentionRuleScalarFieldEnum = {
+  id: 'id',
+  entityKey: 'entityKey',
+  label: 'label',
+  purpose: 'purpose',
+  retentionMonths: 'retentionMonths',
+  legalBasis: 'legalBasis',
+  postAction: 'postAction',
+  triggeredBy: 'triggeredBy',
+  notes: 'notes',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
+} as const
+
+export type RetentionRuleScalarFieldEnum = (typeof RetentionRuleScalarFieldEnum)[keyof typeof RetentionRuleScalarFieldEnum]
+
+
+export const PrivacySettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt',
+  updatedById: 'updatedById'
+} as const
+
+export type PrivacySettingScalarFieldEnum = (typeof PrivacySettingScalarFieldEnum)[keyof typeof PrivacySettingScalarFieldEnum]
+
+
+export const PrivacyRequestRetentionLimitScalarFieldEnum = {
+  id: 'id',
+  requestType: 'requestType',
+  maxRetentionDays: 'maxRetentionDays',
+  notes: 'notes',
+  active: 'active',
+  updatedAt: 'updatedAt',
+  updatedById: 'updatedById'
+} as const
+
+export type PrivacyRequestRetentionLimitScalarFieldEnum = (typeof PrivacyRequestRetentionLimitScalarFieldEnum)[keyof typeof PrivacyRequestRetentionLimitScalarFieldEnum]
 
 
 export const SessionScalarFieldEnum = {

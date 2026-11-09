@@ -48,3 +48,7 @@ O campo de link documental é opcional. O MemoryDoc armazena a URL e o provedor 
 - **Portabilidade implementada**: JSON estruturado minimizado, hash do pacote, link com validade de 48 horas, uso único e registro de geração/download. Senhas, tokens, credenciais e conteúdo de links documentais externos são excluídos.
 - **Limitações**: pedidos públicos precisam ser associados a um usuário após validação administrativa; envio automático por e-mail não existe no MVP; o link pode ser copiado ou aberto no cliente de e-mail local.
 - **Retenção**: definir prazo institucional para a solicitação, mensagens, trilha técnica e registros de entrega; a validade de 48 horas do link não substitui a política de retenção.
+
+## Nota sobre prazos legais
+
+A LGPD não fornece um limite numérico padrão de retenção por tipo de dado ou direito. Os arts. 15 e 16 estabelecem critérios de término e hipóteses de conservação. Qualquer prazo numérico deve ser fundamentado na finalidade, em obrigação legal/regulatória ou em norma setorial aplicável; não deve ser preenchido automaticamente como se fosse um “máximo permitido pela LGPD”.

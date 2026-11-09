@@ -62,3 +62,13 @@ export const DataSubjectRequestStatus = {
 } as const
 
 export type DataSubjectRequestStatus = (typeof DataSubjectRequestStatus)[keyof typeof DataSubjectRequestStatus]
+
+
+export const RetentionPostAction = {
+  HARD_DELETE: 'HARD_DELETE',
+  ANONYMIZE: 'ANONYMIZE',
+  CRYPTO_SHRED: 'CRYPTO_SHRED',
+  BLOCK_AND_RETAIN: 'BLOCK_AND_RETAIN'
+} as const
+
+export type RetentionPostAction = (typeof RetentionPostAction)[keyof typeof RetentionPostAction]

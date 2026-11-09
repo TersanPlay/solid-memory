@@ -240,6 +240,106 @@ describe("API integrada com SQLite", () => {
     expect(response.body.data.subjectUserId).toBe(viewer.id);
   });
 
+  it("protege e mantém configurável a governança de retenção", async () => {
+    const defaults = await adminAgent.get('/api/privacy-governance').expect(200);
+    expect(defaults.body.data).toMatchObject({
+      settings: { DSAR_RESPONSE_DAYS: 15, PORTABILITY_LINK_HOURS: 48 },
+      automaticErasure: { enabled: false },
+    });
+    await viewerAgent.get('/api/privacy-governance').expect(403);
+
+    const created = await adminAgent.post('/api/privacy-governance/retention-rules').send({
+      entityKey: 'Document', label: 'Protocolos administrativos', purpose: 'Preservar o protocolo enquanto houver finalidade administrativa.',
+      retentionMonths: 60, legalBasis: 'Obrigação legal a confirmar', postAction: 'BLOCK_AND_RETAIN', triggeredBy: 'Fim da finalidade', notes: 'Revisar com o controlador.',
+    }).expect(201);
+    expect(created.body.data).toMatchObject({ entityKey: 'Document', retentionMonths: 60, active: true });
+
+    const updated = await adminAgent.patch(`/api/privacy-governance/retention-rules/${created.body.data.id}`).send({ active: false }).expect(200);
+    expect(updated.body.data.active).toBe(false);
+    const settings = await adminAgent.put('/api/privacy-governance/settings').send({ DSAR_RESPONSE_DAYS: 20, PORTABILITY_LINK_HOURS: 24 }).expect(200);
+    expect(settings.body.data.settings).toMatchObject({ DSAR_RESPONSE_DAYS: 20, PORTABILITY_LINK_HOURS: 24 });
+    const limit = await adminAgent.put('/api/privacy-governance/request-limits/PORTABILITY').send({ maxRetentionDays: 180, notes: 'Revisar com o controlador.' }).expect(200);
+    expect(limit.body.data).toMatchObject({ requestType: 'PORTABILITY', maxRetentionDays: 180, active: true });
+    const listed = await adminAgent.get('/api/privacy-governance').expect(200);
+    expect(listed.body.data.requestLimits).toEqual(expect.arrayContaining([expect.objectContaining({ requestType: 'PORTABILITY', maxRetentionDays: 180 })]));
+    await viewerAgent.put('/api/privacy-governance/request-limits/PORTABILITY').send({ maxRetentionDays: 180 }).expect(403);
+  });
+
+  it("rejeita payloads inválidos, acessos indevidos e alterações ambíguas", async () => {
+    await request(app).get('/api/privacy-governance').expect(401);
+    await operatorAgent.get('/api/privacy-governance').expect(403);
+    await viewerAgent.post('/api/privacy-governance/retention-rules').send({}).expect(403);
+
+    const baseRule = {
+      entityKey: 'Session', label: 'Regra de teste', purpose: 'Finalidade de teste suficientemente descrita.',
+      retentionMonths: 12, legalBasis: 'Base de teste a confirmar', postAction: 'BLOCK_AND_RETAIN', triggeredBy: 'Fim do teste', notes: '',
+    };
+    await adminAgent.post('/api/privacy-governance/retention-rules').send({ ...baseRule, retentionMonths: 0 }).expect(400);
+    await adminAgent.post('/api/privacy-governance/retention-rules').send({ ...baseRule, retentionMonths: 1201 }).expect(400);
+    await adminAgent.post('/api/privacy-governance/retention-rules').send({ ...baseRule, postAction: 'DELETE_EVERYTHING' }).expect(400);
+    await adminAgent.post('/api/privacy-governance/retention-rules').send({ ...baseRule, entityKey: 'UnknownEntity' }).expect(400);
+    await adminAgent.post('/api/privacy-governance/retention-rules').send({ ...baseRule, unexpected: 'must be rejected' }).expect(400);
+    await adminAgent.put('/api/privacy-governance/settings').send({ DSAR_RESPONSE_DAYS: 0, PORTABILITY_LINK_HOURS: 48 }).expect(400);
+    await adminAgent.put('/api/privacy-governance/settings').send({ DSAR_RESPONSE_DAYS: 366, PORTABILITY_LINK_HOURS: 48 }).expect(400);
+    await adminAgent.put('/api/privacy-governance/settings').send({ DSAR_RESPONSE_DAYS: 15, PORTABILITY_LINK_HOURS: 721, extra: 1 }).expect(400);
+    await adminAgent.put('/api/privacy-governance/request-limits/NOT_A_REQUEST').send({ maxRetentionDays: 30 }).expect(400);
+    await adminAgent.put('/api/privacy-governance/request-limits/ACCESS').send({ maxRetentionDays: 0 }).expect(400);
+    await adminAgent.put('/api/privacy-governance/request-limits/ACCESS').send({ maxRetentionDays: 3651 }).expect(400);
+  });
+
+  it("aceita uma regra por objeto e mantém a ação configurada sem executar exclusão", async () => {
+    const objects = [
+      ['User', 'Contas de usuários'], ['Session', 'Sessões'], ['Document', 'Protocolos'], ['Attachment', 'Anexos'],
+      ['DocumentHistory', 'Histórico'], ['DataSubjectRequest', 'Solicitações'], ['PrivacyRequestMessage', 'Mensagens'],
+      ['PrivacyRequestDelivery', 'Entregas'], ['Export', 'Exportações'],
+    ];
+    const created = await Promise.all(objects.map(([entityKey, label]) => adminAgent.post('/api/privacy-governance/retention-rules').send({
+      entityKey, label: `Teste ${label}`, purpose: `Finalidade operacional para testar ${label}.`, retentionMonths: 12,
+      legalBasis: 'Teste; decisão institucional pendente.', postAction: 'HARD_DELETE', triggeredBy: 'Fim da finalidade', notes: 'Teste automatizado.',
+    }).expect(201)));
+    expect(created).toHaveLength(objects.length);
+    const governance = await adminAgent.get('/api/privacy-governance').expect(200);
+    for (const [entityKey] of objects) expect(governance.body.data.rules).toEqual(expect.arrayContaining([expect.objectContaining({ entityKey, postAction: 'HARD_DELETE', active: true })]));
+    for (const response of created) {
+      await adminAgent.patch(`/api/privacy-governance/retention-rules/${response.body.data.id}`).send({ active: false }).expect(200);
+      const stillStored = await prisma.retentionRule.findUnique({ where: { id: response.body.data.id } });
+      expect(stillStored).toBeTruthy();
+      expect(stillStored.active).toBe(false);
+    }
+  });
+
+  it("aplica os parâmetros configurados aos novos prazos de DSAR e portabilidade", async () => {
+    await adminAgent.put('/api/privacy-governance/settings').send({ DSAR_RESPONSE_DAYS: 2, PORTABILITY_LINK_HOURS: 3 }).expect(200);
+    const requestStart = Date.now();
+    const dsar = await viewerAgent.post('/api/privacy-requests').send({ type: 'ACCESS', description: 'Teste de prazo configurável.' }).expect(201);
+    const dueDelta = new Date(dsar.body.data.dueAt).getTime() - requestStart;
+    expect(dueDelta).toBeGreaterThan(2 * 24 * 60 * 60 * 1000 - 5000);
+    expect(dueDelta).toBeLessThan(2 * 24 * 60 * 60 * 1000 + 5000);
+
+    const portability = await viewerAgent.post('/api/privacy-requests').send({ type: 'PORTABILITY', description: 'Teste de expiração configurável.' }).expect(201);
+    const deliveryStart = Date.now();
+    const delivery = await adminAgent.post(`/api/privacy-requests/${portability.body.data.id}/delivery`).send({ channel: 'LINK' }).expect(201);
+    const expiryDelta = new Date(delivery.body.data.expiresAt).getTime() - deliveryStart;
+    expect(expiryDelta).toBeGreaterThan(3 * 60 * 60 * 1000 - 5000);
+    expect(expiryDelta).toBeLessThan(3 * 60 * 60 * 1000 + 5000);
+    await adminAgent.put('/api/privacy-governance/settings').send({ DSAR_RESPONSE_DAYS: 15, PORTABILITY_LINK_HOURS: 48 }).expect(200);
+  });
+
+  it("executa diagnóstico somente leitura e protege o relatório por RBAC", async () => {
+    await request(app).post('/api/privacy-governance/diagnostics/run').expect(401);
+    await viewerAgent.post('/api/privacy-governance/diagnostics/run').expect(403);
+    const response = await adminAgent.post('/api/privacy-governance/diagnostics/run').expect(200);
+    expect(response.body.data).toMatchObject({
+      passed: expect.any(Number), warnings: expect.any(Number), failed: 0,
+      checks: expect.arrayContaining([
+        expect.objectContaining({ id: 'database', status: 'PASS' }),
+        expect.objectContaining({ id: 'settings' }),
+        expect.objectContaining({ id: 'automatic-erasure', status: 'PASS' }),
+      ]),
+    });
+    expect(response.body.data.checks.every((check) => typeof check.durationMs === 'number')).toBe(true);
+  });
+
   it("gera sequência transacional, prévia não reservada e não reutiliza cancelamento", async () => {
     const preview = await adminAgent
       .get(`/api/protocols/next?typeId=${type.id}&date=2026-07-22`)
@@ -491,6 +591,12 @@ describe("API integrada com SQLite", () => {
       url: "https://drive.google.com/drive/folders/exemplo",
     }).expect(201)).body.data;
     expect(link.provider).toBe("Google Drive");
+    await adminAgent.post(`/api/documents/${created.id}/links`).send({
+      url: "https://drive.google.com/drive/folders/exemplo?access_token=secret",
+    }).expect(400);
+    const linkHistory = await prisma.documentHistory.findMany({ where: { documentId: created.id }, orderBy: { createdAt: "desc" } });
+    expect(linkHistory[0].detailsJson).not.toContain(link.url);
+    expect(linkHistory[0].detailsJson).toContain("urlFingerprint");
     const detail = (await adminAgent.get(`/api/documents/${created.id}`).expect(200)).body.data;
     expect(detail.links).toHaveLength(1);
     expect(detail.links[0].url).toBe(link.url);

@@ -9,6 +9,9 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.ts'
+export type * from './models/RetentionRule.ts'
+export type * from './models/PrivacySetting.ts'
+export type * from './models/PrivacyRequestRetentionLimit.ts'
 export type * from './models/Session.ts'
 export type * from './models/DocumentType.ts'
 export type * from './models/Department.ts'

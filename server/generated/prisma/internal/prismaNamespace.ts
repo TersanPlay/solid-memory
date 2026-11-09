@@ -398,6 +398,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  RetentionRule: 'RetentionRule',
+  PrivacySetting: 'PrivacySetting',
+  PrivacyRequestRetentionLimit: 'PrivacyRequestRetentionLimit',
   Session: 'Session',
   DocumentType: 'DocumentType',
   Department: 'Department',
@@ -426,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "documentType" | "department" | "protocolSequence" | "document" | "documentHistory" | "attachment" | "documentLink" | "dataSubjectRequest" | "publicPrivacyRequest" | "privacyRequestEvent" | "privacyRequestDelivery" | "privacyRequestMessage"
+    modelProps: "user" | "retentionRule" | "privacySetting" | "privacyRequestRetentionLimit" | "session" | "documentType" | "department" | "protocolSequence" | "document" | "documentHistory" | "attachment" | "documentLink" | "dataSubjectRequest" | "publicPrivacyRequest" | "privacyRequestEvent" | "privacyRequestDelivery" | "privacyRequestMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -501,6 +504,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    RetentionRule: {
+      payload: Prisma.$RetentionRulePayload<ExtArgs>
+      fields: Prisma.RetentionRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RetentionRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RetentionRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>
+        }
+        findFirst: {
+          args: Prisma.RetentionRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RetentionRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>
+        }
+        findMany: {
+          args: Prisma.RetentionRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>[]
+        }
+        create: {
+          args: Prisma.RetentionRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>
+        }
+        createMany: {
+          args: Prisma.RetentionRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RetentionRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>[]
+        }
+        delete: {
+          args: Prisma.RetentionRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>
+        }
+        update: {
+          args: Prisma.RetentionRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.RetentionRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RetentionRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RetentionRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.RetentionRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RetentionRulePayload>
+        }
+        aggregate: {
+          args: Prisma.RetentionRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRetentionRule>
+        }
+        groupBy: {
+          args: Prisma.RetentionRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RetentionRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RetentionRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RetentionRuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrivacySetting: {
+      payload: Prisma.$PrivacySettingPayload<ExtArgs>
+      fields: Prisma.PrivacySettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrivacySettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrivacySettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>
+        }
+        findFirst: {
+          args: Prisma.PrivacySettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrivacySettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>
+        }
+        findMany: {
+          args: Prisma.PrivacySettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>[]
+        }
+        create: {
+          args: Prisma.PrivacySettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>
+        }
+        createMany: {
+          args: Prisma.PrivacySettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrivacySettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>[]
+        }
+        delete: {
+          args: Prisma.PrivacySettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>
+        }
+        update: {
+          args: Prisma.PrivacySettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrivacySettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrivacySettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrivacySettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrivacySettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacySettingPayload>
+        }
+        aggregate: {
+          args: Prisma.PrivacySettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrivacySetting>
+        }
+        groupBy: {
+          args: Prisma.PrivacySettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacySettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrivacySettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacySettingCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrivacyRequestRetentionLimit: {
+      payload: Prisma.$PrivacyRequestRetentionLimitPayload<ExtArgs>
+      fields: Prisma.PrivacyRequestRetentionLimitFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrivacyRequestRetentionLimitFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrivacyRequestRetentionLimitFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>
+        }
+        findFirst: {
+          args: Prisma.PrivacyRequestRetentionLimitFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrivacyRequestRetentionLimitFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>
+        }
+        findMany: {
+          args: Prisma.PrivacyRequestRetentionLimitFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>[]
+        }
+        create: {
+          args: Prisma.PrivacyRequestRetentionLimitCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>
+        }
+        createMany: {
+          args: Prisma.PrivacyRequestRetentionLimitCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrivacyRequestRetentionLimitCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>[]
+        }
+        delete: {
+          args: Prisma.PrivacyRequestRetentionLimitDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>
+        }
+        update: {
+          args: Prisma.PrivacyRequestRetentionLimitUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrivacyRequestRetentionLimitDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrivacyRequestRetentionLimitUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrivacyRequestRetentionLimitUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrivacyRequestRetentionLimitUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyRequestRetentionLimitPayload>
+        }
+        aggregate: {
+          args: Prisma.PrivacyRequestRetentionLimitAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrivacyRequestRetentionLimit>
+        }
+        groupBy: {
+          args: Prisma.PrivacyRequestRetentionLimitGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacyRequestRetentionLimitGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrivacyRequestRetentionLimitCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacyRequestRetentionLimitCountAggregateOutputType> | number
         }
       }
     }
@@ -1517,6 +1742,49 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const RetentionRuleScalarFieldEnum = {
+  id: 'id',
+  entityKey: 'entityKey',
+  label: 'label',
+  purpose: 'purpose',
+  retentionMonths: 'retentionMonths',
+  legalBasis: 'legalBasis',
+  postAction: 'postAction',
+  triggeredBy: 'triggeredBy',
+  notes: 'notes',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
+} as const
+
+export type RetentionRuleScalarFieldEnum = (typeof RetentionRuleScalarFieldEnum)[keyof typeof RetentionRuleScalarFieldEnum]
+
+
+export const PrivacySettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt',
+  updatedById: 'updatedById'
+} as const
+
+export type PrivacySettingScalarFieldEnum = (typeof PrivacySettingScalarFieldEnum)[keyof typeof PrivacySettingScalarFieldEnum]
+
+
+export const PrivacyRequestRetentionLimitScalarFieldEnum = {
+  id: 'id',
+  requestType: 'requestType',
+  maxRetentionDays: 'maxRetentionDays',
+  notes: 'notes',
+  active: 'active',
+  updatedAt: 'updatedAt',
+  updatedById: 'updatedById'
+} as const
+
+export type PrivacyRequestRetentionLimitScalarFieldEnum = (typeof PrivacyRequestRetentionLimitScalarFieldEnum)[keyof typeof PrivacyRequestRetentionLimitScalarFieldEnum]
+
+
 export const SessionScalarFieldEnum = {
   tokenHash: 'tokenHash',
   userId: 'userId',
@@ -1774,6 +2042,13 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
 
 
 /**
+ * Reference to a field of type 'RetentionPostAction'
+ */
+export type EnumRetentionPostActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RetentionPostAction'>
+
+
+
+/**
  * Reference to a field of type 'DocumentStatus'
  */
 export type EnumDocumentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentStatus'>
@@ -1966,6 +2241,9 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  retentionRule?: Prisma.RetentionRuleOmit
+  privacySetting?: Prisma.PrivacySettingOmit
+  privacyRequestRetentionLimit?: Prisma.PrivacyRequestRetentionLimitOmit
   session?: Prisma.SessionOmit
   documentType?: Prisma.DocumentTypeOmit
   department?: Prisma.DepartmentOmit

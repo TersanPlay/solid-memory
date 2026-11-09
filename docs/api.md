@@ -96,7 +96,22 @@ As páginas são informativas e não substituem a definição do controlador, do
 
 O frontend também exibe um banner de cookies e um gerenciador de preferências. No MVP, apenas o cookie técnico de sessão existe; analytics e marketing permanecem indisponíveis e nenhum cookie opcional é instalado. A escolha do usuário é armazenada localmente no navegador.
 
-Tipos aceitos: `ACCESS`, `CORRECTION`, `ANONYMIZATION`, `DELETION`, `PORTABILITY`, `OPPOSITION` e `CONSENT_REVOCATION`. O prazo inicial registrado é de 15 dias corridos como referência operacional; o canal institucional e a verificação adicional de identidade ainda dependem de definição do controlador.
+Tipos aceitos: `ACCESS`, `CORRECTION`, `ANONYMIZATION`, `DELETION`, `PORTABILITY`, `OPPOSITION` e `CONSENT_REVOCATION`. O prazo inicial registrado é configurável por administradores na governança LGPD; o padrão do MVP é 15 dias corridos.
+
+## Governança LGPD
+
+Todas as rotas abaixo exigem `admin`.
+
+| Método e rota | Corpo/observação |
+| --- | --- |
+| `GET /privacy-governance` | Lista regras de retenção, parâmetros operacionais e informa que a eliminação automática está desativada. |
+| `POST /privacy-governance/retention-rules` | Cadastra `entityKey`, `label`, `purpose`, `retentionMonths`, `legalBasis`, `postAction`, `triggeredBy` e `notes`. |
+| `PATCH /privacy-governance/retention-rules/:id` | Edita uma regra ou alterna `active`; desativar é preferível a excluir o registro. |
+| `PUT /privacy-governance/settings` | Atualiza `DSAR_RESPONSE_DAYS` (1–365) e `PORTABILITY_LINK_HOURS` (1–720). |
+| `PUT /privacy-governance/request-limits/:type` | Define o limite máximo de retenção, em dias, para um tipo de solicitação (`ACCESS`, `CORRECTION`, `ANONYMIZATION`, `DELETION`, `PORTABILITY`, `OPPOSITION` ou `CONSENT_REVOCATION`). |
+| `POST /privacy-governance/diagnostics/run` | Executa verificações somente leitura sobre banco, objetos, valores, parâmetros, limites e exclusão automática. |
+
+As regras são registros de governança e não disparam exclusão, anonimização ou destruição criptográfica. A LGPD não fornece limite numérico geral; os prazos devem ser fundamentados na finalidade, em obrigação legal/regulatória ou em norma setorial. A execução depende de matriz institucional aprovada, responsável definido e rotina operacional revisada.
 
 ## Usuários
 

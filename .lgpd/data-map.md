@@ -68,7 +68,7 @@
 | Compartilhamentos | Administradores e destinatários autorizados de exportações |
 | Transferência internacional | Não determinada |
 | Retenção | Definir prazo de logs e histórico; aplicar minimização às exportações |
-| Segurança | Redação de cookie/autorização nos logs, RBAC para relatórios; não há log imutável documentado |
+| Segurança | Redação de cookie/autorização, tokens e URLs sensíveis nos logs; detalhes de histórico de links usam fingerprint; RBAC para relatórios; não há log imutável documentado |
 | Alto risco | Pode ser alto se exportações forem em larga escala |
 | Owner | Segurança/Operações |
 

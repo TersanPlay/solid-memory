@@ -412,14 +412,6 @@ export type DocumentTypeScalarRelationFilter = {
   isNot?: Prisma.DocumentTypeWhereInput
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type DocumentTypeCreateNestedOneWithoutSequencesInput = {
   create?: Prisma.XOR<Prisma.DocumentTypeCreateWithoutSequencesInput, Prisma.DocumentTypeUncheckedCreateWithoutSequencesInput>
   connectOrCreate?: Prisma.DocumentTypeCreateOrConnectWithoutSequencesInput

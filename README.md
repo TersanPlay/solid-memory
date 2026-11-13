@@ -69,6 +69,7 @@ flowchart LR
 - `scripts/`: CLI de usuários e manutenção do banco.
 - `docs/`: documentação operacional e técnica detalhada.
 - `.lgpd/`: especificação, mapa de dados, bases legais, políticas em rascunho, gaps, workflow DSAR e controles de segurança. A página `/lgpd` lê esses arquivos diretamente.
+- `AGENTS.md`: instruções de projeto para uso da skill `lgpd-audit`, atualização dos artefatos `.lgpd/` e preservação dos limites técnicos e institucionais do MVP.
 - `public/lgpd-*-card.png`: ilustrações usadas nos cards do Guia LGPD.
 
 Em desenvolvimento, o Vite atende `127.0.0.1:5173` e encaminha `/api` para a API em `3000`. Em produção, o Express atende a API e o frontend compilado no mesmo processo.

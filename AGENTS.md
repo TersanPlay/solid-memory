@@ -2,7 +2,7 @@
 
 ## Governança LGPD
 
-Para qualquer tarefa que envolva dados pessoais, autenticação, cookies, links documentais, logs, retenção, DSAR, exportações, fornecedores ou segurança, utilize a skill `lgpd-audit` do plugin `lgpd-skills` e consulte primeiro os artefatos em `.lgpd/`.
+Para qualquer tarefa que envolva dados pessoais, autenticação, cookies, links documentais, logs, retenção, DSAR, exportações, fornecedores ou segurança, utilize a skill local `lgpd-audit` em `.agents/skills/lgpd-audit/` (originada do plugin `lgpd-skills`) e consulte primeiro os artefatos em `.lgpd/`.
 
 A pasta `.lgpd/` é a fonte versionada de especificação e status de privacidade deste projeto. Após implementar ou alterar um controle relacionado à LGPD:
 

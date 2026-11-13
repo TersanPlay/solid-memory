@@ -1,0 +1,23 @@
+# Secrets and local state
+.env
+.env.*
+!.env.example
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Dependencies and generated output
+node_modules/
+dist/
+.tmp/
+coverage/
+
+# Local attachments and user-provided documents
+attachments/
+uploads/
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx

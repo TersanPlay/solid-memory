@@ -29,6 +29,15 @@ A pasta `.lgpd/` é a fonte versionada de especificação e status de privacidad
 - Regras de retenção são configuração de governança. Não exclua, anonimize ou destrua dados automaticamente sem política institucional aprovada e rotina revisada.
 - Diagnósticos de governança devem ser somente leitura, salvo quando a tarefa autorizar explicitamente uma alteração.
 
+## Codebase Memory
+
+Para exploração arquitetural, rastreamento de dependências ou análise de impacto, use a skill local `codebase-memory` e o servidor MCP definido em `.mcp.json` quando estiver disponível. Confirme resultados do grafo no código local e respeite o `.cbmignore`.
+
+- Não indexe o repositório sem autorização explícita para essa operação.
+- Não use ausência de resultados como prova de ausência de código.
+- Não leia ou exponha `.env`, banco SQLite, anexos, uploads, dependências ou artefatos de build no grafo.
+- Ao fazer afirmações de impacto, verifique cobertura do índice e a versão do checkout.
+
 ## Validação e documentação
 
 Para mudanças de código, execute conforme aplicável:
